@@ -1,0 +1,183 @@
+{
+  "main": {
+    "id": "a68f1ddef174ca0f",
+    "type": "split",
+    "children": [
+      {
+        "id": "e9b421de7fb7c817",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "4e90dfcc48e59ec7",
+            "type": "leaf",
+            "state": {
+              "type": "canvas",
+              "state": {
+                "file": "Communication.canvas",
+                "viewState": {
+                  "x": 361.9878737691305,
+                  "y": -248.13794995685356,
+                  "zoom": -0.9466666666666665
+                }
+              },
+              "icon": "lucide-layout-dashboard",
+              "title": "Communication"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "1a284fa3a250bbfd",
+    "type": "split",
+    "children": [
+      {
+        "id": "4ddc81dce53dd8c1",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "e7483ecf6ad6201f",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "45b0dc68562642bf",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "e366c8242a77a8d3",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "dd71ccc845980b3e",
+    "type": "split",
+    "children": [
+      {
+        "id": "1b7bec290f8cd686",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "226b9b8fb1dd63bc",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Communication.canvas",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for Communication"
+            }
+          },
+          {
+            "id": "47e89f8984adb972",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Communication.canvas",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from Communication"
+            }
+          },
+          {
+            "id": "4f54f5b98fb929cd",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "4da02ff8b805b0be",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Communication.canvas",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of Communication"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "4e90dfcc48e59ec7",
+  "lastOpenFiles": [
+    "test.c~",
+    "test.c",
+    "Doc.md",
+    "Communication.canvas",
+    "GUI Protocol.png",
+    "AI Protocol.png"
+  ]
+}
