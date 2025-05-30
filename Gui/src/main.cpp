@@ -25,9 +25,6 @@
 *
 ********************************************************************************************/
 
-#define WIDTH 10
-#define HEIGHT 10
-
 void displayMap(float width, float height)
 {
     for (int x = 0; x < width; x++) {
@@ -41,14 +38,13 @@ void displayMap(float width, float height)
 
 void displayEntity(std::vector<Gui::AEntity*> list)
 {
-    // get list(list(int))
-
-    int id = 0;
-
-        for (int x = 0; x < list.size(); ++x) {
-            DrawModel(list[x]->getModel(), list[x]->getPosition(), list[x]->getScale(), list[x]->getColor());
-        }
+    for (int i = 0; i < list.size(); ++i) {
+        DrawModel(list[i]->getModel(), list[i]->getPosition(), list[i]->getScale(), list[i]->getColor());
+    }
 }
+
+#define WIDTH 100
+#define HEIGHT 100
 
 int main(void)
 {
@@ -57,11 +53,9 @@ int main(void)
     float width = WIDTH;
     float height = HEIGHT;
 
-    std::vector<std::vector<int>> map((int)height);
-
     //--------------------------------------------------------- Init ----------------------------------------------------------------
 
-    // ------ For Window ------
+    // ------ Window ------
     const int screenWidth = 1920;
     const int screenHeight = 1080;
 
@@ -69,20 +63,24 @@ int main(void)
 
     SetTargetFPS(60);
 
+    // ------ Brut code for Entity on Map ------
 
     std::vector<Gui::AEntity*> list;
 
-    for (int x = 0; x < 50; ++x) {
+    for (int x = 0; x < (width * height) / 2; ++x) {
         int value1 = GetRandomValue(0, width - 1);
         int value2 = GetRandomValue(0, height - 1);
-        int value3 = GetRandomValue(0, 1);
-        if (value3)
+
+        int isKayu = GetRandomValue(0, 1);
+
+        if (isKayu)
             list.push_back(new Gui::Kayu({(float)value1, 0.55, (float)value2}, 1.0f, RED));
         else
             list.push_back(new Gui::Player({(float)value1, 0.5, (float)value2}, 1.0f, RED));
     }
 
-    // ------ For Camera ------
+    // ------ Camera ------
+
     Camera camera = { { -width, 10.0f, -height}, { width / 2, 0.0f, height / 2 }, { 0.0f, 1.0f, 0.0f }, 45.0f, 0 };
 
     //--------------------------------------------------------- Display ----------------------------------------------------------------
