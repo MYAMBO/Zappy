@@ -39,17 +39,15 @@ void displayMap(float width, float height)
     }
 }
 
-void displayEntity(std::vector<std::vector<Gui::AEntity *>> list, float  width, float height)
+void displayEntity(std::vector<Gui::AEntity*> list)
 {
     // get list(list(int))
 
     int id = 0;
 
-    for (int y = 0; y < (int)height; ++y) {
-        for (int x = 0; x < (int)width; ++x) {
-            DrawModel(*list[y][x]->getModel(), list[y][x]->getPosition(), list[y][x]->getScale(), list[y][x]->getColor());
+        for (int x = 0; x < list.size(); ++x) {
+            DrawModel(list[x]->getModel(), list[x]->getPosition(), list[x]->getScale(), list[x]->getColor());
         }
-    }
 }
 
 int main(void)
@@ -61,8 +59,6 @@ int main(void)
 
     std::vector<std::vector<int>> map((int)height);
 
-    std::vector<std::vector<Gui::AEntity*>> grid;
-
     //--------------------------------------------------------- Init ----------------------------------------------------------------
 
     // ------ For Window ------
@@ -73,16 +69,15 @@ int main(void)
 
     SetTargetFPS(60);
 
-    std::cout << "toto" << std::endl;
 
-    for (int y = 0; y < (int)height; ++y) {
-        std::vector<Gui::AEntity*> row;
-        for (int x = 0; x < (int)width; ++x) {
-            row.push_back(new Gui::Kayu({(float)x, 0.55,(float)y}, 1.0f, RED));
-        }
-        grid.push_back(row);
+    std::vector<Gui::AEntity*> list;
+
+    for (int x = 0; x < 500; ++x) {
+        float value1 = GetRandomValue(0, width - 1);
+        float value2 = GetRandomValue(0, height - 1);
+        std::cout << value1 << "la " << value2 << std::endl;
+        list.push_back(new Gui::Kayu({value1, 0.55, value2}, 1.0f, RED));
     }
-    std::cout << "tourte" << std::endl;
 
     // ------ For Camera ------
     Camera camera = { { -width, 10.0f, -height}, { width / 2, 0.0f, height / 2 }, { 0.0f, 1.0f, 0.0f }, 45.0f, 0 };
@@ -99,7 +94,7 @@ int main(void)
 
         BeginMode3D(camera);
 
-        displayEntity(grid ,width, height);
+        displayEntity(list);
 
         displayMap(width, height);
 
