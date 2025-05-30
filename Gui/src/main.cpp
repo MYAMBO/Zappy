@@ -72,11 +72,14 @@ int main(void)
 
     std::vector<Gui::AEntity*> list;
 
-    for (int x = 0; x < 500; ++x) {
-        float value1 = GetRandomValue(0, width - 1);
-        float value2 = GetRandomValue(0, height - 1);
-        std::cout << value1 << "la " << value2 << std::endl;
-        list.push_back(new Gui::Kayu({value1, 0.55, value2}, 1.0f, RED));
+    for (int x = 0; x < 50; ++x) {
+        int value1 = GetRandomValue(0, width - 1);
+        int value2 = GetRandomValue(0, height - 1);
+        int value3 = GetRandomValue(0, 1);
+        if (value3)
+            list.push_back(new Gui::Kayu({(float)value1, 0.55, (float)value2}, 1.0f, RED));
+        else
+            list.push_back(new Gui::Player({(float)value1, 0.5, (float)value2}, 1.0f, RED));
     }
 
     // ------ For Camera ------
