@@ -14,7 +14,7 @@ void displayMap(float width, float height)
 {
     for (int x = 0; x < width; x++) {
         for (int z = 0; z < height; z++) {
-            Vector3 position = { (float)x, 0.0f, (float)z };
+            Vector3 position = { (float)x, -0.5f, (float)z };
             DrawCube(position, 1.0f, 1.0f, 1.0f, {61, 110, 49, 255});
             DrawCubeWires(position, 1.0f, 1.0f, 1.0f, {61, 0, 49, 255});
         }
@@ -59,9 +59,9 @@ int main(void)
         int isKayu = GetRandomValue(0, 1);
 
         if (isKayu)
-            list.push_back(new Gui::Kayu({(float)value1, 0.55, (float)value2}, 1.0f, RED));
+            list.push_back(new Gui::Kayu({(float)value1, 0.05, (float)value2}, 1.0f, RED));
         else
-            list.push_back(new Gui::Player({(float)value1, 0.5, (float)value2}, 1.0f, RED));
+            list.push_back(new Gui::Player({(float)value1, 0, (float)value2}, 1.0f, RED));
     }
 
     // ------ Camera ------
@@ -77,6 +77,9 @@ int main(void)
         UpdateCamera(&camera, CAMERA_THIRD_PERSON);
 
         BeginDrawing();
+
+        if (camera.position.y < 0.1)
+            camera.position.y = 0.1;
 
         ClearBackground(BLACK);
 
