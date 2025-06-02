@@ -47,3 +47,25 @@ void Gui::Player::Right() {
             break;
     }
 }
+
+void Gui::Player::forward()
+{
+    float x = this->_position.x;
+    float y = this->_position.y;
+    float z = this->_position.z;
+
+    switch (this->_direction) {
+        case North:
+            this->_position = {x, y + 1, z};
+            break;
+        case Est:
+            this->_position = {x + 1, y, z};
+            break;
+        case South:
+            this->_position = {x, y - 1, z};
+            break;
+        case West:
+            this->_position = {x - 1, y, z};
+            break;
+    }
+}
