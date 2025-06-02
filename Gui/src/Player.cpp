@@ -56,16 +56,16 @@ void Gui::Player::forward()
 
     switch (this->_direction) {
         case North:
-            this->_position = {x, y + 1, z};
+            this->_position = {x, y, z + 1};
             break;
         case Est:
-            this->_position = {x + 1, y, z};
+            this->_position = {x - 1, y, z};
             break;
         case South:
-            this->_position = {x, y - 1, z};
+            this->_position = {x, y, z - 1};
             break;
         case West:
-            this->_position = {x - 1, y, z};
+            this->_position = {x + 1, y, z};
             break;
     }
 }

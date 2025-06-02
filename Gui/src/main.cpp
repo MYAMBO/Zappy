@@ -70,6 +70,8 @@ int main(void)
 
     //--------------------------------------------------------- Display ----------------------------------------------------------------
 
+    DisableCursor();
+
     while (!WindowShouldClose())
     {
         UpdateCamera(&camera, CAMERA_THIRD_PERSON);
@@ -90,6 +92,7 @@ int main(void)
     }
 
 
+    EnableCursor();
     CloseWindow();
 
     return 0;
