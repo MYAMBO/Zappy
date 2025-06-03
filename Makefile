@@ -74,6 +74,10 @@ unit_test:
 
 tests_run: unit_test
 	@echo -e "$(GREEN)Start units tests...$(NC)"
+	@echo -e "$(GREEN)Python tests :$(NC)"
+	@PYTHONPATH=.:$(PYTHONPATH) pytest --cov=Ai/src --cov-report=term-missing tests
+	@PYTHONPATH=.:$(PYTHONPATH) pytest --cov=Ai/src --cov-report=html tests
+	@echo -e "$(GREEN)C/C++ tests :$(NC)"
 	@./unit_tests
 
 clean:
@@ -82,6 +86,8 @@ clean:
 	@rm -f *.gcno
 
 fclean: clean
+	@find . -type d -name "__pycache__" -exec rm -rf {} +
+	@rm -rf .coverage htmlcov .pytest_cache
 	@rm -f $(SERVER_NAME) $(GUI_NAME)
 	@rm -f unit_tests
 

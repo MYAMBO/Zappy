@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 ##
 ## EPITECH PROJECT, 2025
 ## Zappy
@@ -10,7 +9,7 @@ def handle_look_string(str):
     return [elem.strip() for elem in str[1:-1].split(',')]
 
 
-def handle_inventory_string(str = "[]"):
+def handle_inventory_string(str):
     result = {}
     for item in handle_look_string(str):
         name, num_str = item.rsplit(' ', 1)
