@@ -10,25 +10,25 @@ import socket
 
 class Client:
     def __init__(self, host, port):
-        self.host = host
-        self.port = port
-        self.sock = None
+        self.__host = host
+        self.__port = port
+        self.__sock = None
 
     def connect(self):
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect((self.host, self.port))
-        print("Connected to " + str(self.host) + ' ' + str(self.port))
+        self.__sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.__sock.connect((self.__host, self.__port))
+        print("Connected to " + str(self.__host) + ' ' + str(self.__port))
 
     def send_command(self, command):
-        if self.sock:
-            self.sock.sendall(command.encode() + '\n'.encode())
-            return self.sock.recv(4096).decode()
+        if self.__sock:
+            self.__sock.sendall(command.encode() + '\n'.encode())
+            return self.__sock.recv(4096).decode()
         else:
             raise ConnectionError("Not connected to server")
 
     def close(self):
-        if self.sock:
-            self.sock.close()
+        if self.__sock:
+            self.__sock.close()
             print("Connection closed")
 
 
