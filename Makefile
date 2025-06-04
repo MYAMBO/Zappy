@@ -5,7 +5,12 @@
 ## Makefile
 ##
 
-SERVER_SRC				=	 	Server/src/main.c		\
+SERVER_SRC				=	 	Server/src/main.c			\
+								Server/src/init_server.c	\
+								Server/src/garbage.c		\
+								Server/src/start_server.c	\
+								Server/src/poll_handling.c	\
+								Server/src/handle_event.c	\
 
 GUI_SRC 				=		Gui/src/main.cpp		\
 
