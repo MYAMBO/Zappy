@@ -24,9 +24,9 @@ SERVER_NAME				=		zappy_server
 
 GUI_NAME 				=  		zappy_gui
 
-SERVER_FLAGS 			= 		-I Server/include
+SERVER_FLAGS 			= 		-I Server/include -I Debug
 
-GUI_FLAGS 				= 		-I Gui/include
+GUI_FLAGS 				= 		-I Gui/include -I Debug
 
 ALL_FLAGS 				= 		$(SERVER_FLAGS) $(GUI_FLAGS)
 
@@ -39,21 +39,23 @@ GREEN          			=     	\033[1;32m
 BLUE          	  		=     	\033[1;34m
 NC              		=     	\033[0m
 
-all:	zappy_server zappy_gui zappy_ai
+all: zappy_server zappy_gui zappy_ai
 
 debug: CFLAGS += -g
 debug: all
 
 zappy_ai:
 
-$(SERVER_NAME): $(SERVER_OBJ)
+Debug/libLogger.a:
+	@$(MAKE) -s -C Debug
+
+$(SERVER_NAME): $(SERVER_OBJ) Debug/libLogger.a
 	@echo -e "$(GREEN)Linking $@...$(NC)"
 	@gcc -o $@ $^ $(CFLAGS) $(SERVER_FLAGS)
 
-$(GUI_NAME): $(GUI_OBJ)
-	@echo -e "$(GREEN)Linking $@...$(NC)"
+$(GUI_NAME): Debug/libLogger.a $(GUI_OBJ)
+	@echo -e "$(GREEN)Linking $@ with static Logger lib...$(NC)"
 	@g++ -o $@ $^ $(CFLAGS) $(GUI_FLAGS)
-
 
 obj/%.o: ./%.c
 	@echo -e "$(GREEN)Compiling $<...$(NC)"
@@ -74,20 +76,22 @@ obj:
 	@mkdir -p obj obj/Server obj/Gui
 
 unit_test:
-	@echo -e "$(GREEN)Compiling units tests...$(NC)"
+	@echo -e "$(GREEN)Compiling unit tests...$(NC)"
 	@gcc -o unit_tests $(SRC_NO_MAIN) $(TEST_SRC) $(TEST_FLAGS)
 
 tests_run: unit_test
-	@echo -e "$(GREEN)Start units tests...$(NC)"
+	@echo -e "$(GREEN)Start unit tests...$(NC)"
 	@./unit_tests
 
 clean:
 	@rm -rf obj
 	@rm -f *.gcda
 	@rm -f *.gcno
+	@$(MAKE) -s -C Debug clean
 
 fclean: clean
 	@rm -f $(SERVER_NAME) $(GUI_NAME)
 	@rm -f unit_tests
+	@$(MAKE) -s -C Debug fclean
 
-re:	fclean all
+re: fclean all
