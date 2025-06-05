@@ -7,19 +7,22 @@
 ** All rights reserved
 */
 
-#ifndef SERVER_H
-#define SERVER_H
-
 #include "struct.h"
 #include "poll_handling.h"
 
-#define FAILURE 84
-#define SUCCESS 0
+#ifndef SERVER_H
+    #define SERVER_H
 
-#define MAX_CLIENT 100
+
+
+    #define FAILURE 84
+    #define SUCCESS 0
+
+    #define MAX_CLIENT 100
 
 int init_server(server_t *server, long port);
 int start_server(server_t *server);
-int handle_event(server_t* server);
+int handle_event(server_t *server);
+void init_density(server_t *server);
 
 #endif //SERVER_H
