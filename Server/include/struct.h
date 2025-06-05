@@ -51,6 +51,13 @@ typedef struct ai_stats_s {
     int direction; //N, S, E, W
     int level;
     char *team_name;
+    int nb_food;
+    int nb_linemate;
+    int nb_deraumere;
+    int nb_sibur;
+    int nb_mendiane;
+    int nb_phiras;
+    int nb_thystame;
 } ai_stats_t;
 
 #endif //STRUCT_H
