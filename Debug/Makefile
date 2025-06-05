@@ -1,0 +1,48 @@
+##
+## EPITECH PROJECT, 2025
+## Logger Library
+## File description:
+## Makefile
+##
+
+NAME        = 	libLogger.a
+
+C_SOURCES   = 	logger.c
+CPP_SOURCES = 	Logger.cpp
+
+C_OBJS      = 	$(C_SOURCES:.c=.o)
+CPP_OBJS    = 	$(CPP_SOURCES:.cpp=.o)
+
+OBJS        = 	$(C_OBJS) $(CPP_OBJS)
+
+CFLAGS      = 	-Wall -Wextra -Werror -std=c11 -I.
+CPPFLAGS    = 	-Wall -Wextra -Werror -std=c++20 -I.
+
+RED         = 	\033[1;31m
+GREEN       = 	\033[1;32m
+BLUE        = 	\033[1;34m
+NC          = 	\033[0m
+
+all: $(NAME)
+
+$(NAME): $(OBJS)
+	@echo -e "$(BLUE)Creating static library: $@$(NC)"
+	ar rcs $@ $(OBJS)
+
+%.o: %.c
+	@echo -e "$(GREEN)Compiling C $<...$(NC)"
+	@gcc $(CFLAGS) -c $< -o $@
+
+%.o: %.cpp
+	@echo -e "$(GREEN)Compiling C++ $<...$(NC)"
+	@g++ $(CPPFLAGS) -c $< -o $@
+
+clean:
+	@echo -e "$(RED)Cleaning objects.$(NC)"
+	@rm -f *.o *.gcda *.gcno
+
+fclean: clean
+	@echo -e "$(RED)Removing library.$(NC)"
+	@rm -f $(NAME)
+
+re: fclean all
