@@ -6,6 +6,9 @@
 ##
 
 def get_visible_tiles_sorted_by_distance(tiles):
+    if not tiles:
+        return []
+
     length = 1
     layers = []
     try:
