@@ -6,6 +6,7 @@
 ##
 
 import socket
+import select
 
 class ClientError(Exception):
     def __init__(self, message):
@@ -34,32 +35,18 @@ class Client:
     def send_command(self, command):
         if self.__sock:
             self.__sock.sendall(command.encode() + '\n'.encode())
-            return self.__sock.recv(4096).decode()
+            #return self.__sock.recv(4096).decode()
         else:
             raise ConnectionError("Not connected to server")
+
+    def try_get_reply(self):
+        ready_to_read, _, _ = select.select([self.__sock], [], [], 0.5)
+        if ready_to_read:
+            return self.__sock.recv(4096).decode()
+        return None
+        
 
     def close(self):
         if self.__sock:
             self.__sock.close()
             print("Connection closed")
-
-
-"""
-client = Client("zappy.antoiix.me", 12345)
-
-try:
-    client.connect()
-except ClientError as e:
-    print(e.message)
-    exit()
-
-try:
-    while True:
-        command = input("Enter command (or 'exit' to quit): ")
-        if command == "exit":
-            break
-        response = client.send_command(command)
-        print("Server response:", response)
-finally:
-    client.close()
-"""

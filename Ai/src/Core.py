@@ -21,7 +21,8 @@ def core():
             command = input("Enter command (or 'exit' to quit): ")
             if command == "exit":
                 break
-            response = client.send_command("Look")
+            client.send_command(command)
+            response = client.try_get_reply()
             print("Server response:", response)
     finally:
         client.close()
