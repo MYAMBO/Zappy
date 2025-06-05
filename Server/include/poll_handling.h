@@ -7,20 +7,21 @@
 ** All rights reserved
 */
 
-#ifndef POLL_HANDLING_H
-#define POLL_HANDLING_H
-
 #include <poll.h>
 
-typedef struct poll_handling_s
-{
+#ifndef POLL_HANDLING_H
+    #define POLL_HANDLING_H
+
+typedef struct poll_handling_s {
     struct pollfd poll_fd;
     struct poll_handling_s *next;
 } poll_handling_t;
 
 int append_node_poll_handling(poll_handling_t **head, int fd);
-struct pollfd *convert_poll_handling(poll_handling_t *head, struct pollfd *poll_list, int size);
-void convert_poll_handling_reverse(poll_handling_t *head, struct pollfd *poll_list, int size);
+struct pollfd *convert_poll_handling(poll_handling_t *head,
+    struct pollfd *poll_list, int size);
+void convert_poll_handling_reverse(poll_handling_t *head,
+    struct pollfd *poll_list, int size);
 void remove_node_poll_handling(poll_handling_t **head, int fd);
 
 #endif //POLL_HANDLING_H

@@ -31,9 +31,9 @@ int main(int ac, char **av)
 {
     server_t server;
 
+    init_density(&server);
     if (parse_arguments(ac, av, &server) == FAILURE ||
-        start_server(&server) == FAILURE)
-    {
+        start_server(&server) == FAILURE) {
         free_garbage();
         return FAILURE;
     }
