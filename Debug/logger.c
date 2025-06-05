@@ -44,17 +44,17 @@ bool logger_log(const char *prefix, char *message, output_t out, bool date)
     return true;
 }
 
-bool logger_info(const char *message, output_t output, bool date)
+bool logger_info(char *message, output_t output, bool date)
 {
     return logger_log("[INFO] ", message, output, date);
 }
 
-bool logger_debug(const char *message, output_t output, bool date)
+bool logger_debug(char *message, output_t output, bool date)
 {
     return logger_log("[DEBUG] ", message, output, date);
 }
 
-bool logger_warning(const char *message, output_t output, bool date)
+bool logger_warning(char *message, output_t output, bool date)
 {
     return logger_log("[WARNING] ", message, output, date);
 }

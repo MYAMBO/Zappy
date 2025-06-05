@@ -32,7 +32,7 @@
  * @param date Whether to include the current date in the log message.
  * @return true if the log was successful, false otherwise.
  */
-    bool logger_info(const char *message, output_t output, bool date);
+    bool logger_info(char *message, output_t output, bool date);
 
 /**
  * @brief Log a debug message with the current time.
@@ -43,7 +43,7 @@
  * @param date Whether to include the current date in the log message.
  * @return true if the log was successful, false otherwise.
  */
-    bool logger_debug(const char *message, output_t output, bool date);
+    bool logger_debug(char *message, output_t output, bool date);
 
 /**
  * @brief Log a warning message with the current time.
@@ -54,7 +54,7 @@
  * @param date Whether to include the current date in the log message.
  * @return true if the log was successful, false otherwise.
  */
-    bool logger_warning(const char *message, output_t output, bool date);
+    bool logger_warning(char *message, output_t output, bool date);
 
 /**
  * @brief Clear the log File.
