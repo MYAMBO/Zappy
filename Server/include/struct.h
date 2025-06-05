@@ -58,6 +58,7 @@ typedef struct ai_stats_s {
     int nb_mendiane;
     int nb_phiras;
     int nb_thystame;
+    bool in_incantation;
 } ai_stats_t;
 
 #endif //STRUCT_H
