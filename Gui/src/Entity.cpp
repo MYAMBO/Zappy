@@ -1,10 +1,7 @@
-#include <iostream>
-#include "../include/AEntity.hpp"
+#include "AEntity.hpp"
 
-Gui::AEntity::AEntity(std::string type, Vector3 position, float scale, Color color)
+gui::AEntity::AEntity(const std::string& type, Vector3 position, float scale, Color color)
 {
-    std::cout << "test" << std::endl;
-
     if (type == "Kayu") {
         Mesh mesh = GenMeshSphere(0.05f, 10, 500);
         _model = LoadModelFromMesh(mesh);
@@ -13,54 +10,53 @@ Gui::AEntity::AEntity(std::string type, Vector3 position, float scale, Color col
         _model = LoadModelFromMesh(mesh);
     }
 
-    std::cout << "tourte" << std::endl;
     _position = position;
     _scale = scale;
     _color = color;
 }
 
-Gui::AEntity::~AEntity()
+gui::AEntity::~AEntity()
 {
     UnloadModel(_model);
 }
 
-Color Gui::AEntity::getColor()
+Color gui::AEntity::getColor()
 {
     return _color;
 }
 
-Model Gui::AEntity::getModel()
+Model gui::AEntity::getModel()
 {
     return _model;
 }
 
-Vector3 Gui::AEntity::getPosition()
+Vector3 gui::AEntity::getPosition()
 {
     return _position;
 }
 
-float Gui::AEntity::getScale()
+float gui::AEntity::getScale()
 {
     return _scale;
 }
 
-void Gui::AEntity::setColor(Color color)
+void gui::AEntity::setColor(Color color)
 {
     _color = color;
 }
 
-void Gui::AEntity::setModel(Model model)
+void gui::AEntity::setModel(Model model)
 {
     UnloadModel(_model);
     _model = model;
 }
 
-void Gui::AEntity::setPosition(Vector3 position)
+void gui::AEntity::setPosition(Vector3 position)
 {
     _position = position;
 }
 
-void Gui::AEntity::setScale(float scale)
+void gui::AEntity::setScale(float scale)
 {
     _scale = scale;
 }

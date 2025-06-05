@@ -6,12 +6,12 @@
 */
 
 #ifndef ZAPPY_MAIN_HPP
-#define ZAPPY_MAIN_HPP
+    #define ZAPPY_MAIN_HPP
 
-#include "raylib.h"
-#include <vector>
+    #include "raylib.h"
+    #include <vector>
 
-namespace Gui {
+namespace gui {
     class IEntity {
         public:
             virtual CLITERAL(Color) getColor() = 0;

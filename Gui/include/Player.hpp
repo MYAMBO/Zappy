@@ -6,10 +6,10 @@
 */
 
 #ifndef ZAPPY_PLAYER_HPP
-#define ZAPPY_PLAYER_HPP
+    #define ZAPPY_PLAYER_HPP
 
-#include <tuple>
-#include "../include/AEntity.hpp"
+    #include <tuple>
+    #include "AEntity.hpp"
 
 enum orientation {
     North,
@@ -18,7 +18,7 @@ enum orientation {
     West
 };
 
-namespace Gui {
+namespace gui {
     class Player : public AEntity {
         public:
             Player(Vector3 position, float scale, CLITERAL(Color) color);

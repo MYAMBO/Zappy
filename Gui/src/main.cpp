@@ -5,10 +5,8 @@
 ** main
 */
 
-#include <cstdlib>
-#include <iostream>
-#include "../include/Player.hpp"
-#include "../include/Kayu.hpp"
+#include "Player.hpp"
+#include "Kayu.hpp"
 
 void displayMap(float width, float height)
 {
@@ -21,7 +19,7 @@ void displayMap(float width, float height)
     }
 }
 
-void displayEntity(std::vector<Gui::AEntity*> list)
+void displayEntity(std::vector<gui::AEntity*> list)
 {
     for (auto & i : list) {
         DrawModel(i->getModel(), i->getPosition(), i->getScale(), i->getColor());
@@ -31,7 +29,7 @@ void displayEntity(std::vector<Gui::AEntity*> list)
 #define WIDTH 10
 #define HEIGHT 10
 
-int main(void)
+int main()
 {
 
     //--------------------------------------------------------- Temp brut code ----------------------------------------------------------------
@@ -50,7 +48,7 @@ int main(void)
 
     // ------ Brut code for Entity on Map ------
 
-    std::vector<Gui::AEntity*> list;
+    std::vector<gui::AEntity*> list;
 
     for (int x = 0; (float)x < (width * height) / 2; ++x) {
         int value1 = GetRandomValue(0, (int)width - 1);
@@ -59,9 +57,9 @@ int main(void)
         int isKayu = GetRandomValue(0, 1);
 
         if (isKayu)
-            list.push_back(new Gui::Kayu({(float)value1, 0.05, (float)value2}, 1.0f, RED));
+            list.push_back(new gui::Kayu({(float)value1, 0.05, (float)value2}, 1.0f, RED));
         else
-            list.push_back(new Gui::Player({(float)value1, 0, (float)value2}, 1.0f, RED));
+            list.push_back(new gui::Player({(float)value1, 0, (float)value2}, 1.0f, RED));
     }
 
     // ------ Camera ------

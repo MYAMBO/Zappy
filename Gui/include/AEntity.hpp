@@ -1,15 +1,13 @@
 #ifndef ZAPPY_AEntity_HPP
-#define ZAPPY_AEntity_HPP
+    #define ZAPPY_AEntity_HPP
 
-#include <string>
-#include "raylib.h"
-#include "./IEntity.hpp"
+    #include <string>
+    #include "IEntity.hpp"
 
-namespace Gui {
-
+namespace gui {
     class AEntity : public IEntity {
     public:
-        AEntity(std::string type, Vector3 position, float scale, CLITERAL(Color) color);
+        AEntity(const std::string& type, Vector3 position, float scale, CLITERAL(Color) color);
         ~AEntity();
 
         CLITERAL(Color) getColor() override;

@@ -5,15 +5,15 @@
 ** Player.cpp
 */
 
-#include "../include/Player.hpp"
+#include "Player.hpp"
 
-Gui::Player::Player( Vector3 position, float scale, CLITERAL(Color) color) : AEntity("Player", position, scale, color)
+gui::Player::Player(Vector3 position, float scale, CLITERAL(Color) color) : AEntity("Player", position, scale, color), _direction(North)
 {
 }
 
-Gui::Player::~Player() = default;
+gui::Player::~Player() = default;
 
-void Gui::Player::Left()
+void gui::Player::Left()
 {
     switch (this->_direction) {
         case North:
@@ -31,7 +31,7 @@ void Gui::Player::Left()
     }
 }
 
-void Gui::Player::Right() {
+void gui::Player::Right() {
     switch (this->_direction) {
         case North:
             this->_direction = Est;
@@ -48,7 +48,7 @@ void Gui::Player::Right() {
     }
 }
 
-void Gui::Player::forward()
+void gui::Player::forward()
 {
     float x = this->_position.x;
     float y = this->_position.y;

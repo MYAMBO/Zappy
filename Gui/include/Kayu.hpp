@@ -6,11 +6,11 @@
 */
 
 #ifndef ZAPPY_KAYU_HPP
-#define ZAPPY_KAYU_HPP
+    #define ZAPPY_KAYU_HPP
 
-#include "../include/AEntity.hpp"
+    #include "AEntity.hpp"
 
-namespace Gui {
+namespace gui {
     class Kayu : public AEntity {
         public:
             Kayu(Vector3 position, float scale, CLITERAL(Color) color);
