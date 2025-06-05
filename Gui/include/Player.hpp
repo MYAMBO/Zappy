@@ -21,7 +21,7 @@ enum orientation {
 namespace gui {
     class Player : public AEntity {
         public:
-            Player(Vector3 position, float scale, CLITERAL(Color) color);
+            Player(Vector3 position, float scale, Color color);
             ~Player();
 
             void Left();

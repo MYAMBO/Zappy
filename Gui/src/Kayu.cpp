@@ -7,7 +7,7 @@
 
 #include "Kayu.hpp"
 
-gui::Kayu::Kayu( Vector3 position, float scale, CLITERAL(Color) color) : AEntity("Kayu", position, scale, color)
+gui::Kayu::Kayu( Vector3 position, float scale, Color color) : AEntity("Kayu", position, scale, color)
 {
     float value1 = ((float)GetRandomValue(0, 10000) / 10000.0f) * 0.9f - 0.45f;
     float value2 = ((float)GetRandomValue(0, 10000) / 10000.0f) * 0.9f - 0.45f;

@@ -7,7 +7,7 @@
 
 #include "Player.hpp"
 
-gui::Player::Player(Vector3 position, float scale, CLITERAL(Color) color) : AEntity("Player", position, scale, color), _direction(North)
+gui::Player::Player(Vector3 position, float scale, Color color) : AEntity("Player", position, scale, color), _direction(North)
 {
 }
 

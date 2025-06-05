@@ -13,7 +13,7 @@
 namespace gui {
     class Kayu : public AEntity {
         public:
-            Kayu(Vector3 position, float scale, CLITERAL(Color) color);
+            Kayu(Vector3 position, float scale, Color color);
             ~Kayu();
     };
 };

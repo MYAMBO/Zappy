@@ -7,21 +7,21 @@
 namespace gui {
     class AEntity : public IEntity {
     public:
-        AEntity(const std::string& type, Vector3 position, float scale, CLITERAL(Color) color);
+        AEntity(const std::string& type, Vector3 position, float scale, Color color);
         ~AEntity();
 
-        CLITERAL(Color) getColor() override;
+        Color getColor() override;
         Model getModel() override;
         float getScale() override;
         Vector3 getPosition() override;
 
-        void setColor(CLITERAL(Color) color) override;
+        void setColor(Color color) override;
         void setPosition(Vector3 position) override;
         void setScale(float scale) override;
         void setModel(Model model) override;
 
     protected:
-        CLITERAL(Color) _color;
+        Color _color;
         Vector3 _position;
         float _scale;
         Model _model;
