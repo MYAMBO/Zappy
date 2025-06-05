@@ -10,6 +10,7 @@
 #include "garbage.h"
 #include "server.h"
 #include "struct.h"
+#include "logger.h"
 
 int parse_arguments(int ac, char **av, server_t *server)
 {
@@ -31,6 +32,9 @@ int main(int ac, char **av)
 {
     server_t server;
 
+    logger_clear_log_file();
+    logger_info("Server starting...", FILE_OUTPUT, true);
+    return 0; 
     if (parse_arguments(ac, av, &server) == FAILURE ||
         start_server(&server) == FAILURE)
     {
