@@ -13,6 +13,9 @@ SERVER_SRC				=	 	Server/src/main.c			\
 								Server/src/handle_event.c	\
 
 GUI_SRC 				=		Gui/src/main.cpp		\
+								Gui/src/Entity.cpp		\
+								Gui/src/Kayu.cpp		\
+								Gui/src/Player.cpp		\
 
 TEST_SRC 				=								\
 
@@ -26,7 +29,7 @@ GUI_NAME 				=  		zappy_gui
 
 SERVER_FLAGS 			= 		-I Server/include
 
-GUI_FLAGS 				= 		-I Gui/include
+GUI_FLAGS 				= 		-I Gui/include -lraylib -lpthread -lGL
 
 ALL_FLAGS 				= 		$(SERVER_FLAGS) $(GUI_FLAGS)
 

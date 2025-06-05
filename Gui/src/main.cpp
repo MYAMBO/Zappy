@@ -12,8 +12,8 @@
 
 void displayMap(float width, float height)
 {
-    for (int x = 0; x < width; x++) {
-        for (int z = 0; z < height; z++) {
+    for (int x = 0; (float)x < width; x++) {
+        for (int z = 0; (float)z < height; z++) {
             Vector3 position = { (float)x, -0.5f, (float)z };
             DrawCube(position, 1.0f, 1.0f, 1.0f, {61, 110, 49, 255});
             DrawCubeWires(position, 1.0f, 1.0f, 1.0f, {61, 0, 49, 255});
@@ -23,8 +23,8 @@ void displayMap(float width, float height)
 
 void displayEntity(std::vector<Gui::AEntity*> list)
 {
-    for (int i = 0; i < list.size(); ++i) {
-        DrawModel(list[i]->getModel(), list[i]->getPosition(), list[i]->getScale(), list[i]->getColor());
+    for (auto & i : list) {
+        DrawModel(i->getModel(), i->getPosition(), i->getScale(), i->getColor());
     }
 }
 
@@ -52,9 +52,9 @@ int main(void)
 
     std::vector<Gui::AEntity*> list;
 
-    for (int x = 0; x < (width * height) / 2; ++x) {
-        int value1 = GetRandomValue(0, width - 1);
-        int value2 = GetRandomValue(0, height - 1);
+    for (int x = 0; (float)x < (width * height) / 2; ++x) {
+        int value1 = GetRandomValue(0, (int)width - 1);
+        int value2 = GetRandomValue(0, (int)height - 1);
 
         int isKayu = GetRandomValue(0, 1);
 
