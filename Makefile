@@ -13,6 +13,9 @@ SERVER_SRC				=	 	Server/src/main.c			\
 								Server/src/handle_event.c	\
 
 GUI_SRC 				=		Gui/src/main.cpp		\
+								Gui/src/Entity.cpp		\
+								Gui/src/Kayu.cpp		\
+								Gui/src/Player.cpp		\
 
 TEST_SRC 				=								\
 
@@ -26,7 +29,7 @@ GUI_NAME 				=  		zappy_gui
 
 SERVER_FLAGS 			= 		-I Server/include -I Debug
 
-GUI_FLAGS 				= 		-I Gui/include -I Debug
+GUI_FLAGS 				= 		-I Gui/include -lraylib -lpthread -lGL -I Debug
 
 ALL_FLAGS 				= 		$(SERVER_FLAGS) $(GUI_FLAGS)
 
@@ -45,6 +48,7 @@ debug: CFLAGS += -g
 debug: all
 
 zappy_ai:
+	@cp Ai/src/startAi.py ./zappy_ai
 
 Debug/libLogger.a:
 	@$(MAKE) -s -C Debug
@@ -81,16 +85,26 @@ unit_test:
 
 tests_run: unit_test
 	@echo -e "$(GREEN)Start unit tests...$(NC)"
+	@echo -e "$(GREEN)Python tests :$(NC)"
+	@PYTHONPATH=.:$(PYTHONPATH) pytest --cov=Ai/src --cov-report=term-missing tests -vv
+	@PYTHONPATH=.:$(PYTHONPATH) pytest --cov=Ai/src --cov-report=html tests
+	@echo -e "$(GREEN)C/C++ tests :$(NC)"
 	@./unit_tests
 
 clean:
+	@if [ -d obj ]; then echo -e "$(RED)Cleaning objects$(NC)"; fi
+	@find . -type d -name "__pycache__" -exec rm -rf {} +
+	@rm -rf .coverage htmlcov .pytest_cache
 	@rm -rf obj
 	@rm -f *.gcda
 	@rm -f *.gcno
 	@$(MAKE) -s -C Debug clean
 
 fclean: clean
-	@rm -f $(SERVER_NAME) $(GUI_NAME)
+	@if [ -e "$(SERVER_NAME)" ]; then echo -e "$(RED)Cleaning server binary$(NC)"; fi
+	@if [ -e "$(GUI_NAME)" ]; then echo -e "$(RED)Cleaning gui binary$(NC)"; fi
+	@if [ -e "zappy_ai" ]; then echo -e "$(RED)Cleaning ai binary$(NC)"; fi
+	@rm -f $(SERVER_NAME) $(GUI_NAME) zappy_ai
 	@rm -f unit_tests
 	@$(MAKE) -s -C Debug fclean
 
