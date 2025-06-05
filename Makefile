@@ -50,7 +50,7 @@ Debug/libLogger.a:
 	@$(MAKE) -s -C Debug
 
 $(SERVER_NAME): $(SERVER_OBJ) Debug/libLogger.a
-	@echo -e "$(GREEN)Linking $@...$(NC)"
+	@echo -e "$(GREEN)Linking $@ with static Logger lib...$(NC)"
 	@gcc -o $@ $^ $(CFLAGS) $(SERVER_FLAGS)
 
 $(GUI_NAME): Debug/libLogger.a $(GUI_OBJ)
