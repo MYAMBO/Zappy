@@ -43,20 +43,26 @@ GREEN = \033[1;32m
 BAR_LENGTH := 40
 
 define progress_bar
-	@if [ ! -f $(2) ]; then echo 1 > $(2); fi; \
-	count=$$(cat $(2) 2>/dev/null || echo 1); \
-	total=$$(echo $$(($(words $(3))))); \
-	if [ -z "$$count" ] || [ "$$count" = "" ]; then count=1; fi; \
-	progress=$$(($$count * 100 / $$total)); \
-	if [ $$progress -gt 100 ]; then progress=100; fi; \
-	bar_fill=$$(($$progress * $(BAR_LENGTH) / 100)); \
-	bar=$$(printf "%0.s=" $$(seq 1 $$bar_fill)); \
-	space=$$(($(BAR_LENGTH) - $$bar_fill)); \
-	if [ $$progress -lt 100 ]; then \
-		empty=$$(printf "%0.s " $$(seq 1 $$space)); \
-	else \
-		empty=""; \
-	fi; \
+	@if [ ! -f $(2) ]; then												\
+		echo 1 > $(2);													\
+	fi; 																\
+	count=$$(cat $(2) 2>/dev/null || echo 1); 							\
+	total=$$(echo $$(($(words $(3))))); 								\
+	if [ -z "$$count" ] || [ "$$count" = "" ]; then						\
+		count=1;														\
+	fi; 																\
+	progress=$$(($$count * 100 / $$total)); 							\
+	if [ $$progress -gt 100 ]; then										\
+		progress=100;													\
+	fi; 																\
+	bar_fill=$$(($$progress * $(BAR_LENGTH) / 100)); 					\
+	bar=$$(printf "%0.s=" $$(seq 1 $$bar_fill)); 						\
+	space=$$(($(BAR_LENGTH) - $$bar_fill)); 							\
+	if [ $$progress -lt 100 ]; then 									\
+		empty=$$(printf "%0.s " $$(seq 1 $$space)); 					\
+	else 																\
+		empty=""; 														\
+	fi; 																\
 	printf "\r[\033[1;34m%s%s\033[0m] %3d%% \033[1;32m%s\033[0m\n" "$$bar" "$$empty" "$$progress" "$(1)"
 endef
 
