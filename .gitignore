@@ -1,2 +1,17 @@
 .idea
 .vscode
+
+.gui_counter
+.server_counter
+
+zappy_ai
+zappy_gui
+zappy_server
+
+debug.log
+
+obj
+
+*.a
+*.o
+*.so
