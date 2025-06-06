@@ -35,7 +35,7 @@ def core():
         return 84
     while True:
         command = ["update the commands list"]
-        if canSendAnotherCommand and command.count() != 0:
+        if canSendAnotherCommand and command.count != 0:
             client.send_command(command[0])
             commandToReply = command.pop(0)
             canSendAnotherCommand = False
