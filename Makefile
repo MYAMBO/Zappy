@@ -14,11 +14,13 @@ SERVER_SRC = 								\
 				Server/src/start_server.c 	\
 				Server/src/poll_handling.c 
 
-GUI_SRC = 							\
-				Gui/src/main.cpp 	\
-				Gui/src/Kayu.cpp 	\
-				Gui/src/Entity.cpp 	\
-				Gui/src/Player.cpp
+GUI_SRC = 											\
+				Gui/src/main.cpp 					\
+				Gui/src/Kayu/Kayu.cpp 				\
+				Gui/src/Button/Button.cpp 			\
+				Gui/src/Player/Player.cpp			\
+				Gui/src/AEntity/AEntity.cpp			\
+				Gui/src/Inventory/Inventory.cpp
 
 TEST_SRC =
 
@@ -30,7 +32,14 @@ GUI_NAME = zappy_gui
 SERVER_NAME = zappy_server
 
 SERVER_FLAGS = -I Server/include -I Debug
-GUI_FLAGS = -I Gui/include -lraylib -lpthread -lGL -I Debug
+GUI_FLAGS = -lraylib -lpthread -lGL -I Debug 		\
+        											\
+			-I Gui/src/Kayu 						\
+			-I Gui/src/Player 						\
+			-I Gui/src/Button 						\
+			-I Gui/src/AEntity 						\
+			-I Gui/src/Inventory 					\
+			-I Gui/include/interfaces				\
 
 ALL_FLAGS = $(SERVER_FLAGS) $(GUI_FLAGS)
 CFLAGS = -Werror -Wall -Wextra -Iinclude
