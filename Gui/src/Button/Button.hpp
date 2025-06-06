@@ -78,10 +78,10 @@ namespace gui {
                 void setColors(Color normal, Color hovered, Color pressed);
                 
                 /**
-                 * @brief Getter for the text.
-                 * This function returns the text displayed on the button.
-                 * @return The text of the button.
-                 */
+                 * @brief Getter for the hover of the button.
+                 * This function returns whether the button is currently hovered.
+                 * @return true if the button is hovered, false otherwise.
+                */
                 bool getIsHovered() const;
 
                 /**
