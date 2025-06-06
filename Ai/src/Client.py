@@ -34,7 +34,7 @@ class Client:
 
     def send_command(self, command):
         if self.__sock:
-            self.__sock.sendall(command.encode() + '\n'.encode())
+            self.__sock.sendall(command.encode() + '\r\n'.encode())
         else:
             raise ConnectionError("Not connected to server")
 
