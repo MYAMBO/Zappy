@@ -5,8 +5,9 @@
 ## Core
 ##
 
-from Ai.src.Client import Client, ClientError
-from Ai.src.CommandHandler import handle_look_string, handle_inventory_string
+from Ai.src.Ai import Ai
+from Ai.src.Client import *
+from Ai.src.CommandHandler import *
 
 def init():
     client = Client("zappy.antoiix.me", 12345)
@@ -17,16 +18,9 @@ def init():
         return None
     return client
 
-
-def check_look(reply):
-    return True
-
-
-def reply_correspond_to_command(command, reply):
-    return True
-
  
 def core():
+    ai = Ai()
     client = init()
     commandToReply = None
     canSendAnotherCommand = True
@@ -34,18 +28,18 @@ def core():
     if client == None:
         return 84
     while True:
-        command = ["update the commands list"]
-        if canSendAnotherCommand and command.count != 0:
-            client.send_command(command[0])
-            commandToReply = command.pop(0)
+        commands = ["update the commands list"]
+        if canSendAnotherCommand and commands.count != 0:
+            client.send_command(commands[0])
+            commandToReply = commands.pop(0)
             canSendAnotherCommand = False
         reply = client.try_get_reply()
         if (reply == "dead"):
             client.close()
             return 0
-        if (reply_correspond_to_command(commandToReply, reply)):
+        if (reply != None):
             canSendAnotherCommand = True
-            #handle reply
+            handle_command(commandToReply, reply, ai)
 
 
 """

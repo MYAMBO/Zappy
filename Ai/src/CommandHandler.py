@@ -5,6 +5,8 @@
 ## Ai
 ##
 
+from Ai.src.Ai import Ai
+
 def handle_look_string(string):
     return [obj.split(' ') for obj in [tile.strip() for tile in string[1:-1].split(',')]]
 
@@ -16,3 +18,16 @@ def handle_inventory_string(string):
         name, num_str = item.rsplit(' ', 1)
         result[name.strip()] = int(num_str)
     return result
+
+
+def handle_command(command, reply, ai):
+    if (reply == "ko" or reply == "ok"):
+        return
+    if (command == "Look"):
+        ai.set_view(handle_look_string(reply))
+        return
+    if (command == "Connect_nbr"):
+        ai.set_unused_slots(int(reply))
+    if (command == "Inventory"):
+        ai.set_inventory(handle_inventory_string(reply))
+        return
