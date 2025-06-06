@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2025
+** Zappy
+** File description:
+** AEntity
+*/
+
 #include "AEntity.hpp"
 
 gui::AEntity::AEntity(const std::string& type, Vector3 position, float scale, Color color)
