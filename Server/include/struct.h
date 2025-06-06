@@ -13,6 +13,7 @@
     #define STRUCT_H
 
     #include "poll_handling.h"
+    #include <stdbool.h>
 
 
 
@@ -28,6 +29,7 @@ typedef struct server_s {
     int map_width;
     int map_height;
     char **team_names;
+    int team_count;
     int nb_clients;
     int freq;
     double food_density;
