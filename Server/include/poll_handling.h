@@ -7,10 +7,12 @@
 ** All rights reserved
 */
 
-#include <poll.h>
+
 
 #ifndef POLL_HANDLING_H
     #define POLL_HANDLING_H
+
+#include <poll.h>
 
 typedef struct poll_handling_s {
     struct pollfd poll_fd;

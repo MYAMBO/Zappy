@@ -7,8 +7,7 @@
 ** All rights reserved
 */
 
-#include "struct.h"
-#include "poll_handling.h"
+
 
 #ifndef SERVER_H
     #define SERVER_H
@@ -19,6 +18,9 @@
     #define SUCCESS 0
 
     #define MAX_CLIENT 100
+
+    #include "struct.h"
+    #include "poll_handling.h"
 
 int init_server(server_t *server, long port);
 int start_server(server_t *server);

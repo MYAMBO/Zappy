@@ -7,10 +7,12 @@
 ** All rights reserved
 */
 
-#include "poll_handling.h"
+
 
 #ifndef STRUCT_H
     #define STRUCT_H
+
+    #include "poll_handling.h"
 
 
 
