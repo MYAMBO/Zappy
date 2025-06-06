@@ -13,6 +13,7 @@
     #define STRUCT_H
 
     #include "poll_handling.h"
+    #include <stdbool.h>
 
 
 
