@@ -24,8 +24,9 @@ TEST_SRC =
 SERVER_OBJ = $(SERVER_SRC:%.c=obj/%.o)
 GUI_OBJ = $(GUI_SRC:%.cpp=obj/%.o)
 
-SERVER_NAME = zappy_server
+IA_NAME = zappy_ai
 GUI_NAME = zappy_gui
+SERVER_NAME = zappy_server
 
 SERVER_FLAGS = -I Server/include -I Debug
 GUI_FLAGS = -I Gui/include -lraylib -lpthread -lGL -I Debug
@@ -64,10 +65,14 @@ all: zappy_server zappy_gui zappy_ai
 debug: CFLAGS += -g
 debug: all
 
-Debug/libLogger.a:
-	@$(MAKE) -s -C Debug
+Debug/libLogger.so:
+	@$(MAKE) libLogger.so -s -C Debug
 
-zappy_ai:
+Debug/libLogger.a:
+	@$(MAKE) libLogger.a -s -C Debug
+
+$(IA_NAME): Debug/libLogger.so
+	@echo -e "$(GREEN)Linking $@ with shared Logger lib...$(NC)"
 	@cp Ai/src/startAi.py ./zappy_ai
 
 $(SERVER_NAME): $(SERVER_OBJ) Debug/libLogger.a

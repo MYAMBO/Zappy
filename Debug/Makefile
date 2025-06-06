@@ -26,13 +26,13 @@ NC              = \033[0m
 
 all: $(LIB_STATIC) $(LIB_SHARED)
 
+$(LIB_SHARED): $(OBJS)
+	@echo -e "$(BLUE)Creating shared library: $@$(NC)"
+	@$(CC) -fPIC -shared -o $(LIB_SHARED) logger.c
+
 $(LIB_STATIC): $(OBJS)
 	@echo -e "$(BLUE)Creating static library: $@$(NC)"
 	@ar rcs $@ $(OBJS)
-
-$(LIB_SHARED): $(OBJS)
-	@echo -e "$(BLUE)Creating shared library: $@$(NC)"
-	@$(CC) -fPIC -shared -o $@ $(OBJS)
 
 %.o: %.c
 	@gcc $(CFLAGS) -fPIC -c $< -o $@
@@ -49,5 +49,3 @@ fclean: clean
 	@rm -f $(LIB_STATIC) $(LIB_SHARED)
 
 re: fclean all
-
-.PHONY: all clean fclean re
