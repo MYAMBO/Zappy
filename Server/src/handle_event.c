@@ -13,11 +13,12 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-int create_new_connection(server_t* server)
+int create_new_connection(server_t *server)
 {
     struct sockaddr_in peer_addr;
     socklen_t addr_len = sizeof(peer_addr);
-    int client_fd = accept(server->server_fd, (struct sockaddr*)(&peer_addr), &addr_len);
+    int client_fd = accept(server->server_fd,
+        (struct sockaddr*)(&peer_addr), &addr_len);
 
     if (client_fd == -1)
         return FAILURE;
@@ -29,10 +30,9 @@ int create_new_connection(server_t* server)
     return SUCCESS;
 }
 
-int handle_connection(server_t* server, struct pollfd poll)
+int handle_connection(server_t *server, struct pollfd poll)
 {
-    if (poll.revents & POLLIN && poll.fd == server->server_fd)
-    {
+    if (poll.revents & POLLIN && poll.fd == server->server_fd) {
         if (create_new_connection(server) == 84)
             return FAILURE;
         return 1;
@@ -41,14 +41,12 @@ int handle_connection(server_t* server, struct pollfd poll)
 }
 
 // BE CAREFUL BUFFER LIMITED TO 1024 !
-int handle_command(server_t* server, struct pollfd poll)
+int handle_command(server_t *server, struct pollfd poll)
 {
     char buffer[1024] = {0};
 
-    if (poll.revents & POLLIN)
-    {
+    if (poll.revents & POLLIN) {
         ssize_t bytes_read = read(poll.fd, buffer, 1023);
-
         buffer[bytes_read] = '\0';
         if (bytes_read < 0) {
             perror("read failed");
@@ -57,15 +55,13 @@ int handle_command(server_t* server, struct pollfd poll)
             server->poll_count--;
             return FAILURE;
         }
-        if (bytes_read == 0)
-        {
+        if (bytes_read == 0) {
             close(poll.fd);
             remove_node_poll_handling(&server->poll_list, poll.fd);
             server->poll_count--;
             return FAILURE;
         }
-        if (strncmp(buffer, "quit", 4) == 0)
-        {
+        if (strncmp(buffer, "quit", 4) == 0) {
             close(poll.fd);
             remove_node_poll_handling(&server->poll_list, poll.fd);
             server->poll_count--;
@@ -75,12 +71,12 @@ int handle_command(server_t* server, struct pollfd poll)
     return SUCCESS;
 }
 
-int handle_event(server_t* server)
+int handle_event(server_t *server)
 {
     int val_connection;
 
-    for (poll_handling_t *node = server->poll_list; node != NULL; node = node->next)
-    {
+    for (poll_handling_t *node = server->poll_list;
+        node != NULL; node = node->next) {
         val_connection = handle_connection(server, node->poll_fd);
         if (val_connection == FAILURE)
             return FAILURE;
