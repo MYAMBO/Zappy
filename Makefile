@@ -13,7 +13,8 @@ SERVER_SRC = 								\
 				Server/src/handle_event.c	\
 				Server/src/init_density.c 	\
 				Server/src/start_server.c 	\
-				Server/src/poll_handling.c 
+				Server/src/poll_handling.c  \
+				Server/src/options_parser.c \
 
 GUI_SRC = 							\
 				Gui/src/main.cpp 	\
