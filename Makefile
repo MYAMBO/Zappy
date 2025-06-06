@@ -5,76 +5,99 @@
 ## Makefile
 ##
 
-SERVER_SRC				=	 	Server/src/main.c			\
-								Server/src/init_server.c	\
-								Server/src/garbage.c		\
-								Server/src/start_server.c	\
-								Server/src/poll_handling.c	\
-								Server/src/handle_event.c	\
+SERVER_SRC = 								\
+				Server/src/main.c 			\
+				Server/src/garbage.c 		\
+				Server/src/init_server.c 	\
+				Server/src/handle_event.c	\
+				Server/src/start_server.c 	\
+				Server/src/poll_handling.c 
 
-GUI_SRC 				=		Gui/src/main.cpp		\
-								Gui/src/Entity.cpp		\
-								Gui/src/Kayu.cpp		\
-								Gui/src/Player.cpp		\
+GUI_SRC = 							\
+				Gui/src/main.cpp 	\
+				Gui/src/Kayu.cpp 	\
+				Gui/src/Entity.cpp 	\
+				Gui/src/Player.cpp
 
-TEST_SRC 				=								\
+TEST_SRC =
 
-SERVER_OBJ				=		$(SERVER_SRC:%.c=obj/%.o)
+SERVER_OBJ = $(SERVER_SRC:%.c=obj/%.o)
+GUI_OBJ = $(GUI_SRC:%.cpp=obj/%.o)
 
-GUI_OBJ 				= 		$(GUI_SRC:%.cpp=obj/%.o)
+SERVER_NAME = zappy_server
+GUI_NAME = zappy_gui
 
-SERVER_NAME				=		zappy_server
+SERVER_FLAGS = -I Server/include -I Debug
+GUI_FLAGS = -I Gui/include -lraylib -lpthread -lGL -I Debug
 
-GUI_NAME 				=  		zappy_gui
+ALL_FLAGS = $(SERVER_FLAGS) $(GUI_FLAGS)
+CFLAGS = -Werror -Wall -Wextra -Iinclude
+TEST_FLAGS = --coverage -lcriterion $(CFLAGS) $(ALL_FLAGS)
 
-SERVER_FLAGS 			= 		-I Server/include -I Debug
+NC = \033[0m
+RED = \033[1;31m
+BLUE = \033[1;34m
+GREEN = \033[1;32m
 
-GUI_FLAGS 				= 		-I Gui/include -lraylib -lpthread -lGL -I Debug
+BAR_LENGTH := 40
 
-ALL_FLAGS 				= 		$(SERVER_FLAGS) $(GUI_FLAGS)
-
-CFLAGS 					= 		-Werror -Wall -Wextra -Iinclude
-
-TEST_FLAGS 				= 		--coverage -lcriterion $(CFLAGS) $(ALL_FLAGS)
-
-RED             		=     	\033[1;31m
-GREEN          			=     	\033[1;32m
-BLUE          	  		=     	\033[1;34m
-NC              		=     	\033[0m
+define progress_bar
+	@if [ ! -f $(2) ]; then echo 1 > $(2); fi; \
+	count=$$(cat $(2) 2>/dev/null || echo 1); \
+	total=$$(echo $$(($(words $(3))))); \
+	if [ -z "$$count" ] || [ "$$count" = "" ]; then count=1; fi; \
+	progress=$$(($$count * 100 / $$total)); \
+	if [ $$progress -gt 100 ]; then progress=100; fi; \
+	bar_fill=$$(($$progress * $(BAR_LENGTH) / 100)); \
+	bar=$$(printf "%0.s=" $$(seq 1 $$bar_fill)); \
+	space=$$(($(BAR_LENGTH) - $$bar_fill)); \
+	if [ $$progress -lt 100 ]; then \
+		empty=$$(printf "%0.s " $$(seq 1 $$space)); \
+	else \
+		empty=""; \
+	fi; \
+	printf "\r[\033[1;34m%s%s\033[0m] %3d%% \033[1;32m%s\033[0m\n" "$$bar" "$$empty" "$$progress" "$(1)"
+endef
 
 all: zappy_server zappy_gui zappy_ai
 
 debug: CFLAGS += -g
 debug: all
 
-zappy_ai:
-	@cp Ai/src/startAi.py ./zappy_ai
-
 Debug/libLogger.a:
 	@$(MAKE) -s -C Debug
 
+zappy_ai:
+	@cp Ai/src/startAi.py ./zappy_ai
+
 $(SERVER_NAME): $(SERVER_OBJ) Debug/libLogger.a
+	@echo 1 > .server_counter
 	@echo -e "$(GREEN)Linking $@ with static Logger lib...$(NC)"
-	@gcc -o $@ $^ $(CFLAGS) $(SERVER_FLAGS)
+	@gcc -o $@ $(SERVER_OBJ) Debug/libLogger.a $(CFLAGS) $(SERVER_FLAGS)
 
-$(GUI_NAME): Debug/libLogger.a $(GUI_OBJ)
+$(GUI_NAME): $(GUI_OBJ) Debug/libLogger.a
+	@echo 1 > .gui_counter
 	@echo -e "$(GREEN)Linking $@ with static Logger lib...$(NC)"
-	@g++ -o $@ $^ $(CFLAGS) $(GUI_FLAGS)
+	@g++ -o $@ $(GUI_OBJ) Debug/libLogger.a $(CFLAGS) $(GUI_FLAGS)
 
-obj/%.o: ./%.c
-	@echo -e "$(GREEN)Compiling $<...$(NC)"
+obj/Server/%.o: Server/%.c
 	@mkdir -p $(dir $@)
+	@if [ ! -f .server_counter ]; then echo 1 > .server_counter; fi
+	@$(call progress_bar,Compiling $<...,.server_counter,$(SERVER_OBJ))
 	@gcc -c -o $@ $< $(CFLAGS) $(SERVER_FLAGS)
+	@count=$$(cat .server_counter 2>/dev/null || echo 1); echo $$((count + 1)) > .server_counter
 
-obj/%.o: ./%.cpp
-	@echo -e "$(GREEN)Compiling $<...$(NC)"
+obj/Gui/%.o: Gui/%.cpp
 	@mkdir -p $(dir $@)
+	@if [ ! -f .gui_counter ]; then echo 1 > .gui_counter; fi
+	@$(call progress_bar,Compiling $<...,.gui_counter,$(GUI_OBJ))
 	@g++ -c -o $@ $< $(CFLAGS) $(GUI_FLAGS)
+	@count=$$(cat .gui_counter 2>/dev/null || echo 1); echo $$((count + 1)) > .gui_counter
 
-obj/test/%.o: ./%.c
+obj/test/%.o: %.c
 	@echo -e "$(GREEN)Compiling $<...$(NC)"
 	@mkdir -p $(dir $@)
-	@g++ -c -o $@ $< $(SRC_NO_MAIN) $(TEST_SRC) $(TEST_FLAGS) $(CFLAGS)
+	@gcc -c -o $@ $< $(SRC_NO_MAIN) $(TEST_SRC) $(TEST_FLAGS) $(CFLAGS)
 
 obj:
 	@mkdir -p obj obj/Server obj/Gui
@@ -95,17 +118,15 @@ clean:
 	@if [ -d obj ]; then echo -e "$(RED)Cleaning objects$(NC)"; fi
 	@find . -type d -name "__pycache__" -exec rm -rf {} +
 	@rm -rf .coverage htmlcov .pytest_cache
-	@rm -rf obj
-	@rm -f *.gcda
-	@rm -f *.gcno
+	@rm -rf obj .server_counter .gui_counter
+	@rm -f *.gcda *.gcno
 	@$(MAKE) -s -C Debug clean
 
 fclean: clean
 	@if [ -e "$(SERVER_NAME)" ]; then echo -e "$(RED)Cleaning server binary$(NC)"; fi
 	@if [ -e "$(GUI_NAME)" ]; then echo -e "$(RED)Cleaning gui binary$(NC)"; fi
 	@if [ -e "zappy_ai" ]; then echo -e "$(RED)Cleaning ai binary$(NC)"; fi
-	@rm -f $(SERVER_NAME) $(GUI_NAME) zappy_ai
-	@rm -f unit_tests
+	@rm -f $(SERVER_NAME) $(GUI_NAME) zappy_ai unit_tests
 	@$(MAKE) -s -C Debug fclean
 
 re: fclean all
