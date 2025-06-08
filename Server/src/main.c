@@ -7,24 +7,27 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "garbage.h"
 #include "server.h"
 #include "struct.h"
 #include "logger.h"
+#include "options_parser.h"
 
 int parse_arguments(int ac, char **av, server_t *server)
 {
-    long port;
-    char *end_ptr;
-
-    if (ac != 2)
+    if (ac < 2)
         return FAILURE;
-    port = strtol(av[1], &end_ptr, 0);
-    if (*end_ptr != '\0')
+    if (parse_port(av, server) == FAILURE)
         return FAILURE;
-    if (init_server(server, port) == FAILURE)
+    if (parse_map_size(av, server) == FAILURE)
         return FAILURE;
-    server->port = port;
+    if (parse_clients_nb(av, server) == FAILURE)
+        return FAILURE;
+    if (parse_team_names(av, server) == FAILURE)
+        return FAILURE;
+    if (parse_freq(av, server) == FAILURE)
+        return FAILURE;
     return SUCCESS;
 }
 
