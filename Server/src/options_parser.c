@@ -125,12 +125,17 @@ static int search_team_name(char **av, int nb, server_t *server)
     if (!server->team_names)
         return FAILURE;
     for (int j = 0; j < count; j++) {
-        server->team_names[j] = strdup(av[back_nb + j]);
+        size_t len = strlen(av[back_nb + j]);
+        server->team_names[j] = my_malloc(len + 1);
         if (!server->team_names[j])
             return FAILURE;
+        strcpy(server->team_names[j], av[back_nb + j]);
     }
     server->team_names[count] = NULL;
     server->team_count = count;
+
+    for (int k = 0; server->team_names[k] != NULL; k++)
+        printf("%s\n", server->team_names[k]);
     return SUCCESS;
 }
 
