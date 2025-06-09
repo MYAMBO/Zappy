@@ -29,16 +29,27 @@ def get_better_way(layer_len, tile, actual_tile, way, direction):
         way.append("forward")
         return get_better_way(layer_len, tile, actual_tile, way, direction)
 
+def check_number_of_tiles(tiles, resourcesList):
+    count = 0
+    for tile in tiles:
+        for current in tile:
+            count += 1
+    if count != len(resourcesList):
+        return False
+    return True
+
 def get_better_way_to_resources(tiles, resourcesList, needed):
-    keep = {"tile" : 0, "resources" : []}
+    if not check_number_of_tiles(tiles, resourcesList):
+        return None
+    keep = {"tile" : -1, "resources" : []}
     for tile in tiles:
         for current in tile:
             resources = resourcesList[current]
-            if (needed and needed in resources and len(keep['resources']) < len(resources)) or (not needed and len(keep['resources']) < len(resources)):
+            if (needed and needed in resources and keep['tile'] == -1) or (not needed and len(keep['resources']) < len(resources)):
                 keep['tile'] = current
                 keep['resources'] = resources
 
-    way = []
-    print("better tile to follow:", keep['tile'], "\nwith following resources:", keep['resources'], "\nwith this way:", get_better_way(1, keep['tile'], 0, way, "nord"))
-
-get_better_way_to_resources([[0], [2], [3, 1]], [['rock0'], ['rock1', 'food', 'big rock'], ['rock2', 'food'], ['rock3']], None)
+    if keep['tile'] != -1:
+        way = []
+        return get_better_way(1, keep['tile'], 0, way, "nord")
+    return None
