@@ -5,29 +5,31 @@
 ## find good way
 ##
 
-def get_better_way(layer_len, tile, actual_tile, way, direction):
+def get_better_way(layer_len, tile, resources, actual_tile, way, direction):
     if tile == actual_tile:
-        way.append("take object")
+        for elt in resources:
+            if elt != "player":
+                way.append("Take " + elt)
         return way
     elif tile < actual_tile:
         if direction == "nord":
-            way.append("turn left")
+            way.append("Left")
         elif direction == "ouest":
-            way.append("forward")
+            way.append("Forward")
             actual_tile -= 1
-        return get_better_way(layer_len, tile, actual_tile, way, "ouest")
+        return get_better_way(layer_len, tile, resources, actual_tile, way, "ouest")
     elif tile <= actual_tile + (layer_len // 2):
         if direction == "nord":
-            way.append("turn right")
+            way.append("Right")
         elif direction == "est":
-            way.append("forward")
+            way.append("Forward")
             actual_tile += 1
-        return get_better_way(layer_len, tile, actual_tile, way, "est")
+        return get_better_way(layer_len, tile, resources, actual_tile, way, "est")
     else:
         actual_tile = actual_tile + layer_len + 1
         layer_len += 2
-        way.append("forward")
-        return get_better_way(layer_len, tile, actual_tile, way, direction)
+        way.append("Forward")
+        return get_better_way(layer_len, tile, resources, actual_tile, way, direction)
 
 def check_number_of_tiles(tiles, resourcesList):
     count = 0
@@ -50,6 +52,5 @@ def get_better_way_to_resources(tiles, resourcesList, needed):
                 keep['resources'] = resources
 
     if keep['tile'] != -1:
-        way = []
-        return get_better_way(1, keep['tile'], 0, way, "nord")
-    return None
+        return get_better_way(1, keep['tile'], keep['resources'], 0, [], "nord")
+    return ['Right']

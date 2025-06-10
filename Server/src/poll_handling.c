@@ -35,8 +35,7 @@ int append_node_poll_handling(poll_handling_t **head, int fd)
         return FAILURE;
     if (*head == NULL)
         *head = new_node;
-    else
-    {
+    else {
         for (node = *head; node->next != NULL; node = node->next);
         node->next = new_node;
     }
@@ -48,31 +47,27 @@ void remove_node_poll_handling(poll_handling_t **head, int fd)
     poll_handling_t *node = *head;
     poll_handling_t *prev = NULL;
     poll_handling_t *next;
-    while (node != NULL)
-    {
+
+    while (node != NULL) {
         next = node->next;
-        if (node->poll_fd.fd == fd)
-        {
+        if (node->poll_fd.fd == fd) {
             if (prev == NULL)
                 *head = next;
             else
                 prev->next = next;
-        }
-        else
-        {
+        } else
             prev = node;
-        }
         node = next;
     }
 }
 
-struct pollfd *convert_poll_handling(poll_handling_t *head, struct pollfd *poll_list, int size)
+struct pollfd *convert_poll_handling(poll_handling_t *head,
+    struct pollfd *poll_list, int size)
 {
     poll_handling_t *node = head;
-
     int i = 0;
-    while (node != NULL && i < size)
-    {
+
+    while (node != NULL && i < size) {
         poll_list[i].fd = node->poll_fd.fd;
         poll_list[i].events = POLLIN;
         poll_list[i].revents = 0;
@@ -82,13 +77,13 @@ struct pollfd *convert_poll_handling(poll_handling_t *head, struct pollfd *poll_
     return poll_list;
 }
 
-void convert_poll_handling_reverse(poll_handling_t *head, struct pollfd *poll_list, int size)
+void convert_poll_handling_reverse(poll_handling_t *head,
+    struct pollfd *poll_list, int size)
 {
     poll_handling_t *node = head;
-
     int i = 0;
-    while (node != NULL && i < size)
-    {
+
+    while (node != NULL && i < size) {
         node->poll_fd.fd = poll_list[i].fd;
         node->poll_fd.events = poll_list[i].events;
         node->poll_fd.revents = poll_list[i].revents;
