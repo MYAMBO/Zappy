@@ -6,23 +6,12 @@
 ## zappy_ai
 ##
 
-import ctypes
-
 from Ai.src.Core import core
-from enum import IntEnum
+from Ai.src.Debug import logger, Output
 
-class Output(IntEnum):
-    CONSOLE = 0
-    FILE_OUTPUT = 1
-    BOTH = 2
+logger.info("Starting Zappy AI", Output.FILE_OUTPUT, True)
 
-logger = ctypes.CDLL('Debug/libLogger.so')
+name = "kayu"
 
-logger.logger_info.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_bool]
-logger.logger_info.restype = ctypes.c_bool
-
-logger.logger_info(b"Hello from C++!", Output.BOTH, True)
-
-
-returnValue = core()
+returnValue = core(name)
 exit(returnValue)

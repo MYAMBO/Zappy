@@ -1,0 +1,115 @@
+name: Workflow
+
+env:
+  MIRROR_URL: git@github.com:EpitechPromo2028/B-YEP-400-LIL-4-1-zappy-yanis.monte.git
+  EXECUTABLES: zappy_server,zappy_gui,zappy_ai
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+
+jobs:
+  set_current_url:
+    runs-on: ubuntu-latest
+    outputs:
+      current_url: ${{ steps.set_current_url.outputs.current_url }}
+    steps:
+      - name: Set CURRENT_URL
+        id: set_current_url
+        run: |
+          echo "$MIRROR_URL"
+          MIRROR_URL="$MIRROR_URL"
+          CURRENT_URL=$(echo -e "$MIRROR_URL" | sed 's/.*://; s/\.git.*//')
+          echo "current_url=$CURRENT_URL" >> $GITHUB_OUTPUT
+
+  check_program_compilation:
+    needs:
+      - set_current_url
+    if: ${{ !contains(needs.set_current_url.outputs.current_url, github.repository) || !contains(github.repository, needs.set_current_url.outputs.current_url)}}
+    runs-on: ubuntu-latest
+    container:
+      image: epitechcontent/epitest-docker
+    steps:
+      - name: Install Raylib dependencies
+        run: |
+          apt-get update -qq
+          apt-get install -y --no-install-recommends libglfw3 libglfw3-dev libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev libasound2-dev libpulse-dev build-essential cmake
+      - name: Install Raylib
+        run: |
+          git clone https://github.com/raysan5/raylib.git raylib
+          cd raylib
+          mkdir build && cd build
+          cmake -DBUILD_SHARED_LIBS=ON ..
+          make
+          make install
+          ldconfig
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: make
+        timeout-minutes: 2
+        run: make
+      - name: clean
+        run: make clean
+      - name: checking
+        shell: bash
+        run: |
+          echo "Checking executables: $EXECUTABLES"
+          IFS=',' read -ra filenames <<< "$EXECUTABLES"
+          for filename in "${filenames[@]}"; do
+            if [ ! -f "$filename" ]; then
+              echo "Error: $filename not found!" 1>&2
+              exit 1
+            fi
+          done
+          echo "All executables are present."
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up venv and install pytest
+        shell: bash
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -U pip
+          pip install pytest
+
+      - name: Run pytest
+        shell: bash
+        run: |
+          source venv/bin/activate
+          pytest
+
+      - name: tests
+        run: make tests_run
+
+  push_to_mirror:
+    needs:
+      - set_current_url
+      - check_program_compilation
+    if: ${{ !contains(needs.set_current_url.outputs.current_url, github.repository) || !contains(github.repository, needs.set_current_url.outputs.current_url) }} && ${{ github.event_name }} == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${{ needs.set_current_url.outputs.current_url }}
+      - run: echo ${{ github.repository }}
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pixta-dev/repository-mirroring-action@v1
+        with:
+          target_repo_url:
+            ${{ env.MIRROR_URL }}
+          ssh_private_key:
+            ${{ secrets.GIT_SSH_PRIVATE_KEY }}
