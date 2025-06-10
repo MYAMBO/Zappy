@@ -58,5 +58,3 @@ def get_better_way_to_resources(tiles, resourcesList, needed):
     if keep['tile'] != -1:
         return get_better_way(1, keep['tile'], keep['resources'], 0, [], "nord", needed)
     return ['Right']
-
-print(get_better_way_to_resources([[0], [2], [3, 1, 6], [7, 5], [8, 4]], [['rock'], ['apple'], [], ['rock', 'food', 'apple', None], ['big-rock'], ['apple', 'big-rock', 'rock'], ['food', 'apple'], ['rock', 'big-rock', 'food'], ['apple']], None))
