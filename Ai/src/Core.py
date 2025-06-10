@@ -5,12 +5,12 @@
 ## Core
 ##
 
-from Ai.src.Ai import Ai
-from Ai.src.Client import *
-from Ai.src.CommandHandler import *
-from Ai.src.Debug import logger, Output
-from Ai.src.getWay import get_better_way_to_resources
-from Ai.src.SortTiles import get_visible_tiles_sorted_by_distance
+from Ai import Ai
+from Client import *
+from CommandHandler import *
+from Logger import logger, Output
+from getWay import get_better_way_to_resources
+from SortTiles import get_visible_tiles_sorted_by_distance
 
 def init():
     client = Client("127.0.0.1", 12345)
@@ -36,7 +36,6 @@ def update_command_list(currentList, ai):
 
  
 def core(name):
-    fail = 0
     ai = Ai()
     client = init()
     commandToReply = None
@@ -51,13 +50,9 @@ def core(name):
         commandToReply = commands.pop(0)
         try:
             client.send_command(commandToReply)
-            fail = 0
         except ClientError as e:
             logger.warning(e.message)
-            fail += 1
-            if fail == 10:
-                return 84
-            continue
+            return 84
         logger.info("command: \"" + commandToReply + "\" has been send", Output.BOTH, True)
         logger.info(f"other commands to do after: {", ".join(commands)}", Output.BOTH, True)
         reply = client.try_get_reply()

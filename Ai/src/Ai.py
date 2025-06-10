@@ -25,7 +25,6 @@ class Ai:
 
     def get_inventory(self):
         return self.__inventory
-    
+
     def get_unused_slots(self):
         return self.__unused_slots
-    
