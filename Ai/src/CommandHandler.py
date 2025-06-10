@@ -6,7 +6,7 @@
 ##
 
 import json
-from Ai.src.Debug import logger, Output
+from Logger import logger, Output
 
 def handle_look_string(string):
     return [obj.strip().split(' ') for obj in [tile.strip() for tile in string.strip()[1:-1].strip().split(',')]]

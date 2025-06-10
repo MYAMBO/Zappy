@@ -5,12 +5,12 @@
 ## Core
 ##
 
-from Ai.src.Ai import Ai
-from Ai.src.Client import *
-from Ai.src.CommandHandler import *
-from Ai.src.Debug import logger, Output
-from Ai.src.getWay import get_better_way_to_resources
-from Ai.src.SortTiles import get_visible_tiles_sorted_by_distance
+from Ai import Ai
+from Client import *
+from CommandHandler import *
+from Logger import logger, Output
+from getWay import get_better_way_to_resources
+from SortTiles import get_visible_tiles_sorted_by_distance
 
 def init():
     client = Client("127.0.0.1", 12345)
@@ -48,7 +48,11 @@ def core(name):
         if len(commands) == 0:
             continue
         commandToReply = commands.pop(0)
-        client.send_command(commandToReply)
+        try:
+            client.send_command(commandToReply)
+        except ClientError as e:
+            logger.warning(e.message)
+            return 84
         logger.info("command: \"" + commandToReply + "\" has been send", Output.BOTH, True)
         logger.info(f"other commands to do after: {", ".join(commands)}", Output.BOTH, True)
         reply = client.try_get_reply()

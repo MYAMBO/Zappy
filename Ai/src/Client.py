@@ -34,7 +34,10 @@ class Client:
 
     def send_command(self, command):
         if self.__sock:
-            self.__sock.sendall((command + "\n").encode())
+            try:
+                self.__sock.sendall((command + "\n").encode())
+            except socket.error as e:
+                raise ClientError("Socket error: " + e.strerror)
         else:
             raise ConnectionError("Not connected to server")
 
