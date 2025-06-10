@@ -36,6 +36,7 @@ def update_command_list(currentList, ai):
 
  
 def core(name):
+    fail = 0
     ai = Ai()
     client = init()
     commandToReply = None
@@ -48,7 +49,15 @@ def core(name):
         if len(commands) == 0:
             continue
         commandToReply = commands.pop(0)
-        client.send_command(commandToReply)
+        try:
+            client.send_command(commandToReply)
+            fail = 0
+        except ClientError as e:
+            logger.warning(e.message)
+            fail += 1
+            if fail == 10:
+                return 84
+            continue
         logger.info("command: \"" + commandToReply + "\" has been send", Output.BOTH, True)
         logger.info(f"other commands to do after: {", ".join(commands)}", Output.BOTH, True)
         reply = client.try_get_reply()
