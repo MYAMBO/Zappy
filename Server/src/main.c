@@ -14,6 +14,11 @@
 #include "logger.h"
 #include "options_parser.h"
 
+#include "map_protocol.h"
+#include "technical_protocol.h"
+#include "player_informations_protocol.h"
+
+
 int parse_arguments(int ac, char **av, server_t *server)
 {
     if (ac < 2)
@@ -28,6 +33,12 @@ int parse_arguments(int ac, char **av, server_t *server)
         return FAILURE;
     if (parse_freq(av, server) == FAILURE)
         return FAILURE;
+
+    printf("%s", get_map_size(server));
+    printf("%s", get_teams_name(server));
+    printf("%s", get_unknown_command());
+    printf("%s", get_server_message("stephane pizza"));
+
     return SUCCESS;
 }
 

@@ -10,6 +10,8 @@
 #ifndef GARBAGE_H
     #define GARBAGE_H
 
+#include "stdlib.h"
+
 typedef struct garbage_s {
     void *data;
     struct garbage_s *next;
