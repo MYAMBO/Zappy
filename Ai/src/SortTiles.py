@@ -32,11 +32,13 @@ def get_visible_tiles_sorted_by_distance(tiles):
 
             center_index = len(layers[depth]) // 2
 
-            if len(layers[depth]) % 2 == 0:
+            if len(layers[depth]) % 2 == 0 and (step - depth) >= 2:
                 current_step_tiles.append(layers[depth].pop(center_index))
                 center_index = len(layers[depth]) // 2
+                current_step_tiles.append(layers[depth].pop(center_index))
 
-            current_step_tiles.append(layers[depth].pop(center_index))
+            if len(layers[depth]) % 2 == 1:
+                current_step_tiles.append(layers[depth].pop(center_index))
 
         sorted_tiles.append(current_step_tiles)
         step += 1
