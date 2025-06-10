@@ -8,6 +8,9 @@
 from Ai.src.Ai import Ai
 from Ai.src.Client import *
 from Ai.src.CommandHandler import *
+from Ai.src.Debug import logger, Output
+from Ai.src.getWay import get_better_way_to_resources
+from Ai.src.SortTiles import get_visible_tiles_sorted_by_distance
 
 def init():
     client = Client("zappy.antoiix.me", 12345)
@@ -18,45 +21,41 @@ def init():
         return None
     return client
 
+
+def update_command_list(currentList, ai):
+    if len(currentList) == 0:
+        view = ai.get_view()
+        if view == None:
+            return currentList
+        currentList = get_better_way_to_resources(get_visible_tiles_sorted_by_distance(list(range(len(view)))), view, None)
+        currentList.append("Look")
+        if (currentList[0] == "Look"):
+            currentList[0] = "Forward"
+            currentList.append("Look")
+    return currentList
+
  
-def core():
+def core(name):
     ai = Ai()
     client = init()
     commandToReply = None
-    canSendAnotherCommand = True
+    commands = [name, "Inventory", "Look"]
 
     if client == None:
         return 84
     while True:
-        commands = ["update the commands list"]
-        if canSendAnotherCommand and commands.count != 0:
-            client.send_command(commands[0])
-            commandToReply = commands.pop(0)
-            canSendAnotherCommand = False
+        commands = update_command_list(commands, ai)
+        if len(commands) == 0:
+            continue
+        commandToReply = commands.pop(0)
+        client.send_command(commandToReply)
+        logger.logger_info(b"command: \"" + commandToReply.encode('utf-8') + b"\" has been send", Output.BOTH, True)
+        logger.logger_info(f"other commands to do after: {", ".join(commands)}".encode('utf-8'), Output.BOTH, True)
         reply = client.try_get_reply()
-        if (reply == "dead"):
+        while reply == None:
+            reply = client.try_get_reply()
+        if reply == "dead":
             client.close()
             return 0
-        if (reply != None):
-            canSendAnotherCommand = True
-            handle_command(commandToReply, reply, ai)
-
-
-"""
-def core():
-    client = init()
-
-    if client == None:
-        return 84
-    try:
-        while True:
-            command = input("Enter command (or 'exit' to quit): ")
-            if command == "exit":
-                break
-            client.send_command(command)
-            response = client.try_get_reply()
-            print("Server response:", response)
-    finally:
-        client.close()
-    return 0
-    """
+        logger.logger_info(b"reply is: " + reply[0:-1].encode('utf-8'), Output.BOTH, True)
+        handle_command(commandToReply, reply, ai)
