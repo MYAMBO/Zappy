@@ -5,11 +5,15 @@
 ## find good way
 ##
 
-def get_better_way(layer_len, tile, resources, actual_tile, way, direction):
+def get_better_way(layer_len, tile, resources, actual_tile, way, direction, needed):
     if tile == actual_tile:
-        for elt in resources:
-            if elt != "player":
-                way.append("Take " + elt)
+        if needed and needed in resources:
+            way.append("Take " + needed)
+            resources.remove(needed)
+        else:
+            for elt in resources:
+                if elt != "player" and elt != None:
+                    way.append("Take " + elt)
         return way
     elif tile < actual_tile:
         if direction == "nord":
@@ -17,29 +21,42 @@ def get_better_way(layer_len, tile, resources, actual_tile, way, direction):
         elif direction == "ouest":
             way.append("Forward")
             actual_tile -= 1
-        return get_better_way(layer_len, tile, resources, actual_tile, way, "ouest")
+        return get_better_way(layer_len, tile, resources, actual_tile, way, "ouest", needed)
     elif tile <= actual_tile + (layer_len // 2):
         if direction == "nord":
             way.append("Right")
         elif direction == "est":
             way.append("Forward")
             actual_tile += 1
-        return get_better_way(layer_len, tile, resources, actual_tile, way, "est")
+        return get_better_way(layer_len, tile, resources, actual_tile, way, "est", needed)
     else:
         actual_tile = actual_tile + layer_len + 1
         layer_len += 2
         way.append("Forward")
-        return get_better_way(layer_len, tile, resources, actual_tile, way, direction)
+        return get_better_way(layer_len, tile, resources, actual_tile, way, direction, needed)
 
+def check_number_of_tiles(tiles, resourcesList):
+    count = 0
+    for tile in tiles:
+        for current in tile:
+            count += 1
+    if count != len(resourcesList):
+        return False
+    return True
 
 def get_better_way_to_resources(tiles, resourcesList, needed):
-    keep = {"tile" : 0, "resources" : []}
+    if not check_number_of_tiles(tiles, resourcesList):
+        return None
+    keep = {"tile" : -1, "resources" : []}
     for tile in tiles:
         for current in tile:
             resources = resourcesList[current]
-            if (needed and needed in resources and len(keep['resources']) < len(resources)) or (not needed and len(keep['resources']) < len(resources)):
+            if (needed and needed in resources and keep['tile'] == -1) or (not needed and len(keep['resources']) < len(resources)):
                 keep['tile'] = current
                 keep['resources'] = resources
 
-    way = get_better_way(1, keep['tile'], keep['resources'], 0, [], "nord")
-    return way
+    if keep['tile'] != -1:
+        return get_better_way(1, keep['tile'], keep['resources'], 0, [], "nord", needed)
+    return ['Right']
+
+print(get_better_way_to_resources([[0], [2], [3, 1, 6], [7, 5], [8, 4]], [['rock'], ['apple'], [], ['rock', 'food', 'apple', None], ['big-rock'], ['apple', 'big-rock', 'rock'], ['food', 'apple'], ['rock', 'big-rock', 'food'], ['apple']], None))
