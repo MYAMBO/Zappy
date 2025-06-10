@@ -8,15 +8,14 @@
 */
 
 #ifndef GARBAGE_H
-#define GARBAGE_H
+    #define GARBAGE_H
 
-typedef struct garbage_s
-{
+typedef struct garbage_s {
     void *data;
     struct garbage_s *next;
 } garbage_t;
 
 void *my_malloc(size_t size);
-void free_garbage();
+void free_garbage(void);
 
 #endif //GARBAGE_H

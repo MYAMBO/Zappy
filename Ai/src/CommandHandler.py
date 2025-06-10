@@ -26,11 +26,11 @@ def handle_command(command, reply, ai):
         return
     if (command == "Look"):
         ai.set_view(handle_look_string(reply))
-        logger.logger_info(b"I see this: " + json.dumps(ai.get_view()).encode('utf-8'), Output.BOTH, True)
+        logger.info("I see this: " + json.dumps(ai.get_view()), Output.BOTH, True)
         return
     if (command == "Connect_nbr"):
         ai.set_unused_slots(int(reply))
     if (command == "Inventory"):
         ai.set_inventory(handle_inventory_string(reply))
-        logger.logger_info(b"I have this: " + json.dumps(ai.get_inventory()).encode('utf-8'), Output.BOTH, True)
+        logger.info("I have this: " + json.dumps(ai.get_inventory()), Output.BOTH, True)
         return

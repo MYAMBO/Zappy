@@ -13,7 +13,7 @@ from Ai.src.getWay import get_better_way_to_resources
 from Ai.src.SortTiles import get_visible_tiles_sorted_by_distance
 
 def init():
-    client = Client("zappy.antoiix.me", 12345)
+    client = Client("127.0.0.1", 12345)
     try:
         client.connect()
     except ClientError as e:
@@ -49,13 +49,13 @@ def core(name):
             continue
         commandToReply = commands.pop(0)
         client.send_command(commandToReply)
-        logger.logger_info(b"command: \"" + commandToReply.encode('utf-8') + b"\" has been send", Output.BOTH, True)
-        logger.logger_info(f"other commands to do after: {", ".join(commands)}".encode('utf-8'), Output.BOTH, True)
+        logger.info("command: \"" + commandToReply + "\" has been send", Output.BOTH, True)
+        logger.info(f"other commands to do after: {", ".join(commands)}", Output.BOTH, True)
         reply = client.try_get_reply()
         while reply == None:
             reply = client.try_get_reply()
         if reply == "dead":
             client.close()
             return 0
-        logger.logger_info(b"reply is: " + reply[0:-1].encode('utf-8'), Output.BOTH, True)
+        logger.info("reply is: " + reply[0:-1], Output.BOTH, True)
         handle_command(commandToReply, reply, ai)
