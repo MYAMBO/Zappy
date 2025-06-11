@@ -7,10 +7,15 @@
 
 #include "Kayu.hpp"
 #include "Button.hpp"
+#include "Logger.hpp"
 #include "Player.hpp"
 #include "Inventory.hpp"
 
 #include <iostream>
+
+#define WIDTH 10
+#define HEIGHT 10
+
 
 void displayMap(float width, float height)
 {
@@ -26,12 +31,13 @@ void displayMap(float width, float height)
 void displayEntity(std::vector<gui::AEntity*> list)
 {
     for (auto & i : list) {
-        DrawModel(i->getModel(), i->getPosition(), i->getScale(), i->getColor());
+        if (dynamic_cast<gui::Player*>(i)) {
+            static_cast<gui::Player*>(i)->draw();
+        } else if (dynamic_cast<gui::Kayu*>(i)) {
+            DrawModel(i->getModel(), i->getPosition(), i->getScale(), i->getColor());
+        }
     }
 }
-
-#define WIDTH 10
-#define HEIGHT 10
 
 int main()
 {
@@ -40,15 +46,14 @@ int main()
     float height = HEIGHT;
 
     //--------------------------------------------------------- Init ----------------------------------------------------------------
-
+    Debug::ClearLogFile();
+    Debug::InfoLog("Zappy started");
     // ------ Window ------
     const int screenWidth = 1920;
     const int screenHeight = 1080;
 
     InitWindow(screenWidth, screenHeight, "Zappy");
     SetTargetFPS(60);
-
-    gui::ui::Inventory inventory(screenWidth, screenHeight);
 
     // ------ Brut code for Entity on Map ------
     std::vector<gui::AEntity*> list;
@@ -62,7 +67,7 @@ int main()
         if (isKayu)
             list.push_back(new gui::Kayu({(float)value1, 0.05, (float)value2}, 1.0f, RED));
         else
-            list.push_back(new gui::Player({(float)value1, 0, (float)value2}, 1.0f, RED));
+            list.push_back(new gui::Player({(float)value1, 0, (float)value2}, 1.0f, RED, screenWidth, screenHeight));
     }
 
     // ------ Camera ------
@@ -70,23 +75,14 @@ int main()
 
     //--------------------------------------------------------- Display ----------------------------------------------------------------
 
-    bool showUI = true;
-
     while (!WindowShouldClose())
     {
         // ------ Update ------
         UpdateCamera(&camera, CAMERA_THIRD_PERSON);
-
-        if (IsKeyPressed(KEY_TAB)) {
-            showUI = !showUI;
-            if (showUI) {
-                EnableCursor();
-            } else {
-                DisableCursor();
+        for (auto & i : list) {
+            if (dynamic_cast<gui::Player*>(i)) {
+                static_cast<gui::Player*>(i)->update(camera);
             }
-        }
-        if (showUI) {
-            // update ui
         }
         BeginDrawing();
 
@@ -102,8 +98,10 @@ int main()
         
         EndMode3D();
 
-        if (showUI) {
-            inventory.draw();
+        for (auto & i : list) {
+            if (dynamic_cast<gui::Player*>(i)) {
+                static_cast<gui::Player*>(i)->drawInventory();
+            }
         }
 
         EndDrawing();
