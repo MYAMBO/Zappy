@@ -65,4 +65,21 @@ typedef struct ai_stats_s {
     bool in_incantation;
 } ai_stats_t;
 
+typedef struct tile_s {
+    int resources[7]; // all possible ressources in one tile
+} tile_t;
+
+/*
+ *
+ *  include the following map_t in the server struct after some
+ *  amelioration
+ *
+*/
+
+typedef struct map_s {
+    int width;
+    int height;
+    tile_t **tiles;
+} map_t;
+
 #endif //STRUCT_H

@@ -12,8 +12,11 @@
     #include "server.h"
     #include "garbage.h"
     #include "stdio.h"
+    #include "string.h"
 
 char *get_map_size(server_t *server);
+char *get_tile_content(map_t *map, int x, int y);
+char *get_map_content(map_t *map);
 
 
 
