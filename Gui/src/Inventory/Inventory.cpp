@@ -15,7 +15,7 @@
 
 
 gui::ui::Inventory::Inventory(int screenWidth, int screenHeight)
-    : _fontSize(30), _bounds({0, static_cast<float>(screenHeight) * 0.89f, static_cast<float>(screenWidth), static_cast<float>(screenHeight) / 5.0f})
+    : _fontSize(30), _bounds({0, static_cast<float>(screenHeight) * 0.8f, static_cast<float>(screenWidth), static_cast<float>(screenHeight) / 5.0f})
 {
     _items = {
         {"Food", {0, BROWN}},

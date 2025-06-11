@@ -59,6 +59,7 @@ int gui::Player::update(Camera3D camera)
             _isSelected = true;
             Debug::InfoLog("[GUI] Player selected via ray picking");
         } else {
+            _toogleInventory = false;
             _isSelected = false;
         }
     }
