@@ -29,3 +29,25 @@ char *get_teams_name(server_t *server)
 
     return result;
 }
+
+char *get_player_position(ai_stats_t ai)
+{
+    int alloc = snprintf(NULL, 0, "ppo #%d %d %d\n", ai.id, ai.x, ai.y);
+    char *result = my_malloc(alloc + 1);
+
+    if (!result)
+        return NULL;
+    snprintf(result, alloc + 1, "ppo #%d %d %d\n", ai.id, ai.x, ai.y);
+    return result;
+}
+
+char *get_player_level(ai_stats_t ai)
+{
+    int alloc = snprintf(NULL, 0, "ppo #%d %d\n", ai.id, ai.level);
+    char *result = my_malloc(alloc + 1);
+
+    if (!result)
+        return NULL;
+    snprintf(result, alloc + 1, "ppo #%d %d\n", ai.id, ai.level);
+    return result;
+}
