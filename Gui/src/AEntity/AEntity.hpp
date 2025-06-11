@@ -1,5 +1,12 @@
-#ifndef ZAPPY_AEntity_HPP
-    #define ZAPPY_AEntity_HPP
+/*
+** EPITECH PROJECT, 2025
+** Zappy
+** File description:
+** AEntity
+*/
+
+#ifndef ZAPPY_AENTITY_HPP
+    #define ZAPPY_AENTITY_HPP
 
     #include <string>
     #include "IEntity.hpp"
