@@ -8,7 +8,7 @@
 class Ai:
     def __init__(self):
         self.__view = None
-        self.__inventory = {"food": 10, "linemate": 0, "deraumere": 0, "sibur": 0, "mendiane": 0, "phiras": 0, "thystame": 0}
+        self.__inventory = None
         self.__unused_slots = 0
 
     def set_view(self, view):

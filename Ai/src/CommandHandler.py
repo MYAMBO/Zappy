@@ -21,19 +21,12 @@ def handle_inventory_string(string):
     return result
 
 
-def handle_message():
-    return
-
-
 def handle_command(command, reply, ai):
-    if reply == "ko\n":
+    if reply == "ko\n" or reply.startswith("message"):
         return
-    elif reply.startswith("message"):
-        handle_message()
-    elif reply == "ok\n" and command.startswith("Take"):
-        ai.add_object_to_inventory(command.strip().split(' ')[1])
     elif reply == "ok\n":
-        return
+        if command.startswith("Take "):
+            ai.add_object_to_inventory(command.split(' ')[1])
     elif command == "Look":
         ai.set_view(handle_look_string(reply))
         logger.info("I see this: " + json.dumps(ai.get_view()), Output.BOTH, True)
