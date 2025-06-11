@@ -8,7 +8,7 @@
 class Ai:
     def __init__(self):
         self.__view = None
-        self.__inventory = None
+        self.__inventory = {"food": 10, "linemate": 0, "deraumere": 0, "sibur": 0, "mendiane": 0, "phiras": 0, "thystame": 0}
         self.__unused_slots = 0
 
     def set_view(self, view):
@@ -28,3 +28,6 @@ class Ai:
 
     def get_unused_slots(self):
         return self.__unused_slots
+
+    def add_object_to_inventory(self, object):
+        self.__inventory[object] += 1
