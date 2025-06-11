@@ -26,10 +26,10 @@ map_t *init_test_map(int width, int height)
     srand(time(NULL));
     map->width = width;
     map->height = height;
-    map->tiles = my_malloc(sizeof(tile_t *) * height);
+    map->tiles = my_malloc(sizeof(ressources_t *) * height);
 
     for (int y = 0; y < height; y++) {
-        map->tiles[y] = my_malloc(sizeof(tile_t) * width);
+        map->tiles[y] = my_malloc(sizeof(ressources_t) * width);
         for (int x = 0; x < width; x++) {
             for (int i = 0; i < 7; i++)
                 map->tiles[y][x].resources[i] = rand() % 100;

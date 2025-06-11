@@ -51,3 +51,28 @@ char *get_player_level(ai_stats_t ai)
     snprintf(result, alloc + 1, "ppo #%d %d\n", ai.id, ai.level);
     return result;
 }
+
+char *get_player_inventory(ai_stats_t *ai, int x, int y)
+{
+    int alloc = snprintf(NULL, 0, "pin #%d %d %d %d %d %d %d %d %d %d\n", ai->id, x, y,
+                         ai->inventory.resources[0],
+                         ai->inventory.resources[1],
+                         ai->inventory.resources[2],
+                         ai->inventory.resources[3],
+                         ai->inventory.resources[4],
+                         ai->inventory.resources[5],
+                         ai->inventory.resources[6]);
+    char *result = my_malloc(alloc + 1);
+
+    if (!result)
+        return NULL;
+    snprintf(result, alloc + 1, "pin #%d %d %d %d %d %d %d %d %d %d\n", ai->id, x, y,
+             ai->inventory.resources[0],
+             ai->inventory.resources[1],
+             ai->inventory.resources[2],
+             ai->inventory.resources[3],
+             ai->inventory.resources[4],
+             ai->inventory.resources[5],
+             ai->inventory.resources[6]);
+    return result;
+}
