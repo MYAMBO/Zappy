@@ -30,4 +30,7 @@ class Ai:
         return self.__unused_slots
 
     def add_object_to_inventory(self, object):
-        self.__inventory[object] += 1
+        try:
+            self.__inventory[object] += 1
+        except:
+            return
