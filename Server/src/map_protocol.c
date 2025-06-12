@@ -36,13 +36,13 @@ char *get_tile_content(map_t *map, int x, int y)
     if (!result)
         return NULL;
     snprintf(result, alloc + 1, "bct %d %d %d %d %d %d %d %d %d\n", x, y,
-             map->tiles[x][y].resources[0],
-             map->tiles[x][y].resources[1],
-             map->tiles[x][y].resources[2],
-             map->tiles[x][y].resources[3],
-             map->tiles[x][y].resources[4],
-             map->tiles[x][y].resources[5],
-             map->tiles[x][y].resources[6]);
+        map->tiles[x][y].resources[0],
+        map->tiles[x][y].resources[1],
+        map->tiles[x][y].resources[2],
+        map->tiles[x][y].resources[3],
+        map->tiles[x][y].resources[4],
+        map->tiles[x][y].resources[5],
+        map->tiles[x][y].resources[6]);
     return result;
 }
 
@@ -55,13 +55,13 @@ char *get_map_content(map_t *map)
     for (int y = 0; y < map->height; y++) {
         for (int x = 0; x < map->width; x++) {
             total_len += snprintf(NULL, 0, "bct %d %d %d %d %d %d %d %d %d\n", x, y,
-                             map->tiles[x][y].resources[0],
-                             map->tiles[x][y].resources[1],
-                             map->tiles[x][y].resources[2],
-                             map->tiles[x][y].resources[3],
-                             map->tiles[x][y].resources[4],
-                             map->tiles[x][y].resources[5],
-                             map->tiles[x][y].resources[6]);
+                map->tiles[x][y].resources[0],
+                map->tiles[x][y].resources[1],
+                map->tiles[x][y].resources[2],
+                map->tiles[x][y].resources[3],
+                map->tiles[x][y].resources[4],
+                map->tiles[x][y].resources[5],
+                map->tiles[x][y].resources[6]);
         }
     }
     result = my_malloc(total_len + 1);
@@ -78,7 +78,3 @@ char *get_map_content(map_t *map)
     }
     return result;
 }
-
-
-
-

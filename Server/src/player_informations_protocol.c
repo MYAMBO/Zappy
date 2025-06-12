@@ -1,6 +1,9 @@
-//
-// Created by pierre on 6/10/25.
-//
+/*
+** EPITECH PROJECT, 2025
+** Zappy
+** File description:
+** player_informations_protocol
+*/
 
 #include "player_informations_protocol.h"
 
@@ -24,9 +27,7 @@ char *get_teams_name(server_t *server)
         snprintf(buffer, total_len + 1, "tna %s\n", server->team_names[i]);
         strcat(result, buffer);
     }
-
     //my_free needed here for buffer
-
     return result;
 }
 
@@ -55,24 +56,24 @@ char *get_player_level(ai_stats_t ai)
 char *get_player_inventory(ai_stats_t *ai, int x, int y)
 {
     int alloc = snprintf(NULL, 0, "pin #%d %d %d %d %d %d %d %d %d %d\n", ai->id, x, y,
-                         ai->inventory.resources[0],
-                         ai->inventory.resources[1],
-                         ai->inventory.resources[2],
-                         ai->inventory.resources[3],
-                         ai->inventory.resources[4],
-                         ai->inventory.resources[5],
-                         ai->inventory.resources[6]);
+                    ai->inventory.resources[0],
+                    ai->inventory.resources[1],
+                    ai->inventory.resources[2],
+                    ai->inventory.resources[3],
+                    ai->inventory.resources[4],
+                    ai->inventory.resources[5],
+                    ai->inventory.resources[6]);
     char *result = my_malloc(alloc + 1);
 
     if (!result)
         return NULL;
     snprintf(result, alloc + 1, "pin #%d %d %d %d %d %d %d %d %d %d\n", ai->id, x, y,
-             ai->inventory.resources[0],
-             ai->inventory.resources[1],
-             ai->inventory.resources[2],
-             ai->inventory.resources[3],
-             ai->inventory.resources[4],
-             ai->inventory.resources[5],
-             ai->inventory.resources[6]);
+        ai->inventory.resources[0],
+        ai->inventory.resources[1],
+        ai->inventory.resources[2],
+        ai->inventory.resources[3],
+        ai->inventory.resources[4],
+        ai->inventory.resources[5],
+        ai->inventory.resources[6]);
     return result;
 }

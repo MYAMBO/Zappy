@@ -27,7 +27,6 @@ map_t *init_test_map(int width, int height)
     map->width = width;
     map->height = height;
     map->tiles = my_malloc(sizeof(ressources_t *) * height);
-
     for (int y = 0; y < height; y++) {
         map->tiles[y] = my_malloc(sizeof(ressources_t) * width);
         for (int x = 0; x < width; x++) {
@@ -35,14 +34,9 @@ map_t *init_test_map(int width, int height)
                 map->tiles[y][x].resources[i] = rand() % 100;
         }
     }
-
-    //printf("%s", get_tile_content(map, 2, 3));
     printf("%s", get_map_content(map));  // get_map_content calls get_tile_content
-
-
     return map;
 }
-
 
 int parse_arguments(int ac, char **av, server_t *server)
 {
@@ -58,14 +52,11 @@ int parse_arguments(int ac, char **av, server_t *server)
         return FAILURE;
     if (parse_freq(av, server) == FAILURE)
         return FAILURE;
-
     init_test_map(server->map_width, server->map_height);
-
     printf("%s", get_map_size(server));
     printf("%s", get_teams_name(server));
     printf("%s", get_unknown_command());
     printf("%s", get_server_message("test"));
-
     return SUCCESS;
 }
 

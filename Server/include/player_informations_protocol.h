@@ -9,10 +9,10 @@
 #ifndef ZAPPY_PLAYER_INFORMATIONS_PROTOCOL_H
     #define ZAPPY_PLAYER_INFORMATIONS_PROTOCOL_H
 
+    #include "stdio.h"
+    #include "string.h"
     #include "server.h"
     #include "garbage.h"
-    #include "stdio.h"
-    #include <string.h>
 
 char *get_teams_name(server_t *server);
 

@@ -133,7 +133,6 @@ static int search_team_name(char **av, int nb, server_t *server)
     }
     server->team_names[count] = NULL;
     server->team_count = count;
-
     for (int k = 0; server->team_names[k] != NULL; k++)
         printf("%s\n", server->team_names[k]);
     return SUCCESS;

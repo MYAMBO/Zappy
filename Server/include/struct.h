@@ -12,8 +12,8 @@
 #ifndef STRUCT_H
     #define STRUCT_H
 
-    #include "poll_handling.h"
     #include <stdbool.h>
+    #include "poll_handling.h"
 
 
 

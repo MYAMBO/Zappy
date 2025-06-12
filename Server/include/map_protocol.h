@@ -9,10 +9,10 @@
 #ifndef ZAPPY_MAP_PROTOCOL_H
     #define ZAPPY_MAP_PROTOCOL_H
 
-    #include "server.h"
-    #include "garbage.h"
     #include "stdio.h"
     #include "string.h"
+    #include "server.h"
+    #include "garbage.h"
 
 char *get_map_size(server_t *server);
 char *get_tile_content(map_t *map, int x, int y);
