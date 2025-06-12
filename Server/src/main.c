@@ -52,11 +52,24 @@ int parse_arguments(int ac, char **av, server_t *server)
         return FAILURE;
     if (parse_freq(av, server) == FAILURE)
         return FAILURE;
+
+    //test part
     init_test_map(server->map_width, server->map_height);
     printf("%s", get_map_size(server));
     printf("%s", get_teams_name(server));
     printf("%s", get_unknown_command());
     printf("%s", get_server_message("test"));
+    ai_stats_t ai;
+    ai.id = 84;
+    ai.inventory.resources[0] = 1;
+    ai.inventory.resources[1] = 2;
+    ai.inventory.resources[2] = 3;
+    ai.inventory.resources[3] = 4;
+    ai.inventory.resources[4] = 5;
+    ai.inventory.resources[5] = 6;
+    ai.inventory.resources[6] = 7;
+    printf("%s", get_player_inventory(&ai, 0, 0));
+
     return SUCCESS;
 }
 
