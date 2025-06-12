@@ -17,8 +17,11 @@
 
 
 gui::Player::Player(Vector3 position, float scale, Color color, int screenWidth, int screenHeight)
-    : AEntity("Player", position, scale, color),  _direction(North),  _inventory(screenWidth, screenHeight)
+    : AEntity(position, scale, color),  _direction(North),  _inventory(screenWidth, screenHeight)
 {
+    Mesh mesh = GenMeshCylinder(0.25f, 1.0f, 50);
+    _model = LoadModelFromMesh(mesh);
+
     Debug::InfoLog("[GUI] Player initialized: " + std::to_string(position.x) + ", " + std::to_string(position.y) + ", " + std::to_string(position.z));
 }
 

@@ -1,0 +1,11 @@
+Model Information:
+* title:	Chicken leg low poly
+* source:	https://sketchfab.com/3d-models/chicken-leg-low-poly-9cb43dbc01034d90ad775401469ce76e
+* author:	oksanaArthouse (https://sketchfab.com/oksanaArthouse)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Chicken leg low poly" (https://sketchfab.com/3d-models/chicken-leg-low-poly-9cb43dbc01034d90ad775401469ce76e) by oksanaArthouse (https://sketchfab.com/oksanaArthouse) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
