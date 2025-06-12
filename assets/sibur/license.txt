@@ -1,0 +1,11 @@
+Model Information:
+* title:	Rubis_Zelda
+* source:	https://sketchfab.com/3d-models/rubis-zelda-0efd5cbc4c3d48c6b6ab8d0a19c061ee
+* author:	Elhiot (https://sketchfab.com/elhiot)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Rubis_Zelda" (https://sketchfab.com/3d-models/rubis-zelda-0efd5cbc4c3d48c6b6ab8d0a19c061ee) by Elhiot (https://sketchfab.com/elhiot) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
