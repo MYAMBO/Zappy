@@ -21,7 +21,7 @@ gui::AItem::AItem(Vector3 position, float scale, Color color)
 
     Vector3 new_pos = {position.x + value1, position.y, position.z + value2};
 
-    AEntity::setPosition(new_pos);
+    setPosition(new_pos);
 }
 
 gui::AItem::~AItem() = default;
