@@ -14,18 +14,19 @@
 namespace gui {
     class AEntity : public IEntity {
     public:
-        AEntity(const std::string& type, Vector3 position, float scale, Color color);
+        AEntity(Vector3 position, float scale, Color color);
         ~AEntity();
 
         Color getColor() override;
         Model getModel() override;
         float getScale() override;
         Vector3 getPosition() override;
+        std::string getType() override;
 
         void setColor(Color color) override;
-        void setPosition(Vector3 position) override;
         void setScale(float scale) override;
         void setModel(Model model) override;
+        void setPosition(Vector3 position) override;
 
     protected:
         Color _color;
