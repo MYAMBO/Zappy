@@ -27,6 +27,8 @@ def handle_command(command, reply, ai):
     elif reply == "ok\n":
         if command.startswith("Take "):
             ai.add_object_to_inventory(command.split(' ')[1])
+        elif command.startswith("Set "):
+            ai.set_down_object_from_inventory(command.split(' ')[1])
     elif command == "Look":
         ai.set_view(handle_look_string(reply))
         logger.info("I see this: " + json.dumps(ai.get_view()), Output.BOTH, True)

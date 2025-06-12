@@ -34,3 +34,10 @@ class Ai:
             self.__inventory[object] += 1
         except:
             return
+
+    def set_down_object_from_inventory(self, object):
+        try:
+            if self.__inventory[object] > 0:
+                self.__inventory[object] -= 1
+        except:
+            return
