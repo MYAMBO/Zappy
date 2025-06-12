@@ -22,15 +22,18 @@ def handle_inventory_string(string):
 
 
 def handle_command(command, reply, ai):
-    if (reply == "ko\n" or reply == "ok\n"):
+    if reply == "ko\n" or reply.startswith("message"):
         return
-    if (command == "Look"):
+    elif reply == "ok\n":
+        if command.startswith("Take "):
+            ai.add_object_to_inventory(command.split(' ')[1])
+        elif command.startswith("Set "):
+            ai.set_down_object_from_inventory(command.split(' ')[1])
+    elif command == "Look":
         ai.set_view(handle_look_string(reply))
         logger.info("I see this: " + json.dumps(ai.get_view()), Output.BOTH, True)
-        return
-    if (command == "Connect_nbr"):
+    elif command == "Connect_nbr":
         ai.set_unused_slots(int(reply))
-    if (command == "Inventory"):
+    elif command == "Inventory":
         ai.set_inventory(handle_inventory_string(reply))
         logger.info("I have this: " + json.dumps(ai.get_inventory()), Output.BOTH, True)
-        return

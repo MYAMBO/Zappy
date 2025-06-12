@@ -28,3 +28,16 @@ class Ai:
 
     def get_unused_slots(self):
         return self.__unused_slots
+
+    def add_object_to_inventory(self, object):
+        try:
+            self.__inventory[object] += 1
+        except:
+            return
+
+    def set_down_object_from_inventory(self, object):
+        try:
+            if self.__inventory[object] > 0:
+                self.__inventory[object] -= 1
+        except:
+            return
