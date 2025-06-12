@@ -5,11 +5,18 @@
 ** main
 */
 
-#include "Kayu.hpp"
+#include "Food.hpp"
+#include "Sibur.hpp"
+#include "AItem.hpp"
 #include "Button.hpp"
 #include "Logger.hpp"
 #include "Player.hpp"
+#include "Phiras.hpp"
+#include "Linemate.hpp"
+#include "Mendiane.hpp"
+#include "Thystame.hpp"
 #include "Inventory.hpp"
+#include "Deraumere.hpp"
 
 #include <iostream>
 
@@ -33,7 +40,7 @@ void displayEntity(std::vector<gui::AEntity*> list)
     for (auto & i : list) {
         if (dynamic_cast<gui::Player*>(i)) {
             static_cast<gui::Player*>(i)->draw();
-        } else if (dynamic_cast<gui::Kayu*>(i)) {
+        } else {
             DrawModel(i->getModel(), i->getPosition(), i->getScale(), i->getColor());
         }
     }
@@ -62,12 +69,24 @@ int main()
         int value1 = GetRandomValue(0, (int)width - 1);
         int value2 = GetRandomValue(0, (int)height - 1);
 
-        int isKayu = GetRandomValue(0, 1);
+        int isKayu = GetRandomValue(0, 7);
 
-        if (isKayu)
-            list.push_back(new gui::Kayu({(float)value1, 0.05, (float)value2}, 1.0f, RED));
-        else
+        if (isKayu == 0)
+            list.push_back(new gui::Food({(float)value1, 0.05, (float)value2}, 0.7f, BROWN));
+        else if (isKayu == 1)
             list.push_back(new gui::Player({(float)value1, 0, (float)value2}, 1.0f, RED, screenWidth, screenHeight));
+        else if (isKayu == 2)
+            list.push_back(new gui::Linemate({(float)value1, 0.05, (float)value2}, 0.04f, BROWN));
+        else if (isKayu == 3)
+            list.push_back(new gui::Deraumere({(float)value1, 0.05, (float)value2}, 0.3f, BROWN));
+        else if (isKayu == 4)
+            list.push_back(new gui::Sibur({(float)value1, 0.05, (float)value2}, 0.07f, BROWN));
+        else if (isKayu == 5)
+            list.push_back(new gui::Mendiane({(float)value1, 0.05, (float)value2}, 0.025f, WHITE));
+        else if (isKayu == 6)
+            list.push_back(new gui::Phiras({(float)value1, 0.05, (float)value2}, 0.15f, BLUE));
+        else if (isKayu == 7)
+            list.push_back(new gui::Thystame({(float)value1, 0.05, (float)value2}, 0.4f, PURPLE));
     }
 
     // ------ Camera ------

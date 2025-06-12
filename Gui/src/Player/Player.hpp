@@ -71,4 +71,4 @@ namespace gui {
     };
 };
 
-#endif //ZAPPY_PLAYER_HPP
+#endif
