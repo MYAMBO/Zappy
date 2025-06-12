@@ -76,7 +76,7 @@ int main()
         else if (isKayu == 1)
             list.push_back(new gui::Player({(float)value1, 0, (float)value2}, 1.0f, RED, screenWidth, screenHeight));
         else if (isKayu == 2)
-            list.push_back(new gui::Linemate({(float)value1, 0.05, (float)value2}, 0.04f, BROWN));
+            list.push_back(new gui::Linemate({(float)value1, 0.05, (float)value2}, 0.27f, BROWN));
         else if (isKayu == 3)
             list.push_back(new gui::Deraumere({(float)value1, 0.05, (float)value2}, 0.3f, BROWN));
         else if (isKayu == 4)
@@ -84,7 +84,7 @@ int main()
         else if (isKayu == 5)
             list.push_back(new gui::Mendiane({(float)value1, 0.05, (float)value2}, 0.025f, WHITE));
         else if (isKayu == 6)
-            list.push_back(new gui::Phiras({(float)value1, 0.05, (float)value2}, 0.15f, BLUE));
+            list.push_back(new gui::Phiras({(float)value1, 0.05, (float)value2}, 0.04f, BLUE));
         else if (isKayu == 7)
             list.push_back(new gui::Thystame({(float)value1, 0.05, (float)value2}, 0.4f, PURPLE));
     }
