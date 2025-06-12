@@ -42,9 +42,9 @@ void gui::Player::draw()
     }
 }
 
-void gui::Player::drawInventory()
+void gui::Player::drawUI()
 {
-    if (_toogleInventory && _isSelected) {
+    if (_isSelected) {
         _inventory.draw();
     }
 }
@@ -62,13 +62,11 @@ int gui::Player::update(Camera3D camera)
             _isSelected = true;
             Debug::InfoLog("[GUI] Player selected via ray picking");
         } else {
-            _toogleInventory = false;
             _isSelected = false;
         }
     }
-    if (_isSelected && IsKeyPressed(KEY_I)) {
-        _toogleInventory = !_toogleInventory;
-        Debug::InfoLog("[GUI] Inventory toggled: " + std::to_string(_toogleInventory));
+    if (_isSelected) {
+        Debug::InfoLog("[GUI] Inventory toggled: " + std::to_string(_isSelected));
     }
 
     return 0;
