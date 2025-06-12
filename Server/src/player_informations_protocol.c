@@ -43,12 +43,12 @@ char *get_player_position(ai_stats_t ai)
 
 char *get_player_level(ai_stats_t ai)
 {
-    int alloc = snprintf(NULL, 0, "ppo #%d %d\n", ai.id, ai.level);
+    int alloc = snprintf(NULL, 0, "plv #%d %d\n", ai.id, ai.level);
     char *result = my_malloc(alloc + 1);
 
     if (!result)
         return NULL;
-    snprintf(result, alloc + 1, "ppo #%d %d\n", ai.id, ai.level);
+    snprintf(result, alloc + 1, "plv #%d %d\n", ai.id, ai.level);
     return result;
 }
 
