@@ -119,7 +119,7 @@ int main()
 
         for (auto & i : list) {
             if (dynamic_cast<gui::Player*>(i)) {
-                static_cast<gui::Player*>(i)->drawInventory();
+                static_cast<gui::Player*>(i)->drawUI();
             }
         }
 
