@@ -11,7 +11,7 @@
     #include <tuple>
     #include "AEntity.hpp"
 
-enum orientation {
+enum Orientation {
     North,
     Est,
     South,
@@ -21,15 +21,15 @@ enum orientation {
 namespace gui {
     class Player : public AEntity {
         public:
-            Player(Vector3 position, float scale, Color color);
+            Player(int id, std::pair<int, int> position, Orientation orientation, int level, const std::string& team);
+
             ~Player();
 
-            void Left();
-            void Right();
-            void forward();
-        private:
-            orientation _direction;
+            int _id;
+            Orientation _orientation;
+            int _level{};
+            std::string _team;
     };
-};
+}
 
 #endif //ZAPPY_PLAYER_HPP

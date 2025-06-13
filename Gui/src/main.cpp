@@ -10,8 +10,6 @@
 #include "Player.hpp"
 #include "Inventory.hpp"
 
-#include <iostream>
-
 void displayMap(float width, float height)
 {
     for (int x = 0; (float)x < width; x++) {
