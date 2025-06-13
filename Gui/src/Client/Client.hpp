@@ -12,6 +12,7 @@
     #include <sys/socket.h>
     #include <iostream>
     #include "AEntity.hpp"
+    #include "AItem.hpp"
     #include "Player.hpp"
     #include <vector>
     #include <iostream>
@@ -70,7 +71,7 @@ namespace gui {
             int _socket;
             sockaddr_in _serverAddr;
             std::vector<std::shared_ptr<gui::Player>> _Players;
-            std::vector<std::shared_ptr<gui::A>> _Players;
+            std::vector<std::shared_ptr<gui::AItem>> _Items;
     };
 
     class WrongPlayerValue : public std::exception {
