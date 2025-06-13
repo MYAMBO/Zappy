@@ -104,6 +104,30 @@ int parse_clients_nb(char **av, server_t *server)
     return SUCCESS;
 }
 
+static int show_current_team_name(server_t *server,
+    char **av, int count, int back_nb)
+{
+    size_t len = 0;
+
+    if (count == 0)
+        return FAILURE;
+    server->team_names = my_malloc(sizeof(char *) * (count + 1));
+    if (!server->team_names)
+        return FAILURE;
+    for (int j = 0; j < count; j++) {
+        len = strlen(av[back_nb + j]);
+        server->team_names[j] = my_malloc(len + 1);
+        if (!server->team_names[j])
+            return FAILURE;
+        strcpy(server->team_names[j], av[back_nb + j]);
+    }
+    server->team_names[count] = NULL;
+    server->team_count = count;
+    for (int k = 0; server->team_names[k] != NULL; k++)
+        printf("%s\n", server->team_names[k]);
+    return SUCCESS;
+}
+
 static int search_team_name(char **av, int nb, server_t *server)
 {
     int back_nb = nb;
@@ -119,22 +143,8 @@ static int search_team_name(char **av, int nb, server_t *server)
             break;
         count++;
     }
-    if (count == 0)
+    if (show_current_team_name(server, av, count, back_nb) == FAILURE)
         return FAILURE;
-    server->team_names = my_malloc(sizeof(char *) * (count + 1));
-    if (!server->team_names)
-        return FAILURE;
-    for (int j = 0; j < count; j++) {
-        size_t len = strlen(av[back_nb + j]);
-        server->team_names[j] = my_malloc(len + 1);
-        if (!server->team_names[j])
-            return FAILURE;
-        strcpy(server->team_names[j], av[back_nb + j]);
-    }
-    server->team_names[count] = NULL;
-    server->team_count = count;
-    for (int k = 0; server->team_names[k] != NULL; k++)
-        printf("%s\n", server->team_names[k]);
     return SUCCESS;
 }
 
@@ -156,11 +166,23 @@ int parse_team_names(char **av, server_t *server)
     return SUCCESS;
 }
 
+static int attribute_freq(int nb, int found, char **av, server_t *server)
+{
+    int freq = 0;
+
+    if (found != 1 || av[nb + 1] == NULL)
+        return FAILURE;
+    freq = atoi(av[nb + 1]);
+    if (freq <= 0)
+        return FAILURE;
+    server->freq = freq;
+    return SUCCESS;
+}
+
 int parse_freq(char **av, server_t *server)
 {
     int found = 0;
     int nb = 0;
-    int freq = 0;
 
     for (int i = 0; av[i] != NULL; i++){
         if (strcmp(av[i], "-f") == 0){
@@ -172,11 +194,7 @@ int parse_freq(char **av, server_t *server)
         server->freq = 100;
         return SUCCESS;
     }
-    if (found != 1 || av[nb + 1] == NULL)
+    if (attribute_freq(nb, found, av, server) == FAILURE)
         return FAILURE;
-    freq = atoi(av[nb + 1]);
-    if (freq <= 0)
-        return FAILURE;
-    server->freq = freq;
     return SUCCESS;
 }

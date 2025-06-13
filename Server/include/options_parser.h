@@ -18,9 +18,9 @@
 
 
 int parse_port(char **av, server_t *server);
+int parse_freq(char **av, server_t *server);
 int parse_map_size(char **av, server_t *server);
 int parse_clients_nb(char **av, server_t *server);
 int parse_team_names(char **av, server_t *server);
-int parse_freq(char **av, server_t *server);
 
 #endif //ZAPPY_OPTIONS_PARSER_H

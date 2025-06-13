@@ -13,7 +13,7 @@
     #include "server.h"
     #include "garbage.h"
 
-char *get_server_message(char *message);
 char *get_unknown_command(void);
+char *get_server_message(char *message);
 
 #endif //ZAPPY_TECHNICAL_PROTOCOL_H
