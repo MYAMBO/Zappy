@@ -9,6 +9,8 @@
     #define ZAPPY_PLAYER_HPP
 
     #include <tuple>
+
+    #include "Button.hpp"
     #include "AEntity.hpp"
     #include "Inventory.hpp"
 
@@ -22,7 +24,7 @@ enum orientation {
 namespace gui {
     class Player : public AEntity {
         public:
-            Player(Vector3 position, float scale, Color color, int screenWidth, int screenHeight);
+            Player(Vector3 position, float scale, Color color, int screenWidth, int screenHeight, Camera3D &camera, int &sceneState);
             ~Player();
 
             /**
@@ -56,15 +58,28 @@ namespace gui {
             void drawUI();
 
             /**
+             * @brief Handle the camera button action.
+             * This function handles the action when the camera button is clicked.
+             */
+            void HandleCamButton(Camera3D &camera, int &sceneState);
+
+            /**
              * @brief Update the Player.
              * This function updates the Player's state based on user input.
              * @param camera The Camera3D used for ray picking.
              * @return An integer indicating the result of the update (e.g., success or failure).
              */
             int update(Camera3D camera);
+
+            /**
+             * @brief Update the UI of the Player.
+             * This function updates the UI of the Player.
+             */
+            void updateUI();
         private:
             bool _isSelected = false;
 
+            ui::Button _camButton;
             orientation _direction;
             ui::Inventory _inventory;
     };

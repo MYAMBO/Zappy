@@ -64,6 +64,8 @@ int main()
 
     // ------ Brut code for Entity on Map ------
     std::vector<gui::AEntity*> list;
+    Camera camera = { { -width, 10.0f, -height}, { width / 2, 0.0f, height / 2 }, { 0.0f, 1.0f, 0.0f }, 45.0f, 0 };
+    int sceneState = 1;
 
     for (int x = 0; (float)x < (width * height) / 2; ++x) {
         int value1 = GetRandomValue(0, (int)width - 1);
@@ -74,7 +76,7 @@ int main()
         if (isKayu == 0)
             list.push_back(new gui::Food({(float)value1, 0.05, (float)value2}, 0.7f, BROWN));
         else if (isKayu == 1)
-            list.push_back(new gui::Player({(float)value1, 0, (float)value2}, 1.0f, RED, screenWidth, screenHeight));
+            list.push_back(new gui::Player({(float)value1, 0, (float)value2}, 1.0f, RED, screenWidth, screenHeight, camera, sceneState));
         else if (isKayu == 2)
             list.push_back(new gui::Linemate({(float)value1, 0.05, (float)value2}, 0.27f, BROWN));
         else if (isKayu == 3)
@@ -90,20 +92,22 @@ int main()
     }
 
     // ------ Camera ------
-    Camera camera = { { -width, 10.0f, -height}, { width / 2, 0.0f, height / 2 }, { 0.0f, 1.0f, 0.0f }, 45.0f, 0 };
 
     //--------------------------------------------------------- Display ----------------------------------------------------------------
 
-    while (!WindowShouldClose()) {
-        if (IsKeyDown(KEY_LEFT_CONTROL)) {
-            UpdateCamera(&camera, CAMERA_THIRD_PERSON);
-            DisableCursor();
+    while (sceneState != 0) {
+        if (IsKeyPressed(KEY_ESCAPE)) {
+            sceneState--;
+            if (sceneState == 1)
+                camera = { { -width, 10.0f, -height}, { width / 2, 0.0f, height / 2 }, { 0.0f, 1.0f, 0.0f }, 45.0f, 0 };
         }
-        else
-            EnableCursor();
         for (auto & i : list)
             if (dynamic_cast<gui::Player*>(i))
                 static_cast<gui::Player*>(i)->update(camera);
+        if (IsKeyDown(KEY_LEFT_CONTROL) && sceneState == 1)
+            UpdateCamera(&camera, CAMERA_THIRD_PERSON);
+        else if (IsKeyDown(KEY_LEFT_CONTROL) && sceneState == 2)
+            UpdateCamera(&camera, CAMERA_ORBITAL);
         BeginDrawing();
         if (camera.position.y < 0.1)
             camera.position.y = 0.1;
@@ -113,8 +117,10 @@ int main()
         displayEntity(list);
         EndMode3D();
         for (auto & i : list)
-            if (dynamic_cast<gui::Player*>(i))
+            if (dynamic_cast<gui::Player*>(i)) {
                 static_cast<gui::Player*>(i)->drawUI();
+                static_cast<gui::Player*>(i)->updateUI();
+            }
         EndDrawing();
     }
     list.clear();
