@@ -25,9 +25,18 @@ namespace gui {
 
             ~Player();
 
+            int getId() const;
+            int getLevel() const;
+            Orientation getOrientation() const;
+            std::string getTeam() const;
+
+            void setLevel(int level);
+            void setOrientation(Orientation orientation);
+
+        private:
             int _id;
             Orientation _orientation;
-            int _level{};
+            int _level;
             std::string _team;
     };
 }

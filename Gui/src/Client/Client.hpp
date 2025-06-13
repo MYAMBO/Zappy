@@ -35,11 +35,11 @@ namespace gui {
             Client& operator=(const Client &) = delete;
 
 
-            void catchCommand(std::shared_ptr<std::vector<gui::AEntity>> list);
+            void catchCommand(std::shared_ptr<std::vector<gui::Player>> list);
 
             void interpretCommand(std::string string);
 
-            void bct(std::string string); // content of a tile
+            void bct(const std::string& string); // content of a tile
             void tna(std::string string); // name of all the teams
             void pnw(const std::string &string); // connection of a new player
             void ppo(std::string string); // player’s position
@@ -52,7 +52,7 @@ namespace gui {
             void pfk(std::string string); // egg laying by the player
             void pdr(std::string string); // resource dropping
             void pgt(std::string string); // resource collecting
-            void pdi(std::string string); // death of a player
+            void pdi(const std::string& string); // death of a player
             void enw(std::string string); // an egg was laid by a player
             void ebo(std::string string); // player connection for an egg
             void edi(std::string string); // death of an egg
@@ -69,7 +69,7 @@ namespace gui {
 
             int _socket;
             sockaddr_in _serverAddr;
-            std::shared_ptr<std::vector<gui::AEntity>> _list;
+            std::shared_ptr<std::vector<gui::Player>> _list;
     };
 
     class WrongPlayerValue : public std::exception {
@@ -83,6 +83,20 @@ namespace gui {
     public:
         [[nodiscard]] const char *what() const noexcept override {
             return "Value for Map size is invalid.";
+        };
+    };
+
+    class WrongPlayerId : public std::exception {
+    public:
+        [[nodiscard]] const char *what() const noexcept override {
+            return "No player with this Id.";
+        };
+    };
+
+    class PlayerIdAlreadyUsed : public std::exception {
+    public:
+        [[nodiscard]] const char *what() const noexcept override {
+            return "This Id is already used by an other player.";
         };
     };
 }

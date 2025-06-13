@@ -12,3 +12,33 @@ gui::Player::Player(int id, std::pair<int, int> position, Orientation orientatio
 }
 
 gui::Player::~Player() = default;
+
+int gui::Player::getId() const
+{
+    return this->_id;
+}
+
+int gui::Player::getLevel() const
+{
+    return this->_level;
+}
+
+Orientation gui::Player::getOrientation() const
+{
+    return this->_orientation;
+}
+
+std::string gui::Player::getTeam() const
+{
+    return  this->_team;
+}
+
+void gui::Player::setLevel(int level)
+{
+    this->_level = level;
+}
+
+void gui::Player::setOrientation(Orientation orientation)
+{
+    this->_orientation = orientation;
+}
