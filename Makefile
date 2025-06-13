@@ -5,21 +5,35 @@
 ## Makefile
 ##
 
-SERVER_SRC = 								\
-				Server/src/main.c 			\
-				Server/src/garbage.c 		\
-				Server/src/init_server.c 	\
-				Server/src/handle_event.c	\
-				Server/src/init_density.c 	\
-				Server/src/start_server.c 	\
-				Server/src/poll_handling.c 
 
-GUI_SRC = 											\
-				Gui/src/main.cpp 					\
-				Gui/src/Kayu/Kayu.cpp 				\
-				Gui/src/Button/Button.cpp 			\
-				Gui/src/Player/Player.cpp			\
-				Gui/src/AEntity/AEntity.cpp			\
+SERVER_SRC = 												\
+				Server/src/main.c 							\
+				Server/src/garbage.c 						\
+				Server/src/init_server.c 					\
+				Server/src/handle_event.c					\
+				Server/src/init_density.c 					\
+				Server/src/start_server.c 					\
+				Server/src/map_protocol.c   				\
+				Server/src/poll_handling.c  				\
+				Server/src/options_parser.c 				\
+				Server/src/technical_protocol.c 			\
+				Server/src/player_informations_protocol.c 	\
+
+GUI_SRC = 												\
+				Gui/src/main.cpp 						\
+														\
+				Gui/src/Items/Food/Food.cpp 			\
+				Gui/src/Items/AItem/AItem.cpp 			\
+				Gui/src/Items/Sibur/Sibur.cpp			\
+				Gui/src/Items/Phiras/Phiras.cpp			\
+				Gui/src/Items/Mendiane/Mendiane.cpp		\
+				Gui/src/Items/Thystame/Thystame.cpp		\
+				Gui/src/Items/Linemate/Linemate.cpp		\
+				Gui/src/Items/Deraumere/Deraumere.cpp	\
+														\
+				Gui/src/Button/Button.cpp 				\
+				Gui/src/Player/Player.cpp				\
+				Gui/src/AEntity/AEntity.cpp				\
 				Gui/src/Inventory/Inventory.cpp
 
 TEST_SRC =
@@ -34,12 +48,20 @@ SERVER_NAME = zappy_server
 SERVER_FLAGS = -I Server/include -I Debug
 GUI_FLAGS = -lraylib -lpthread -lGL -I Debug 		\
         											\
-			-I Gui/src/Kayu 						\
+			-I Gui/src/Items 						\
 			-I Gui/src/Player 						\
 			-I Gui/src/Button 						\
 			-I Gui/src/AEntity 						\
 			-I Gui/src/Inventory 					\
+			-I Gui/src/Items/Food 					\
+			-I Gui/src/Items/Sibur 					\
+			-I Gui/src/Items/AItem 					\
+			-I Gui/src/Items/Phiras 				\
+			-I Gui/src/Items/Linemate 				\
+			-I Gui/src/Items/Mendiane 				\
+			-I Gui/src/Items/Thystame 				\
 			-I Gui/include/interfaces				\
+			-I Gui/src/Items/Deraumere 				\
 
 ALL_FLAGS = $(SERVER_FLAGS) $(GUI_FLAGS)
 CFLAGS = -Werror -Wall -Wextra -Iinclude
