@@ -94,28 +94,25 @@ int main()
 
     //--------------------------------------------------------- Display ----------------------------------------------------------------
 
-    while (!WindowShouldClose())
-    {
-        // ------ Update ------
-        UpdateCamera(&camera, CAMERA_THIRD_PERSON);
-        for (auto & i : list) {
-            if (dynamic_cast<gui::Player*>(i)) {
-                static_cast<gui::Player*>(i)->update(camera);
-            }
+    while (!WindowShouldClose()) {
+        if (IsKeyDown(KEY_LEFT_CONTROL)) {
+            UpdateCamera(&camera, CAMERA_THIRD_PERSON);
+            DisableCursor();
         }
+        else
+            EnableCursor();
+        for (auto & i : list)
+            if (dynamic_cast<gui::Player*>(i))
+                static_cast<gui::Player*>(i)->update(camera);
         BeginDrawing();
-
         if (camera.position.y < 0.1)
             camera.position.y = 0.1;
-
         ClearBackground(BLACK);
-
         BeginMode3D(camera);
-        
         displayMap(width, height);
         displayEntity(list);
-        
         EndMode3D();
+<<<<<<< fix-Instant-Inventory
 
         for (auto & i : list) {
             if (dynamic_cast<gui::Player*>(i)) {
@@ -123,6 +120,11 @@ int main()
             }
         }
 
+=======
+        for (auto & i : list)
+            if (dynamic_cast<gui::Player*>(i))
+                static_cast<gui::Player*>(i)->drawInventory();
+>>>>>>> main
         EndDrawing();
     }
     list.clear();
