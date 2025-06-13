@@ -95,8 +95,12 @@ int main()
     //--------------------------------------------------------- Display ----------------------------------------------------------------
 
     while (!WindowShouldClose()) {
-        if (IsKeyDown(KEY_LEFT_CONTROL))
+        if (IsKeyDown(KEY_LEFT_CONTROL)) {
             UpdateCamera(&camera, CAMERA_THIRD_PERSON);
+            DisableCursor();
+        }
+        else
+            EnableCursor();
         for (auto & i : list)
             if (dynamic_cast<gui::Player*>(i))
                 static_cast<gui::Player*>(i)->update(camera);
