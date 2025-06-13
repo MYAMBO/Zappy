@@ -17,7 +17,7 @@
 **         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
 ************************************************************/
 
-gui::Client::Client() : _socket(), _serverAddr(), _list()
+gui::Client::Client() : _socket(), _serverAddr(), _Players()
 {
 }
 
@@ -59,9 +59,33 @@ void gui::Client::catchCommand(std::shared_ptr<std::vector<gui::Player>> list)
 void gui::Client::bct(const std::string& string)
 {
     std::vector<std::string> list;
-    std::pair<int, int>
+    std::pair<int, int> coord;
+    int food;
+    int linemate;
+    int deraumere;
+    int sibur;
+    int mendiane;
+    int phiras;
+    int thystame;
 
     list = this->splitString(string);
+
+    if (list.size() != 10)
+        throw InvalidNumberOfParameter();
+
+    coord.first = atoi(list[1].c_str());
+    coord.first = atoi(list[2].c_str());
+    food = atoi(list[3].c_str());
+    linemate = atoi(list[4].c_str());
+    deraumere = atoi(list[5].c_str());
+    sibur = atoi(list[6].c_str());
+    mendiane = atoi(list[7].c_str());
+    phiras = atoi(list[8].c_str());
+    thystame = atoi(list[9].c_str());
+
+    if (coord.first && coord.second &&
+        food && linemate && deraumere &&
+        sibur && mendiane && phiras && thystame)
 
 }
 
@@ -80,10 +104,14 @@ std::pair<int, int> gui::Client::msz() const
         recv(this->_socket, buffer, sizeof(buffer) - 1, 0);
         list = gui::Client::splitString(buffer);
 
-        if (list.size() == 3 && list[0] == "msz") {
-            coord.first = atoi(list[1].c_str());
-            coord.second = atoi(list[2].c_str());
-        }
+        if (list.size() != 3)
+            throw gui::InvalidNumberOfParameter();
+
+        if (list[0] != "msz")
+            throw gui::UnexpectedArgumentError();
+
+        coord.first = atoi(list[1].c_str());
+        coord.second = atoi(list[2].c_str());
 
         if (coord.first && coord.second && coord.first > 0 && coord.second > 0)
             return coord;
@@ -120,7 +148,7 @@ void gui::Client::pnw(const std::string& string)
         y >= 0 && y < coord.second &&
         orientation > 0 && orientation < 5 &&
         level > 0 && level < 9) {
-        this->_list->emplace_back(id, position, static_cast<Orientation>(orientation), level, list[6]);
+        this->_Players->emplace_back(id, position, static_cast<Orientation>(orientation), level, list[6]);
     } else {
         throw gui::WrongPlayerValue();
     }
@@ -143,7 +171,7 @@ void gui::Client::pdi(const std::string& string)
 
     if (id && id > 0) {
         // replace by an other model
-        this->_list->erase(this->_list->begin() + findPlayer(id));
+        this->_Players->erase(this->_Players->begin() + findPlayer(id));
     }
 }
 
@@ -165,8 +193,8 @@ std::vector<std::string> gui::Client::splitString(const std::string& string)
 
 int gui::Client::findPlayer(int id)
 {
-    for (int i = 0; i < this->_list->size(); ++i) {
-        const gui::Player& entity = (*this->_list)[i];
+    for (int i = 0; i < this->_Players->size(); ++i) {
+        const gui::Player& entity = (*this->_Players)[i];
 
         if (entity.getId() == id)
             return i;

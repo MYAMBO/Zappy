@@ -69,7 +69,8 @@ namespace gui {
 
             int _socket;
             sockaddr_in _serverAddr;
-            std::shared_ptr<std::vector<gui::Player>> _list;
+            std::vector<std::shared_ptr<gui::Player>> _Players;
+            std::vector<std::shared_ptr<gui::A>> _Players;
     };
 
     class WrongPlayerValue : public std::exception {
@@ -97,6 +98,20 @@ namespace gui {
     public:
         [[nodiscard]] const char *what() const noexcept override {
             return "This Id is already used by an other player.";
+        };
+    };
+
+    class InvalidNumberOfParameter : public std::exception {
+    public:
+        [[nodiscard]] const char *what() const noexcept override {
+            return "Command with the wrong number of argument.";
+        };
+    };
+
+    class UnexpectedArgumentError : public std::exception {
+    public:
+        [[nodiscard]] const char *what() const noexcept override {
+            return "Received an unexpected argument.";
         };
     };
 }
