@@ -16,13 +16,12 @@
 ************************************************************/
 
 
-gui::Player::Player(Vector3 position, float scale, Color color, int screenWidth, int screenHeight)
-    : AEntity(position, scale, color),  _direction(North),  _inventory(screenWidth, screenHeight)
+gui::Player::Player(Vector3 position, float scale, Color color, int screenWidth, int screenHeight, Camera3D &camera, int &sceneState)
+    : AEntity(position, scale, color), _camButton([this, &camera, &sceneState]() { HandleCamButton(camera, sceneState); },
+    Rectangle{0, static_cast<float>(screenHeight - 70), 150, 70}, "Camera"), _direction(North), _inventory(screenWidth, screenHeight)
 {
     Mesh mesh = GenMeshCylinder(0.25f, 1.0f, 50);
     _model = LoadModelFromMesh(mesh);
-
-    Debug::InfoLog("[GUI] Player initialized: " + std::to_string(position.x) + ", " + std::to_string(position.y) + ", " + std::to_string(position.z));
 }
 
 gui::Player::~Player() = default;
@@ -46,12 +45,21 @@ void gui::Player::drawUI()
 {
     if (_isSelected) {
         _inventory.draw();
+        _camButton.draw();
+    }
+}
+
+void gui::Player::updateUI()
+{
+    if (_isSelected) {
+        _camButton.update();
     }
 }
 
 int gui::Player::update(Camera3D camera)
 {
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        Debug::InfoLog("[GUI] Player clicked");
         Ray ray = GetMouseRay(GetMousePosition(), camera);
         BoundingBox box = {
             { _position.x - _scale/4, _position.y - _scale/4, _position.z - _scale/4 },
@@ -62,13 +70,13 @@ int gui::Player::update(Camera3D camera)
             _isSelected = true;
             Debug::InfoLog("[GUI] Player selected via ray picking");
         } else {
-            _isSelected = false;
+            Vector2 mousePos = GetMousePosition();
+            Rectangle bounds = _camButton.getBounds();
+            if (!(mousePos.x >= bounds.x && mousePos.x <= bounds.x + bounds.width &&
+                  mousePos.y >= bounds.y && mousePos.y <= bounds.y + bounds.height))
+                _isSelected = false;
         }
     }
-    if (_isSelected) {
-        Debug::InfoLog("[GUI] Inventory toggled: " + std::to_string(_isSelected));
-    }
-
     return 0;
 }
 
@@ -128,4 +136,17 @@ void gui::Player::forward()
             this->_position = {x + 1, y, z};
             break;
     }
+}
+
+void gui::Player::HandleCamButton(Camera3D &camera, int &sceneState)
+{
+    Debug::InfoLog("[GUI] Camera button clicked");
+    Debug::InfoLog("[GUI] Current position: x = " + std::to_string(_position.x) +
+                   ", y = " + std::to_string(_position.y) + ", z = " + std::to_string(_position.z));
+    camera = { { _position.x - 2, _position.y + 2, _position.z - 2 },
+        { _position.x, _position.y, _position.z },
+        { 0.0f, 1.0f, 0.0f },
+        45.0f,
+        0 };
+    sceneState = 2;
 }
