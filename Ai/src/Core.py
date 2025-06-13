@@ -12,8 +12,8 @@ from Logger import logger, Output
 from getWay import get_better_way_to_resources
 from SortTiles import get_visible_tiles_sorted_by_distance
 
-def init():
-    client = Client("127.0.0.1", 12345)
+def init(port, machine):
+    client = Client(machine, port)
     try:
         client.connect()
     except ClientError as e:
@@ -34,10 +34,10 @@ def update_command_list(currentList, ai):
             currentList.append("Look")
     return currentList
 
- 
-def core(name):
+
+def core(name, port, machine):
     ai = Ai()
-    client = init()
+    client = init(port, machine)
     commandToReply = None
     commands = [name, "Inventory", "Look"]
 

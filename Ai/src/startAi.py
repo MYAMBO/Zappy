@@ -8,10 +8,11 @@
 import sys
 from Core import core
 from Logger import logger, Output
+from ParsingAi import parsing_ai
 
 logger.info("Starting Zappy AI", Output.FILE_OUTPUT, True)
 
-name = "kayu"
+port, name, machine = parsing_ai(sys.argv)
 
-returnValue = core(name)
+returnValue = core(name, port, machine)
 sys.exit(returnValue)
