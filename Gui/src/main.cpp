@@ -112,19 +112,9 @@ int main()
         displayMap(width, height);
         displayEntity(list);
         EndMode3D();
-<<<<<<< fix-Instant-Inventory
-
-        for (auto & i : list) {
-            if (dynamic_cast<gui::Player*>(i)) {
-                static_cast<gui::Player*>(i)->drawUI();
-            }
-        }
-
-=======
         for (auto & i : list)
             if (dynamic_cast<gui::Player*>(i))
                 static_cast<gui::Player*>(i)->drawInventory();
->>>>>>> main
         EndDrawing();
     }
     list.clear();

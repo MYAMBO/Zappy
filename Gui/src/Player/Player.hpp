@@ -50,10 +50,10 @@ namespace gui {
             void forward();
 
             /**
-             * @brief Draw the UI of the Player.
-             * This function draws the UI of the Player.
+             * @brief Draw the inventory of the Player.
+             * This function draws the inventory of the Player.
              */
-            void drawUI();
+            void drawInventory();
 
             /**
              * @brief Update the Player.
@@ -64,6 +64,7 @@ namespace gui {
             int update(Camera3D camera);
         private:
             bool _isSelected = false;
+            bool _toogleInventory = false;
 
             orientation _direction;
             ui::Inventory _inventory;
