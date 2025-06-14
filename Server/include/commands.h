@@ -1,0 +1,23 @@
+/*
+** EPITECH PROJECT, 2025
+** commands.h
+** File description:
+** commands.h
+** created and edited by antoiix.
+** All rights reserved
+*/
+
+#ifndef COMMANDS_H
+    #define COMMANDS_H
+
+    #include <stdio.h>
+    #include "struct.h"
+
+int quit_command(server_t *server, poll_handling_t *node);
+
+static entry_t const commands_list[] = {
+    {"quit", quit_command},
+    {NULL, NULL}
+};
+
+#endif //COMMANDS_H

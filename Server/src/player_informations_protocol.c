@@ -7,7 +7,6 @@
 
 #include "player_informations_protocol.h"
 
-
 char *get_teams_name(server_t *server)
 {
     int total_len = 0;
