@@ -13,6 +13,7 @@
     #include "string.h"
     #include "server.h"
     #include "garbage.h"
+    #include "player.h"
 
 char *get_teams_name(server_t *server);
 

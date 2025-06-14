@@ -12,8 +12,6 @@
 #ifndef SERVER_H
     #define SERVER_H
 
-
-
     #define FAILURE 84
     #define SUCCESS 0
 
@@ -21,6 +19,8 @@
 
     #include "struct.h"
     #include "poll_handling.h"
+
+typedef struct pollfd pollfd_t;
 
 int start_server(server_t *server);
 int handle_event(server_t *server);
