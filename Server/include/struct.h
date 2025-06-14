@@ -37,7 +37,7 @@ typedef struct server_s {
 
 typedef struct entry_s {
     char *command;
-    int (*function)(server_t *server, poll_handling_t *node);
+    int (*function)(server_t *server, poll_handling_t *node, char **args);
 } entry_t;
 
 /*

@@ -13,7 +13,7 @@
 #include "server.h"
 #include "garbage.h"
 
-int init_server_fields(server_t *server)
+int init_server_fields(server_t *server, long port)
 {
     server->port = port;
     server->server_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -29,7 +29,7 @@ int init_server(server_t *server, long port)
     int bind_value;
     struct sockaddr_in my_addr;
 
-    if (init_server_fields(server) == FAILURE)
+    if (init_server_fields(server, port) == FAILURE)
         return FAILURE;
     my_addr.sin_family = AF_INET;
     my_addr.sin_port = htons(port);

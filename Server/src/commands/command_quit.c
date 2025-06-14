@@ -14,10 +14,11 @@
 #include "logger.h"
 #include "server.h"
 
-int quit_command(server_t *server, poll_handling_t *node)
+int quit_command(server_t *server, poll_handling_t *node, char **args)
 {
     char *message = my_malloc(sizeof(char) * 1024);
 
+    (void)args;
     if (message == NULL)
         return FAILURE;
     sprintf(message, "Quit command executed by client with id"

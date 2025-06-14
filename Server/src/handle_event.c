@@ -108,7 +108,7 @@ static int execute_command(char *concat_command, server_t *server,
         return FAILURE;
     for (int i = 0; commands_list[i].command != NULL; i++) {
         if (strcmp(args[0], commands_list[i].command) == 0 &&
-            commands_list[i].function(server, node) == FAILURE)
+            commands_list[i].function(server, node, args) == FAILURE)
             return FAILURE;
     }
     return SUCCESS;
