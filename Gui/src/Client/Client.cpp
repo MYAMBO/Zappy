@@ -341,6 +341,41 @@ void gui::Client::pic(std::string string)
     }
 }
 
+// End of an incantation
+void gui::Client::pie(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int posX = 0;
+    int posY = 0;
+    std::pair<int, int> mapSize = msz();
+    int result;
+
+    if (list.size() != 4)
+        throw InvalidNumberOfParameter();
+
+    posX = atoi(list[1].c_str());
+    posY = atoi(list[2].c_str());
+    result = atoi(list[3].c_str());
+
+    if (posX < 0 || posX >= mapSize.first || posY < 0 || posY >= mapSize.second)
+        throw InvalidPlayerPosition();
+}
+
+// egg laying by the player
+void gui::Client::pfk(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int id;
+
+    if (list.size() != 2)
+        throw InvalidNumberOfParameter();
+
+    id = atoi(list[1].c_str());
+
+    if (id && findPlayer(id) == -1)
+        throw WrongPlayerId();
+}
+
 /************************************************************
 **           >>>> STATIC  MEMBER FUNCTIONS   <<<<          **
 ************************************************************/
