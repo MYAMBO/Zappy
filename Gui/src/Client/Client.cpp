@@ -278,6 +278,23 @@ void gui::Client::pex(std::string string)
         throw WrongPlayerId();
 }
 
+// Broadcast
+void gui::Client::pbc(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int id;
+    std::string message;
+
+    if (list.size() != 3)
+        throw InvalidNumberOfParameter();
+
+    id = atoi(list[1].c_str());
+    message = list[2];
+
+    if (id && findPlayer(id) == -1)
+        throw WrongPlayerId();
+}
+
 /************************************************************
 **           >>>> STATIC  MEMBER FUNCTIONS   <<<<          **
 ************************************************************/
