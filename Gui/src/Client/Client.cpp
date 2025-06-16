@@ -370,10 +370,50 @@ void gui::Client::pfk(std::string string)
     if (list.size() != 2)
         throw InvalidNumberOfParameter();
 
-    id = atoi(list[1].c_str());
+    id = atoi(list[1].substr(1).c_str());
 
     if (id && findPlayer(id) == -1)
         throw WrongPlayerId();
+}
+
+// Resource dropping
+void gui::Client::pdr(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int id;
+    int nbResources = -1;
+
+    if (list.size() != 3)
+        throw InvalidNumberOfParameter();
+
+    id = atoi(list[1].substr(1).c_str());
+    nbResources = atoi(list[1].c_str());
+
+    if (id && findPlayer(id) == -1)
+        throw WrongPlayerId();
+
+    if (nbResources < 0)
+        WrongResourceNumber();
+}
+
+// Resource collecting
+void gui::Client::pgt(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int id;
+    int nbResources = -1;
+
+    if (list.size() != 3)
+        throw InvalidNumberOfParameter();
+
+    id = atoi(list[1].substr(1).c_str());
+    nbResources = atoi(list[1].c_str());
+
+    if (id && findPlayer(id) == -1)
+        throw WrongPlayerId();
+
+    if (nbResources < 0)
+        WrongResourceNumber();
 }
 
 /************************************************************

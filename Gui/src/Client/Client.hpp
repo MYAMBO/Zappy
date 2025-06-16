@@ -151,6 +151,13 @@ namespace gui {
             return "Incantation level is invalid";
         };
     };
+
+    class WrongResourceNumber : public std::exception {
+    public:
+        [[nodiscard]] const char *what() const noexcept override {
+            return "Resources can't have negative value";
+        };
+    };
 }
 
 inline void SendCommand(const std::string& command)
