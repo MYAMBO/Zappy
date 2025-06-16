@@ -22,9 +22,9 @@
     #include "struct.h"
     #include "poll_handling.h"
 
-int init_server(server_t *server, long port);
 int start_server(server_t *server);
 int handle_event(server_t *server);
 void init_density(server_t *server);
+int init_server(server_t *server, long port);
 
 #endif //SERVER_H

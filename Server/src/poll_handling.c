@@ -7,11 +7,11 @@
 ** All rights reserved
 */
 
-#include <stdlib.h>
-#include "garbage.h"
+#include "stdio.h"
+#include "stdlib.h"
 #include "server.h"
+#include "garbage.h"
 #include "poll_handling.h"
-#include <stdio.h>
 
 poll_handling_t *create_node_poll_handling(int fd)
 {
