@@ -16,6 +16,7 @@
     #include <vector>
     #include <iostream>
     #include <memory>
+    #include <map>
 
 namespace gui {
     class Client {
@@ -83,6 +84,13 @@ namespace gui {
     public:
         [[nodiscard]] const char *what() const noexcept override {
             return "Value for Map size is invalid.";
+        };
+    };
+
+    class WrongTeamName : public std::exception {
+    public:
+        [[nodiscard]] const char *what() const noexcept override {
+            return "Value for team name is invalid.";
         };
     };
 }

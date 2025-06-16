@@ -126,6 +126,39 @@ void gui::Client::pdi(std::string string)
     }
 }
 
+// Name of all the teams
+void gui::Client::tna(std::string string)
+{
+    std::string team_name;
+    std::vector<std::string> list = this->splitString(string);
+
+    if (list.size() != 2)
+        throw WrongTeamName();
+    team_name = list[1];
+    if (team_name[team_name.length() - 1] == '\n')
+        team_name[team_name.length() - 1] = '\0';
+}
+
+void gui::Client::ppo(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int id = 0;
+    int pos_x = 0;
+    int pos_y = 0;
+    int orientation = 0;
+
+    if (list.size() != 5)
+        throw WrongPlayerValue();
+
+    id = atoi(list[1].substr(1).c_str());
+    pos_x = atoi(list[2].c_str());
+    pos_y = atoi(list[3].c_str());
+    orientation = atoi(list[4].c_str());
+
+    if (orientation < 1 || orientation > 4)
+        throw WrongPlayerValue();
+}
+
 /************************************************************
 **           >>>> STATIC  MEMBER FUNCTIONS   <<<<          **
 ************************************************************/
