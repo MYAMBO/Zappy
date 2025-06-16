@@ -30,7 +30,7 @@ namespace gui {
 
             [[nodiscard]] std::pair<int, int> msz() const; // map size
 
-    private:
+        private:
             Client();
             ~Client();
             Client(const Client&) = delete;
@@ -78,7 +78,7 @@ namespace gui {
     class WrongPlayerValue : public std::exception {
     public:
         [[nodiscard]] const char *what() const noexcept override {
-            return "Value for Player creation are wrong.";
+            return "Player's value are wrong.";
         };
     };
 
@@ -93,6 +93,8 @@ namespace gui {
     public:
         [[nodiscard]] const char *what() const noexcept override {
             return "Value for team name is invalid.";
+        };
+    };
 
     class WrongPlayerId : public std::exception {
     public:
@@ -119,6 +121,20 @@ namespace gui {
     public:
         [[nodiscard]] const char *what() const noexcept override {
             return "Received an unexpected argument.";
+        };
+    };
+
+    class WrongPlayerLevel : public std::exception {
+    public:
+        [[nodiscard]] const char *what() const noexcept override {
+            return "Player's level can't have negative value";
+        };
+    };
+
+    class WrongInventoryValue : public std::exception {
+    public:
+        [[nodiscard]] const char *what() const noexcept override {
+            return "Player's inventory can't have negative value";
         };
     };
 }

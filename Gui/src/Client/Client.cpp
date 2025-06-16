@@ -198,12 +198,15 @@ void gui::Client::ppo(std::string string)
     int orientation = 0;
 
     if (list.size() != 5)
-        throw WrongPlayerValue();
+        throw InvalidNumberOfParameter();
 
     id = atoi(list[1].substr(1).c_str());
     pos_x = atoi(list[2].c_str());
     pos_y = atoi(list[3].c_str());
     orientation = atoi(list[4].c_str());
+
+    if (findPlayer(id) == -1)
+        throw WrongPlayerId();
 
     if (orientation < 1 || orientation > 4)
         throw WrongPlayerValue();
@@ -217,13 +220,16 @@ void gui::Client::plv(std::string string)
     int level = -1;
 
     if (list.size() != 3)
-        throw;
+        throw InvalidNumberOfParameter();
 
     id = atoi(list[1].substr(1).c_str());
     level = atoi(list[2].c_str());
 
+    if (findPlayer(id) == -1)
+        throw WrongPlayerId();
+
     if (level < 0)
-        throw;
+        throw WrongPlayerLevel();
 }
 
 // Payer's inventory
@@ -236,7 +242,7 @@ void gui::Client::pin(std::string string)
     std::map<std::string, int> inventory;
 
     if (list.size() != 11)
-        throw;
+        throw InvalidNumberOfParameter();
 
     id = atoi(list[1].substr(1).c_str());
     pos_x = atoi(list[2].c_str());
@@ -249,9 +255,12 @@ void gui::Client::pin(std::string string)
     inventory.emplace("phiras", atoi(list[9].c_str()));
     inventory.emplace("thystame", atoi(list[10].c_str()));
 
+    if (findPlayer(id) == -1)
+        throw WrongPlayerId();
+
     for (auto elt = inventory.begin(); elt != inventory.end(); elt++)
         if (elt->second < 0)
-            throw;
+            throw WrongInventoryValue();
 }
 
 /************************************************************
