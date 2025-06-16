@@ -416,6 +416,55 @@ void gui::Client::pgt(std::string string)
         WrongResourceNumber();
 }
 
+// an egg was laid by a player
+void gui::Client::enw(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int eggId;
+    int playerId;
+    int posX;
+    int posY;
+    std::pair<int, int> mapSize = msz();
+
+    if (list.size() != 5)
+        throw InvalidNumberOfParameter();
+
+    eggId = atoi(list[1].substr(1).c_str());
+    playerId = atoi(list[2].substr(1).c_str());
+    posX = atoi(list[3].c_str());
+    posY = atoi(list[4].c_str());
+
+    if (posX < 0 || posX >= mapSize.first || posY < 0 || posY >= mapSize.second)
+        throw InvalidPlayerPosition();
+
+    if (id && findPlayer(id) == -1)
+        throw WrongPlayerId();
+}
+
+// Player connection for an egg
+void gui::Client::ebo(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int id;
+
+    if (list.size() != 2)
+        throw InvalidNumberOfParameter();
+
+    id = atoi(list[1].substr(1).c_str());
+}
+
+// death of an egg
+void gui::Client::edi(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int id;
+
+    if (list.size() != 2)
+        throw InvalidNumberOfParameter();
+
+    id = atoi(list[1].substr(1).c_str());
+}
+
 /************************************************************
 **           >>>> STATIC  MEMBER FUNCTIONS   <<<<          **
 ************************************************************/
