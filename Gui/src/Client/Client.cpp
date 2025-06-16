@@ -192,7 +192,7 @@ void gui::Client::tna(std::string string)
 void gui::Client::ppo(std::string string)
 {
     std::vector<std::string> list = this->splitString(string);
-    int id = 0;
+    int id;
     int pos_x = 0;
     int pos_y = 0;
     int orientation = 0;
@@ -205,7 +205,7 @@ void gui::Client::ppo(std::string string)
     pos_y = atoi(list[3].c_str());
     orientation = atoi(list[4].c_str());
 
-    if (findPlayer(id) == -1)
+    if (id && findPlayer(id) == -1)
         throw WrongPlayerId();
 
     if (orientation < 1 || orientation > 4)
@@ -216,7 +216,7 @@ void gui::Client::ppo(std::string string)
 void gui::Client::plv(std::string string)
 {
     std::vector<std::string> list = this->splitString(string);
-    int id = 0;
+    int id;
     int level = -1;
 
     if (list.size() != 3)
@@ -225,7 +225,7 @@ void gui::Client::plv(std::string string)
     id = atoi(list[1].substr(1).c_str());
     level = atoi(list[2].c_str());
 
-    if (findPlayer(id) == -1)
+    if (id && findPlayer(id) == -1)
         throw WrongPlayerId();
 
     if (level < 0)
@@ -236,7 +236,7 @@ void gui::Client::plv(std::string string)
 void gui::Client::pin(std::string string)
 {
     std::vector<std::string> list = this->splitString(string);
-    int id = 0;
+    int id;
     int pos_x = 0;
     int pos_y = 0;
     std::map<std::string, int> inventory;
@@ -255,12 +255,27 @@ void gui::Client::pin(std::string string)
     inventory.emplace("phiras", atoi(list[9].c_str()));
     inventory.emplace("thystame", atoi(list[10].c_str()));
 
-    if (findPlayer(id) == -1)
+    if (id && findPlayer(id) == -1)
         throw WrongPlayerId();
 
     for (auto elt = inventory.begin(); elt != inventory.end(); elt++)
         if (elt->second < 0)
             throw WrongInventoryValue();
+}
+
+// Expulsion
+void gui::Client::pex(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int id;
+
+    if (list.size() != 2)
+        throw InvalidNumberOfParameter();
+
+    id = atoi(list[1].c_str());
+
+    if (id && findPlayer(id) == -1)
+        throw WrongPlayerId();
 }
 
 /************************************************************
