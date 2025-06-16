@@ -18,6 +18,7 @@
     #include <vector>
     #include <iostream>
     #include <memory>
+    #include <map>
 
 namespace gui {
     class Client {
@@ -33,7 +34,7 @@ namespace gui {
 
             [[nodiscard]] std::pair<int, int> msz() const; // map size
 
-    private:
+        private:
             Client();
             ~Client();
             Client(const Client&) = delete;
@@ -81,7 +82,7 @@ namespace gui {
     class WrongPlayerValue : public std::exception {
     public:
         [[nodiscard]] const char *what() const noexcept override {
-            return "Value for Player creation are wrong.";
+            return "Player's value are wrong.";
         };
     };
 
@@ -96,6 +97,13 @@ namespace gui {
     public:
         [[nodiscard]] const char *what() const noexcept override {
             return "Value for Map size is invalid.";
+        };
+    };
+
+    class WrongTeamName : public std::exception {
+    public:
+        [[nodiscard]] const char *what() const noexcept override {
+            return "Value for team name is invalid.";
         };
     };
 
@@ -124,6 +132,41 @@ namespace gui {
     public:
         [[nodiscard]] const char *what() const noexcept override {
             return "Received an unexpected argument.";
+        };
+    };
+
+    class WrongPlayerLevel : public std::exception {
+    public:
+        [[nodiscard]] const char *what() const noexcept override {
+            return "Player's level can't have negative value";
+        };
+    };
+
+    class WrongInventoryValue : public std::exception {
+    public:
+        [[nodiscard]] const char *what() const noexcept override {
+            return "Player's inventory can't have negative value";
+        };
+    };
+
+    class InvalidPlayerPosition : public std::exception {
+    public:
+        [[nodiscard]] const char *what() const noexcept override {
+            return "Player's position out of map";
+        };
+    };
+
+    class InvalidIncantationLevel : public std::exception {
+    public:
+        [[nodiscard]] const char *what() const noexcept override {
+            return "Incantation level is invalid";
+        };
+    };
+
+    class WrongResourceNumber : public std::exception {
+    public:
+        [[nodiscard]] const char *what() const noexcept override {
+            return "Resources can't have negative value";
         };
     };
 }

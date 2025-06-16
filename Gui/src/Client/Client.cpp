@@ -177,6 +177,296 @@ void gui::Client::pdi(const std::string& string)
     }
 }
 
+// Name of all the teams
+void gui::Client::tna(std::string string)
+{
+    std::string team_name;
+    std::vector<std::string> list = this->splitString(string);
+
+    if (list.size() != 2)
+        throw WrongTeamName();
+    team_name = list[1];
+    if (team_name[team_name.length() - 1] == '\n')
+        team_name[team_name.length() - 1] = '\0';
+}
+
+// Player's position
+void gui::Client::ppo(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int id;
+    int posX = 0;
+    int posY = 0;
+    int orientation = 0;
+    std::pair<int, int> mapSize = msz();
+
+    if (list.size() != 5)
+        throw InvalidNumberOfParameter();
+
+    id = atoi(list[1].substr(1).c_str());
+    posX = atoi(list[2].c_str());
+    posY = atoi(list[3].c_str());
+    orientation = atoi(list[4].c_str());
+
+    if (posX < 0 || posX >= mapSize.first || posY < 0 || posY >= mapSize.second)
+        throw InvalidPlayerPosition();
+
+    if (id && findPlayer(id) == -1)
+        throw WrongPlayerId();
+
+    if (orientation < 1 || orientation > 4)
+        throw WrongPlayerValue();
+}
+
+// Player's level
+void gui::Client::plv(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int id;
+    int level = -1;
+
+    if (list.size() != 3)
+        throw InvalidNumberOfParameter();
+
+    id = atoi(list[1].substr(1).c_str());
+    level = atoi(list[2].c_str());
+
+    if (id && findPlayer(id) == -1)
+        throw WrongPlayerId();
+
+    if (level < 0)
+        throw WrongPlayerLevel();
+}
+
+// Payer's inventory
+void gui::Client::pin(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int id;
+    int posX = 0;
+    int posY = 0;
+    std::map<std::string, int> inventory;
+    std::pair<int, int> mapSize = msz();
+
+    if (list.size() != 11)
+        throw InvalidNumberOfParameter();
+
+    id = atoi(list[1].substr(1).c_str());
+    posX = atoi(list[2].c_str());
+    posY = atoi(list[3].c_str());
+    inventory.emplace("food", atoi(list[4].c_str()));
+    inventory.emplace("linemate", atoi(list[5].c_str()));
+    inventory.emplace("deraumere", atoi(list[6].c_str()));
+    inventory.emplace("sibur", atoi(list[7].c_str()));
+    inventory.emplace("mendiane", atoi(list[8].c_str()));
+    inventory.emplace("phiras", atoi(list[9].c_str()));
+    inventory.emplace("thystame", atoi(list[10].c_str()));
+
+    if (posX < 0 || posX >= mapSize.first || posY < 0 || posY >= mapSize.second)
+        throw InvalidPlayerPosition();
+
+    if (id && findPlayer(id) == -1)
+        throw WrongPlayerId();
+
+    for (auto elt = inventory.begin(); elt != inventory.end(); elt++)
+        if (elt->second < 0)
+            throw WrongInventoryValue();
+}
+
+// Expulsion
+void gui::Client::pex(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int id;
+
+    if (list.size() != 2)
+        throw InvalidNumberOfParameter();
+
+    id = atoi(list[1].c_str());
+
+    if (id && findPlayer(id) == -1)
+        throw WrongPlayerId();
+}
+
+// Broadcast
+void gui::Client::pbc(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int id;
+    std::string message;
+
+    if (list.size() != 3)
+        throw InvalidNumberOfParameter();
+
+    id = atoi(list[1].c_str());
+    message = list[2];
+
+    if (id && findPlayer(id) == -1)
+        throw WrongPlayerId();
+}
+
+// Start of an incantation
+void gui::Client::pic(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int incantationLevel;
+    int posX = 0;
+    int posY = 0;
+    std::pair<int, int> mapSize = msz();
+    std::vector<int> playersId;
+    int id;
+
+    if (list.size() < 5)
+        throw InvalidNumberOfParameter();
+
+    posX = atoi(list[1].c_str());
+    posY = atoi(list[2].c_str());
+    incantationLevel = atoi(list[3].c_str());
+
+    if (incantationLevel < 1 || incantationLevel > 7)
+        throw InvalidIncantationLevel();
+
+    if ((incantationLevel == 1 && list.size() != 5) ||
+        ((incantationLevel == 2 || incantationLevel == 3) && list.size() != 6) ||
+        ((incantationLevel == 4 || incantationLevel == 5) && list.size() != 8) ||
+        ((incantationLevel == 6 || incantationLevel == 7) && list.size() != 10))
+        throw InvalidNumberOfParameter();
+
+    if (posX < 0 || posX >= mapSize.first || posY < 0 || posY >= mapSize.second)
+        throw InvalidPlayerPosition();
+
+    for (int i = 4; i < list.size(); i++){
+        id = atoi(list[i].substr(1).c_str());
+        if (id && findPlayer(id) == -1)
+            throw WrongPlayerId();
+        playersId.emplace(id)
+    }
+}
+
+// End of an incantation
+void gui::Client::pie(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int posX = 0;
+    int posY = 0;
+    std::pair<int, int> mapSize = msz();
+    int result;
+
+    if (list.size() != 4)
+        throw InvalidNumberOfParameter();
+
+    posX = atoi(list[1].c_str());
+    posY = atoi(list[2].c_str());
+    result = atoi(list[3].c_str());
+
+    if (posX < 0 || posX >= mapSize.first || posY < 0 || posY >= mapSize.second)
+        throw InvalidPlayerPosition();
+}
+
+// egg laying by the player
+void gui::Client::pfk(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int id;
+
+    if (list.size() != 2)
+        throw InvalidNumberOfParameter();
+
+    id = atoi(list[1].substr(1).c_str());
+
+    if (id && findPlayer(id) == -1)
+        throw WrongPlayerId();
+}
+
+// Resource dropping
+void gui::Client::pdr(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int id;
+    int nbResources = -1;
+
+    if (list.size() != 3)
+        throw InvalidNumberOfParameter();
+
+    id = atoi(list[1].substr(1).c_str());
+    nbResources = atoi(list[1].c_str());
+
+    if (id && findPlayer(id) == -1)
+        throw WrongPlayerId();
+
+    if (nbResources < 0)
+        WrongResourceNumber();
+}
+
+// Resource collecting
+void gui::Client::pgt(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int id;
+    int nbResources = -1;
+
+    if (list.size() != 3)
+        throw InvalidNumberOfParameter();
+
+    id = atoi(list[1].substr(1).c_str());
+    nbResources = atoi(list[1].c_str());
+
+    if (id && findPlayer(id) == -1)
+        throw WrongPlayerId();
+
+    if (nbResources < 0)
+        WrongResourceNumber();
+}
+
+// an egg was laid by a player
+void gui::Client::enw(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int eggId;
+    int playerId;
+    int posX;
+    int posY;
+    std::pair<int, int> mapSize = msz();
+
+    if (list.size() != 5)
+        throw InvalidNumberOfParameter();
+
+    eggId = atoi(list[1].substr(1).c_str());
+    playerId = atoi(list[2].substr(1).c_str());
+    posX = atoi(list[3].c_str());
+    posY = atoi(list[4].c_str());
+
+    if (posX < 0 || posX >= mapSize.first || posY < 0 || posY >= mapSize.second)
+        throw InvalidPlayerPosition();
+
+    if (id && findPlayer(id) == -1)
+        throw WrongPlayerId();
+}
+
+// Player connection for an egg
+void gui::Client::ebo(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int id;
+
+    if (list.size() != 2)
+        throw InvalidNumberOfParameter();
+
+    id = atoi(list[1].substr(1).c_str());
+}
+
+// death of an egg
+void gui::Client::edi(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int id;
+
+    if (list.size() != 2)
+        throw InvalidNumberOfParameter();
+
+    id = atoi(list[1].substr(1).c_str());
+}
+
 /************************************************************
 **           >>>> STATIC  MEMBER FUNCTIONS   <<<<          **
 ************************************************************/
