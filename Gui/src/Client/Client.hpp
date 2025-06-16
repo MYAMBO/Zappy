@@ -158,6 +158,13 @@ namespace gui {
             return "Resources can't have negative value";
         };
     };
+
+    class InvalidTimeUnit : public std::exception {
+    public:
+        [[nodiscard]] const char *what() const noexcept override {
+            return "Invalid time unit";
+        };
+    };
 }
 
 inline void SendCommand(const std::string& command)

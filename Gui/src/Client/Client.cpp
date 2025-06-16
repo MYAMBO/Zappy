@@ -451,6 +451,7 @@ void gui::Client::ebo(std::string string)
         throw InvalidNumberOfParameter();
 
     id = atoi(list[1].substr(1).c_str());
+    // vérifier si l'id de l'oeuf existe
 }
 
 // death of an egg
@@ -463,6 +464,74 @@ void gui::Client::edi(std::string string)
         throw InvalidNumberOfParameter();
 
     id = atoi(list[1].substr(1).c_str());
+    // vérifier si l'id de l'oeuf existe
+}
+
+// Time unit request
+void gui::Client::sgt(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int timeUnit;
+
+    if (list.size() != 2)
+        throw InvalidNumberOfParameter();
+
+    timeUnit = atoi(list[1].substr(1).c_str());
+
+    if (timeUnit && timeUnit < 0)
+        throw InvalidTimeUnit();
+}
+
+// Time unit modification
+void gui::Client::sst(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int timeUnit;
+
+    if (list.size() != 2)
+        throw InvalidNumberOfParameter();
+
+    timeUnit = atoi(list[1].substr(1).c_str());
+
+    if (timeUnit && timeUnit < 0)
+        throw InvalidTimeUnit();
+}
+
+// End of game
+void gui::Client::seg(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int teamName;
+
+    if (list.size() != 2)
+        throw InvalidNumberOfParameter();
+
+    teamName = list[1];
+    // vérifier si l'équipe existe
+}
+
+// Message from the server
+void gui::Client::smg(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int message;
+
+    if (list.size() != 2)
+        throw InvalidNumberOfParameter();
+
+    message = list[1];
+}
+
+// Unknown command
+void gui::Client::suc([[maybe_unused]]std::string string)
+{
+    return;
+}
+
+// Command parameter
+void gui::Client::sbp([[maybe_unused]]std::string string)
+{
+    return;
 }
 
 /************************************************************
