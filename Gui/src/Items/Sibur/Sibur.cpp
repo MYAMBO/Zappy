@@ -15,7 +15,7 @@
 ************************************************************/
 
 
-gui::Sibur::Sibur(Vector3 position, float scale)
+gui::Sibur::Sibur(std::pair<int, int> position, float scale)
     : AItem(position, scale, {0,0,0})
 {
     float randomRotationY = (float)GetRandomValue(0, 360) * DEG2RAD;

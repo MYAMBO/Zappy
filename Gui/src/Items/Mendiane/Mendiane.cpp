@@ -15,7 +15,7 @@
 ************************************************************/
 
 
-gui::Mendiane::Mendiane(Vector3 position, float scale)
+gui::Mendiane::Mendiane(std::pair<int, int> position, float scale)
     : AItem(position, scale, WHITE)
 {
     float randomRotationY = (float)GetRandomValue(0, 360) * DEG2RAD;

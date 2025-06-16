@@ -15,7 +15,7 @@
 ************************************************************/
 
 
-gui::Linemate::Linemate(Vector3 position, float scale)
+gui::Linemate::Linemate(std::pair<int, int> position, float scale)
     : AItem(position, scale, {0,0,0})
 {
     float randomRotationY = (float)GetRandomValue(0, 360) * DEG2RAD;

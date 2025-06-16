@@ -13,7 +13,7 @@
 namespace gui {
     class Food : public AItem {
         public:
-            Food(Vector3 position, float scale);
+            Food(std::pair<int, int> position, float scale);
             ~Food();
 
             std::string getType() override;
