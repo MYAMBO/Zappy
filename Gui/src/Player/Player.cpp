@@ -6,20 +6,20 @@
 */
 
 #include <raylib.h>
-
+#include <utility>
 #include "Player.hpp"
 #include "Logger.hpp"
 
 
-gui::Player::Player(int id, std::pair<int, int> position, Orientation orientation, int level, const std::string& team): AEntity("Player", {(float)position.first, 0, (float)position.second}, 1, WHITE), _id(id), _orientation(orientation), _level(level)
 /************************************************************
 **         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
 ************************************************************/
 
-
-gui::Player::Player(Vector3 position, float scale, Color color, int screenWidth, int screenHeight, Camera3D &camera, int &sceneState)
-    : AEntity(position, scale, color), _camButton([this, &camera, &sceneState]() { HandleCamButton(camera, sceneState); },
-    Rectangle{0, static_cast<float>(screenHeight - 70), 150, 70}, "Camera"), _direction(North), _inventory(screenWidth, screenHeight)
+gui::Player::Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team, float scale,
+                    int screenWidth, int screenHeight, Camera3D &camera, int &sceneState) :
+                    AEntity({(float)position.first, 0, (float)position.second}, scale, WHITE), _id(id), _direction(orientation), _level(level), _team(std::move(team)),
+                    _camButton([this, &camera, &sceneState]() { HandleCamButton(camera, sceneState); }, Rectangle{0, static_cast<float>(screenHeight - 70), 150, 70}, "Camera"),
+                    _inventory(screenWidth, screenHeight)
 {
     Mesh mesh = GenMeshCylinder(0.25f, 1.0f, 50);
     _model = LoadModelFromMesh(mesh);
@@ -92,7 +92,7 @@ int gui::Player::getLevel() const
 
 Orientation gui::Player::getOrientation() const
 {
-    return this->_orientation;
+    return this->_direction;
 }
 
 std::string gui::Player::getTeam() const
@@ -107,7 +107,7 @@ void gui::Player::setLevel(int level)
 
 void gui::Player::setOrientation(Orientation orientation)
 {
-    this->_orientation = orientation;
+    this->_direction = orientation;
 }
 
 void gui::Player::HandleCamButton(Camera3D &camera, int &sceneState)

@@ -24,9 +24,7 @@ enum Orientation {
 namespace gui {
     class Player : public AEntity {
         public:
-            Player(int id, std::pair<int, int> position, Orientation orientation, int level, const std::string& team);
-
-            Player(Vector3 position, float scale, Color color, int screenWidth, int screenHeight, Camera3D &camera, int &sceneState);
+            Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team, float scale, int screenWidth, int screenHeight, Camera3D &camera, int &sceneState);
             ~Player();
 
             int getId() const;
@@ -38,28 +36,10 @@ namespace gui {
             void setOrientation(Orientation orientation);
 
             /**
-             * @brief Move the model to the left.
-             * This function changes the direction of the model to the left.
-             */
-            void Left();
-
-            /**
              * @brief Draw the Player on the screen.
              * This function draws the Player.
              */
             void draw();
-
-            /**
-             * @brief Move the model to the right.
-             * This function changes the direction of the model to the right.
-             */
-            void Right();
-
-            /**
-             * @brief Move the model forward.
-             * This function moves the model in the current direction.
-             */
-            void forward();
 
             /**
              * @brief Draw the UI of the Player.
@@ -88,13 +68,12 @@ namespace gui {
             void updateUI();
         private:
             int _id;
-            Orientation _orientation;
             int _level;
             std::string _team;
             bool _isSelected = false;
 
             ui::Button _camButton;
-            orientation _direction;
+            Orientation _direction;
             ui::Inventory _inventory;
     };
 }

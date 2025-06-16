@@ -68,7 +68,7 @@ void gui::Client::bct(const std::string& string)
     int phiras;
     int thystame;
 
-    list = this->splitString(string);
+    list = gui::Client::splitString(string);
 
     if (list.size() != 10)
         throw InvalidNumberOfParameter();
@@ -86,7 +86,9 @@ void gui::Client::bct(const std::string& string)
     if (coord.first && coord.second &&
         food && linemate && deraumere &&
         sibur && mendiane && phiras && thystame)
-
+        this->_Map.emplace_back(std::make_shared<Tile>(coord, food, linemate, deraumere, sibur, mendiane, phiras, thystame));
+    else
+        throw gui::WrongTileValue();
 }
 
 // Get map size

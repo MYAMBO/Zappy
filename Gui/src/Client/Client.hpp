@@ -14,6 +14,7 @@
     #include "AEntity.hpp"
     #include "AItem.hpp"
     #include "Player.hpp"
+    #include "Tile.hpp"
     #include <vector>
     #include <iostream>
     #include <memory>
@@ -74,13 +75,20 @@ namespace gui {
             int _socket;
             sockaddr_in _serverAddr;
             std::vector<std::shared_ptr<gui::Player>> _Players;
-            std::vector<std::shared_ptr<gui::AItem>> _Items;
+            std::vector<std::shared_ptr<gui::Tile>> _Map;
     };
 
     class WrongPlayerValue : public std::exception {
     public:
         [[nodiscard]] const char *what() const noexcept override {
             return "Value for Player creation are wrong.";
+        };
+    };
+
+    class WrongTileValue : public std::exception {
+    public:
+        [[nodiscard]] const char *what() const noexcept override {
+            return "There is a wrong value for creating Tile.";
         };
     };
 
