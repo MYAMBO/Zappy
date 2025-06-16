@@ -137,6 +137,20 @@ namespace gui {
             return "Player's inventory can't have negative value";
         };
     };
+
+    class InvalidPlayerPosition : public std::exception {
+    public:
+        [[nodiscard]] const char *what() const noexcept override {
+            return "Player's position out of map";
+        };
+    };
+
+    class InvalidIncantationLevel : public std::exception {
+    public:
+        [[nodiscard]] const char *what() const noexcept override {
+            return "Incantation level is invalid";
+        };
+    };
 }
 
 inline void SendCommand(const std::string& command)

@@ -193,17 +193,21 @@ void gui::Client::ppo(std::string string)
 {
     std::vector<std::string> list = this->splitString(string);
     int id;
-    int pos_x = 0;
-    int pos_y = 0;
+    int posX = 0;
+    int posY = 0;
     int orientation = 0;
+    std::pair<int, int> mapSize = msz();
 
     if (list.size() != 5)
         throw InvalidNumberOfParameter();
 
     id = atoi(list[1].substr(1).c_str());
-    pos_x = atoi(list[2].c_str());
-    pos_y = atoi(list[3].c_str());
+    posX = atoi(list[2].c_str());
+    posY = atoi(list[3].c_str());
     orientation = atoi(list[4].c_str());
+
+    if (posX < 0 || posX >= mapSize.first || posY < 0 || posY >= mapSize.second)
+        throw InvalidPlayerPosition();
 
     if (id && findPlayer(id) == -1)
         throw WrongPlayerId();
@@ -237,16 +241,17 @@ void gui::Client::pin(std::string string)
 {
     std::vector<std::string> list = this->splitString(string);
     int id;
-    int pos_x = 0;
-    int pos_y = 0;
+    int posX = 0;
+    int posY = 0;
     std::map<std::string, int> inventory;
+    std::pair<int, int> mapSize = msz();
 
     if (list.size() != 11)
         throw InvalidNumberOfParameter();
 
     id = atoi(list[1].substr(1).c_str());
-    pos_x = atoi(list[2].c_str());
-    pos_y = atoi(list[3].c_str());
+    posX = atoi(list[2].c_str());
+    posY = atoi(list[3].c_str());
     inventory.emplace("food", atoi(list[4].c_str()));
     inventory.emplace("linemate", atoi(list[5].c_str()));
     inventory.emplace("deraumere", atoi(list[6].c_str()));
@@ -254,6 +259,9 @@ void gui::Client::pin(std::string string)
     inventory.emplace("mendiane", atoi(list[8].c_str()));
     inventory.emplace("phiras", atoi(list[9].c_str()));
     inventory.emplace("thystame", atoi(list[10].c_str()));
+
+    if (posX < 0 || posX >= mapSize.first || posY < 0 || posY >= mapSize.second)
+        throw InvalidPlayerPosition();
 
     if (id && findPlayer(id) == -1)
         throw WrongPlayerId();
@@ -293,6 +301,44 @@ void gui::Client::pbc(std::string string)
 
     if (id && findPlayer(id) == -1)
         throw WrongPlayerId();
+}
+
+// Start of an incantation
+void gui::Client::pic(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int incantationLevel;
+    int posX = 0;
+    int posY = 0;
+    std::pair<int, int> mapSize = msz();
+    std::vector<int> playersId;
+    int id;
+
+    if (list.size() < 5)
+        throw InvalidNumberOfParameter();
+
+    posX = atoi(list[1].c_str());
+    posY = atoi(list[2].c_str());
+    incantationLevel = atoi(list[3].c_str());
+
+    if (incantationLevel < 1 || incantationLevel > 7)
+        throw InvalidIncantationLevel();
+
+    if ((incantationLevel == 1 && list.size() != 5) ||
+        ((incantationLevel == 2 || incantationLevel == 3) && list.size() != 6) ||
+        ((incantationLevel == 4 || incantationLevel == 5) && list.size() != 8) ||
+        ((incantationLevel == 6 || incantationLevel == 7) && list.size() != 10))
+        throw InvalidNumberOfParameter();
+
+    if (posX < 0 || posX >= mapSize.first || posY < 0 || posY >= mapSize.second)
+        throw InvalidPlayerPosition();
+
+    for (int i = 4; i < list.size(); i++){
+        id = atoi(list[i].substr(1).c_str());
+        if (id && findPlayer(id) == -1)
+            throw WrongPlayerId();
+        playersId.emplace(id)
+    }
 }
 
 /************************************************************
