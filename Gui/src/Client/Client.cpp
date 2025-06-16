@@ -17,7 +17,7 @@
 **         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
 ************************************************************/
 
-gui::Client::Client() : _socket(), _serverAddr(), _list()
+gui::Client::Client() : _socket(), _serverAddr(), _Players()
 {
 }
 
@@ -40,7 +40,7 @@ void gui::Client::sendCommand(std::string command) const
     send(this->_socket, command.c_str(), command.size(), 0);
 }
 
-void gui::Client::catchCommand(std::shared_ptr<std::vector<gui::AEntity>> list)
+void gui::Client::catchCommand(std::shared_ptr<std::vector<gui::Player>> list)
 {
     char buffer[1024];
     while (true) {
@@ -52,6 +52,41 @@ void gui::Client::catchCommand(std::shared_ptr<std::vector<gui::AEntity>> list)
         buffer[bytesReceived] = '\0';
         std::cout << "Received from server: " << buffer << "\n";
     }
+}
+
+
+// Get map content
+void gui::Client::bct(const std::string& string)
+{
+    std::vector<std::string> list;
+    std::pair<int, int> coord;
+    int food;
+    int linemate;
+    int deraumere;
+    int sibur;
+    int mendiane;
+    int phiras;
+    int thystame;
+
+    list = this->splitString(string);
+
+    if (list.size() != 10)
+        throw InvalidNumberOfParameter();
+
+    coord.first = atoi(list[1].c_str());
+    coord.first = atoi(list[2].c_str());
+    food = atoi(list[3].c_str());
+    linemate = atoi(list[4].c_str());
+    deraumere = atoi(list[5].c_str());
+    sibur = atoi(list[6].c_str());
+    mendiane = atoi(list[7].c_str());
+    phiras = atoi(list[8].c_str());
+    thystame = atoi(list[9].c_str());
+
+    if (coord.first && coord.second &&
+        food && linemate && deraumere &&
+        sibur && mendiane && phiras && thystame)
+
 }
 
 // Get map size
@@ -69,10 +104,14 @@ std::pair<int, int> gui::Client::msz() const
         recv(this->_socket, buffer, sizeof(buffer) - 1, 0);
         list = gui::Client::splitString(buffer);
 
-        if (list.size() == 3 && list[0] == "msz") {
-            coord.first = atoi(list[1].c_str());
-            coord.second = atoi(list[2].c_str());
-        }
+        if (list.size() != 3)
+            throw gui::InvalidNumberOfParameter();
+
+        if (list[0] != "msz")
+            throw gui::UnexpectedArgumentError();
+
+        coord.first = atoi(list[1].c_str());
+        coord.second = atoi(list[2].c_str());
 
         if (coord.first && coord.second && coord.first > 0 && coord.second > 0)
             return coord;
@@ -101,28 +140,38 @@ void gui::Client::pnw(const std::string& string)
     int orientation = atoi(list[4].c_str());
     int level = atoi(list[5].c_str());
 
+    if (this->findPlayer(id) != -1)
+        throw PlayerIdAlreadyUsed();
+
     if (id && x && y && orientation && level && id >= 0 &&
         x >= 0 && x < coord.first &&
         y >= 0 && y < coord.second &&
         orientation > 0 && orientation < 5 &&
         level > 0 && level < 9) {
-        this->_list->push_back(gui::Player(id, position, static_cast<Orientation>(orientation), level, list[6]));
+        this->_Players->emplace_back(id, position, static_cast<Orientation>(orientation), level, list[6]);
     } else {
         throw gui::WrongPlayerValue();
     }
 }
 
 // Player Death
-void gui::Client::pdi(std::string string)
+void gui::Client::pdi(const std::string& string)
 {
     std::vector<std::string> list;
     int id;
+    int indice;
 
-    list = this->splitString(string);
+    list = gui::Client::splitString(string);
     id = atoi(list[1].c_str());
 
-    if (id && id > 0) {
+    indice = findPlayer(id);
 
+    if (indice == -1)
+        throw WrongPlayerId();
+
+    if (id && id > 0) {
+        // replace by an other model
+        this->_Players->erase(this->_Players->begin() + findPlayer(id));
     }
 }
 
@@ -223,14 +272,13 @@ std::vector<std::string> gui::Client::splitString(const std::string& string)
 
 int gui::Client::findPlayer(int id)
 {
-    for (std::size_t i = 0; i < this->_list->size(); ++i) {
-        const gui::AEntity& entity = (*this->_list)[i];
+    for (int i = 0; i < this->_Players->size(); ++i) {
+        const gui::Player& entity = (*this->_Players)[i];
 
-        // Use i and entity
-        // Example: std::cout << "Index " << i << ": " << entity.getName() << "\n";
+        if (entity.getId() == id)
+            return i;
     }
-
-
+    return -1;
 }
 
 /************************************************************
