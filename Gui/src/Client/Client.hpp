@@ -27,6 +27,9 @@ namespace gui {
 
             void sendCommand(std::string command) const;
 
+            void setPlayers(std::vector<std::shared_ptr<Player>> players);
+            void setItems(std::vector<std::shared_ptr<AItem>> items);
+
             [[nodiscard]] std::pair<int, int> msz() const; // map size
 
     private:
@@ -36,7 +39,7 @@ namespace gui {
             Client& operator=(const Client &) = delete;
 
 
-            void catchCommand(std::shared_ptr<std::vector<gui::Player>> list);
+            void catchCommand();
 
             void interpretCommand(std::string string);
 

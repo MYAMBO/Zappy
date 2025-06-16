@@ -77,21 +77,21 @@ int main()
         int isKayu = GetRandomValue(0, 7);
 
         if (isKayu == 0)
-            list.push_back(new gui::Food({(float)value1, 0.05, (float)value2}, 0.7f, BROWN));
+            list.push_back(new gui::Food({(float)value1, 0.05, (float)value2}, 0.7f));
         else if (isKayu == 1)
             list.push_back(new gui::Player({(float)value1, 0, (float)value2}, 1.0f, RED, screenWidth, screenHeight, camera, sceneState));
         else if (isKayu == 2)
-            list.push_back(new gui::Linemate({(float)value1, 0.05, (float)value2}, 0.27f, BROWN));
+            list.push_back(new gui::Linemate({(float)value1, 0.05, (float)value2}, 0.27f));
         else if (isKayu == 3)
-            list.push_back(new gui::Deraumere({(float)value1, 0.05, (float)value2}, 0.3f, BROWN));
+            list.push_back(new gui::Deraumere({(float)value1, 0.05, (float)value2}, 0.3f));
         else if (isKayu == 4)
-            list.push_back(new gui::Sibur({(float)value1, 0.05, (float)value2}, 0.07f, BROWN));
+            list.push_back(new gui::Sibur({(float)value1, 0.05, (float)value2}, 0.07f));
         else if (isKayu == 5)
-            list.push_back(new gui::Mendiane({(float)value1, 0.05, (float)value2}, 0.025f, WHITE));
+            list.push_back(new gui::Mendiane({(float)value1, 0.05, (float)value2}, 0.025f));
         else if (isKayu == 6)
-            list.push_back(new gui::Phiras({(float)value1, 0.05, (float)value2}, 0.04f, BLUE));
+            list.push_back(new gui::Phiras({(float)value1, 0.05, (float)value2}, 0.04f));
         else if (isKayu == 7)
-            list.push_back(new gui::Thystame({(float)value1, 0.05, (float)value2}, 0.4f, PURPLE));
+            list.push_back(new gui::Thystame({(float)value1, 0.05, (float)value2}, 0.4f));
     }
 
     // ------ Camera ------

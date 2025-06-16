@@ -10,6 +10,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 
@@ -40,7 +41,7 @@ void gui::Client::sendCommand(std::string command) const
     send(this->_socket, command.c_str(), command.size(), 0);
 }
 
-void gui::Client::catchCommand(std::shared_ptr<std::vector<gui::Player>> list)
+void gui::Client::catchCommand()
 {
     char buffer[1024];
     while (true) {
@@ -53,7 +54,6 @@ void gui::Client::catchCommand(std::shared_ptr<std::vector<gui::Player>> list)
         std::cout << "Received from server: " << buffer << "\n";
     }
 }
-
 
 // Get map content
 void gui::Client::bct(const std::string& string)
@@ -148,7 +148,7 @@ void gui::Client::pnw(const std::string& string)
         y >= 0 && y < coord.second &&
         orientation > 0 && orientation < 5 &&
         level > 0 && level < 9) {
-        this->_Players->emplace_back(id, position, static_cast<Orientation>(orientation), level, list[6]);
+        this->_Players.push_back( std::make_shared<Player>(gui::Player(id, position, static_cast<Orientation>(orientation), level, list[6])));
     } else {
         throw gui::WrongPlayerValue();
     }
@@ -171,7 +171,7 @@ void gui::Client::pdi(const std::string& string)
 
     if (id && id > 0) {
         // replace by an other model
-        this->_Players->erase(this->_Players->begin() + findPlayer(id));
+        this->_Players.erase(this->_Players.begin() + findPlayer(id));
     }
 }
 
@@ -193,10 +193,10 @@ std::vector<std::string> gui::Client::splitString(const std::string& string)
 
 int gui::Client::findPlayer(int id)
 {
-    for (int i = 0; i < this->_Players->size(); ++i) {
-        const gui::Player& entity = (*this->_Players)[i];
+    for (int i = 0; i < this->_Players.size(); ++i) {
+        std::shared_ptr<gui::Player> entity = this->_Players[i];
 
-        if (entity.getId() == id)
+        if (entity->getId() == id)
             return i;
     }
     return -1;
@@ -205,6 +205,16 @@ int gui::Client::findPlayer(int id)
 /************************************************************
 **                  >>>>    SETTERS   <<<<                 **
 ************************************************************/
+
+void gui::Client::setItems(std::vector<std::shared_ptr<AItem>> items)
+{
+    this->_Items = std::move(items);
+}
+
+void gui::Client::setPlayers(std::vector<std::shared_ptr<Player>> players)
+{
+    this->_Players = std::move(players);
+}
 
 /************************************************************
 **               >>>>   GETTERS   <<<<                     **

@@ -15,8 +15,8 @@
 ************************************************************/
 
 
-gui::Thystame::Thystame(Vector3 position, float scale, Color color)
-    : AItem(position, scale, color)
+gui::Thystame::Thystame(Vector3 position, float scale)
+    : AItem(position, scale, {0,0,0})
 {
     float randomRotationY = (float)GetRandomValue(0, 360) * DEG2RAD;
     _model = LoadModel("assets/thystame/scene.gltf");
