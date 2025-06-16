@@ -139,6 +139,7 @@ void gui::Client::tna(std::string string)
         team_name[team_name.length() - 1] = '\0';
 }
 
+// Player's position
 void gui::Client::ppo(std::string string)
 {
     std::vector<std::string> list = this->splitString(string);
@@ -157,6 +158,51 @@ void gui::Client::ppo(std::string string)
 
     if (orientation < 1 || orientation > 4)
         throw WrongPlayerValue();
+}
+
+// Player's level
+void gui::Client::plv(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int id = 0;
+    int level = -1;
+
+    if (list.size() != 3)
+        throw;
+
+    id = atoi(list[1].substr(1).c_str());
+    level = atoi(list[2].c_str());
+
+    if (level < 0)
+        throw;
+}
+
+// Payer's inventory
+void gui::Client::pin(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+    int id = 0;
+    int pos_x = 0;
+    int pos_y = 0;
+    std::map<std::string, int> inventory;
+
+    if (list.size() != 11)
+        throw;
+
+    id = atoi(list[1].substr(1).c_str());
+    pos_x = atoi(list[2].c_str());
+    pos_y = atoi(list[3].c_str());
+    inventory.emplace("food", atoi(list[4].c_str()));
+    inventory.emplace("linemate", atoi(list[5].c_str()));
+    inventory.emplace("deraumere", atoi(list[6].c_str()));
+    inventory.emplace("sibur", atoi(list[7].c_str()));
+    inventory.emplace("mendiane", atoi(list[8].c_str()));
+    inventory.emplace("phiras", atoi(list[9].c_str()));
+    inventory.emplace("thystame", atoi(list[10].c_str()));
+
+    for (auto elt = inventory.begin(); elt != inventory.end(); elt++)
+        if (elt->second < 0)
+            throw;
 }
 
 /************************************************************
