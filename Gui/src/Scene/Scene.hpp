@@ -1,0 +1,113 @@
+/*
+** EPITECH PROJECT, 2025
+** Zappy
+** File description:
+** Scene
+*/
+
+#ifndef ZAPPY_SCENE_HPP
+    #define ZAPPY_SCENE_HPP
+
+    #include "Food.hpp"
+    #include "Sibur.hpp"
+    #include "AItem.hpp"
+    #include "Button.hpp"
+    #include "Logger.hpp"
+    #include "Phiras.hpp"
+    #include "Linemate.hpp"
+    #include "Mendiane.hpp"
+    #include "Thystame.hpp"
+    #include "Inventory.hpp"
+    #include "Deraumere.hpp"
+    
+    #include <vector>
+    #include <memory>
+    #include <raylib.h>
+    #include <iostream>
+
+    #define WIDTH 10
+    #define HEIGHT 10
+
+    
+namespace gui {
+    class Player;
+    enum CamState {
+        EXIT = 0,
+        WORLD = 1,
+        PLAYER = 2
+    };
+    enum class SceneState {
+        GAME = 1,
+        EXIT = 0
+    };
+    class Scene {
+        public:
+            Scene();
+            ~Scene();
+
+            /**
+             * @brief Check if the scene is open and not closed by the user.
+             * @return true if the scene is open, false otherwise.
+             */
+            bool isOpen() const;
+
+            /**
+             * @brief Update the scene based on the current state.
+             * This function handles input, updates entities, and renders the scene.
+             */
+            void update();
+
+            /**
+             * @brief Render the scene.
+             * This function draws the 3D scene and the UI elements.
+             */
+            void render();
+
+            /**
+             * @brief Handle input from the user.
+             * This function processes user input to control the camera and entities.
+             */
+            void initWindow();
+
+            /**
+             * @brief Display the map.
+             * This function draws the grid of the map based on the width and height.
+             */
+            void displayMap();
+
+            /**
+             * @brief Handle user input for controlling the camera and entities.
+             * This function processes keyboard and mouse input to change the camera state and control player actions.
+             */
+            void handleInput();
+
+            /**
+             * @brief Initialize entities in the scene.
+             * This function creates and initializes the entities (items and players) in the scene.
+             */
+            void initEntities();
+
+            /**
+             * @brief Display entities in the scene.
+             * This function draws all entities (items and players) in the 3D scene.
+             */
+            void displayEntity();
+
+        private:
+            Camera _camera;
+            CamState _camState;
+
+            bool _isOpen;
+            float _width;
+            float _height;
+            SceneState _currentState;
+            std::vector<std::unique_ptr<gui::AItem>> _entities;
+            std::vector<gui::Player> _players;
+        
+            static const int TARGET_FPS = 60;
+            static const int SCREEN_WIDTH = 1920;
+            static const int SCREEN_HEIGHT = 1080;
+    };
+};
+
+#endif // ZAPPY_SCENE_HPP
