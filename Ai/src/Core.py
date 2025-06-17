@@ -12,8 +12,8 @@ from CommandHandler import *
 from getWay import get_better_way_to_resources
 from SortTiles import get_visible_tiles_sorted_by_distance
 
-def init():
-    client = Client("localhost", 12345)
+def init(port, machine):
+    client = Client(machine, port)
     try:
         client.connect()
     except ClientError as e:
@@ -62,8 +62,10 @@ def handle_command(client):
 
 
 def core(name):
+
+def core(name, port, machine):
     ai = Ai()
-    client = init()
+    client = init(port, machine)
     commandToReply = None
     ai.set_id(uuid.uuid4())
     commands = [name, "Broadcast \"hey_je_suis_:" + str(ai.get_id()) + "\"", "Look", "Inventory"]

@@ -93,6 +93,3 @@ class Ai:
 
     def get_unused_slots(self):
         return self.__unused_slots
-
-    def get_id_to_follow(self):
-        return self.__ai_to_follow
