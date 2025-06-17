@@ -17,7 +17,6 @@ gui::AEntity::AEntity(Vector3 position, float scale, Color color)
 
 gui::AEntity::~AEntity()
 {
-    Debug::WarningLog("Unloading model: " + std::to_string(_model.meshCount) + " meshes");
     UnloadModel(_model);
 }
 

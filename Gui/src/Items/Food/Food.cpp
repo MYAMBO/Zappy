@@ -27,7 +27,6 @@ gui::Food::Food(std::pair<int, int> position, float scale)
     Matrix rotationMatrix = MatrixRotateY(randomRotationY);
     
     _model.transform = MatrixMultiply(scaleMatrix, rotationMatrix);
-    Debug::InfoLog("Loading model Food: " + std::to_string(_model.meshCount) + " meshes");
 }
 
 gui::Food::~Food()
