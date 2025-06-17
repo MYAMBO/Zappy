@@ -9,6 +9,8 @@
 
 #include <raymath.h>
 
+#include "Logger.hpp"
+
 
 /************************************************************
 **         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
@@ -25,6 +27,7 @@ gui::Food::Food(Vector3 position, float scale, Color color)
     Matrix rotationMatrix = MatrixRotateY(randomRotationY);
     
     _model.transform = MatrixMultiply(scaleMatrix, rotationMatrix);
+    Debug::InfoLog("Loading model Food: " + std::to_string(_model.meshCount) + " meshes");
 }
 
 gui::Food::~Food()
