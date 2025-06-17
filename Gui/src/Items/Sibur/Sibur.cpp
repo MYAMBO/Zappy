@@ -16,7 +16,7 @@
 
 
 gui::Sibur::Sibur(std::pair<int, int> position, float scale)
-    : AItem(position, scale, {0,0,0})
+    : AItem(position, scale, WHITE)
 {
     float randomRotationY = (float)GetRandomValue(0, 360) * DEG2RAD;
     _model = LoadModel("assets/sibur/scene.gltf");

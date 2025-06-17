@@ -17,32 +17,30 @@
 #include "Thystame.hpp"
 #include "Inventory.hpp"
 #include "Deraumere.hpp"
+#include "Tile.hpp"
 
 #include <iostream>
+#include <memory>
 
-#define WIDTH 10
-#define HEIGHT 10
-
-
-void displayMap(float width, float height)
+void displayMap(const std::vector<std::shared_ptr<gui::Tile>>& map)
 {
-    for (int x = 0; (float)x < width; x++) {
-        for (int z = 0; (float)z < height; z++) {
-            Vector3 position = { (float)x, -0.5f, (float)z };
-            DrawCube(position, 1.0f, 1.0f, 1.0f, {61, 110, 49, 255});
-            DrawCubeWires(position, 1.0f, 1.0f, 1.0f, {61, 0, 49, 255});
-        }
+    for (const auto& tile: map) {
+        tile->displayTile();
     }
 }
 
-void displayEntity(std::vector<gui::AEntity*> list)
+void displayPlayer(const std::vector<std::shared_ptr<gui::Player>>& list)
 {
     for (auto & i : list) {
-        if (dynamic_cast<gui::Player*>(i)) {
-            static_cast<gui::Player*>(i)->draw();
-        } else {
-            DrawModel(i->getModel(), i->getPosition(), i->getScale(), i->getColor());
-        }
+        DrawModel(i->getModel(), i->getPosition(), i->getScale(), i->getColor());
+    }
+}
+
+void displayPlayerUi(const std::vector<std::shared_ptr<gui::Player>>& list)
+{
+    for (auto & i : list) {
+        i->updateUI();
+        i->drawUI();
     }
 }
 
@@ -66,35 +64,32 @@ int main()
     SetTargetFPS(60);
 
     // ------ Brut code for Entity on Map ------
-    std::vector<gui::AEntity*> list;
+    std::vector<std::shared_ptr<gui::Player>> list;
     Camera camera = { { -width, 10.0f, -height}, { width / 2, 0.0f, height / 2 }, { 0.0f, 1.0f, 0.0f }, 45.0f, 0 };
     int sceneState = 1;
 
-    for (int x = 0; (float)x < (width * height) / 2; ++x) {
-        int value1 = GetRandomValue(0, (int)width - 1);
-        int value2 = GetRandomValue(0, (int)height - 1);
+    std::vector<std::shared_ptr<gui::Tile>> Map;
 
-        int isKayu = GetRandomValue(0, 7);
+    for (int y = 0; y < HEIGHT; ++y) {
+        for (int x = 0; x < WIDTH; ++x) {
+            std::pair<int, int> coord = {x, y};
+            int food = GetRandomValue(0, 2);
+            int linemate = GetRandomValue(0, 2);
+            int deraumere = GetRandomValue(0, 2);
+            int sibur = GetRandomValue(0, 2);
+            int mendiane = GetRandomValue(0, 2);
+            int phiras = GetRandomValue(0, 2);
+            int thystame = GetRandomValue(0, 2);
 
-        if (isKayu == 0)
-            list.push_back(new gui::Food({value1, value2}, 0.7f));
-        else if (isKayu == 1)
-            list.push_back(new gui::Player({(float)value1, 0, (float)value2}, 1.0f, RED, screenWidth, screenHeight, camera, sceneState));
-        else if (isKayu == 2)
-            list.push_back(new gui::Linemate({value1, value2}, 0.27f));
-        else if (isKayu == 3)
-            list.push_back(new gui::Deraumere({value1, value2}, 0.3f));
-        else if (isKayu == 4)
-            list.push_back(new gui::Sibur({value1, value2}, 0.07f));
-        else if (isKayu == 5)
-            list.push_back(new gui::Mendiane({value1, value2}, 0.025f));
-        else if (isKayu == 6)
-            list.push_back(new gui::Phiras({value1, value2}, 0.04f));
-        else if (isKayu == 7)
-            list.push_back(new gui::Thystame({value1, value2}, 0.4f));
+            Map.emplace_back(std::make_shared<gui::Tile>(coord, food, linemate, deraumere, sibur, mendiane, phiras, thystame));
+        }
     }
 
-    // ------ Camera ------
+    for (int x = 0; (float)x < 10; ++x) {
+        std::pair<int, int> coord = {GetRandomValue(0, (int)width - 1), GetRandomValue(0, (int)height - 1)};
+
+        list.emplace_back(std::make_shared<gui::Player>(x, coord, North, 1, "toto", 1, screenWidth, screenHeight, camera, sceneState));
+    }
 
     //--------------------------------------------------------- Display ----------------------------------------------------------------
 
@@ -105,8 +100,7 @@ int main()
                 camera = { { -width, 10.0f, -height}, { width / 2, 0.0f, height / 2 }, { 0.0f, 1.0f, 0.0f }, 45.0f, 0 };
         }
         for (auto & i : list)
-            if (dynamic_cast<gui::Player*>(i))
-                static_cast<gui::Player*>(i)->update(camera);
+            i->update(camera);
         if (IsKeyDown(KEY_LEFT_CONTROL) && sceneState == 1)
             UpdateCamera(&camera, CAMERA_THIRD_PERSON);
         else if (IsKeyDown(KEY_LEFT_CONTROL) && sceneState == 2)
@@ -116,14 +110,13 @@ int main()
             camera.position.y = 0.1;
         ClearBackground(BLACK);
         BeginMode3D(camera);
-        displayMap(width, height);
-        displayEntity(list);
+        displayMap(Map);
+        displayPlayer(list);
         EndMode3D();
-        for (auto & i : list)
-            if (dynamic_cast<gui::Player*>(i)) {
-                static_cast<gui::Player*>(i)->drawUI();
-                static_cast<gui::Player*>(i)->updateUI();
-            }
+        for (auto & i : list) {
+            i->updateUI();
+            i->drawUI();
+        }
         EndDrawing();
     }
     list.clear();

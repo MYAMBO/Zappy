@@ -17,9 +17,9 @@
 
 gui::Player::Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team, float scale,
                     int screenWidth, int screenHeight, Camera3D &camera, int &sceneState) :
-                    AEntity({(float)position.first, 0, (float)position.second}, scale, WHITE), _id(id), _direction(orientation), _level(level), _team(std::move(team)),
+                    AEntity({(float)position.first, 0.5, (float)position.second}, scale, RED), _id(id), _level(level), _team(std::move(team)),
                     _camButton([this, &camera, &sceneState]() { HandleCamButton(camera, sceneState); }, Rectangle{0, static_cast<float>(screenHeight - 70), 150, 70}, "Camera"),
-                    _inventory(screenWidth, screenHeight)
+                    _direction(orientation), _inventory(screenWidth, screenHeight)
 {
     Mesh mesh = GenMeshCylinder(0.25f, 1.0f, 50);
     _model = LoadModelFromMesh(mesh);
