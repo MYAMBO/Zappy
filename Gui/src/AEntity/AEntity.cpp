@@ -7,6 +7,7 @@
 
 #include "AEntity.hpp"
 
+#include "Logger.hpp"
 gui::AEntity::AEntity(Vector3 position, float scale, Color color)
 {
     _position = position;

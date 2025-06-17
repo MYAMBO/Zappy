@@ -10,6 +10,7 @@
 
     #include <tuple>
 
+    #include "Scene.hpp"
     #include "Button.hpp"
     #include "AEntity.hpp"
     #include "Inventory.hpp"
@@ -24,7 +25,7 @@ enum Orientation {
 namespace gui {
     class Player : public AEntity {
         public:
-            Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team, float scale, int screenWidth, int screenHeight, Camera3D &camera, int &sceneState);
+            Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team, float scale, int screenWidth, int screenHeight, Camera3D &camera, CamState &sceneState);
             ~Player();
 
             int getId() const;
@@ -51,7 +52,7 @@ namespace gui {
              * @brief Handle the camera button action.
              * This function handles the action when the camera button is clicked.
              */
-            void HandleCamButton(Camera3D &camera, int &sceneState);
+            void HandleCamButton(Camera3D &camera, CamState &sceneState);
 
             /**
              * @brief Update the Player.

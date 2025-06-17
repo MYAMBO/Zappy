@@ -31,11 +31,12 @@ GUI_SRC = 												\
 				Gui/src/Items/Linemate/Linemate.cpp		\
 				Gui/src/Items/Deraumere/Deraumere.cpp	\
 														\
+				Gui/src/Tile/Tile.cpp					\
+				Gui/src/Scene/Scene.cpp					\
 				Gui/src/Button/Button.cpp 				\
 				Gui/src/Player/Player.cpp				\
 				Gui/src/AEntity/AEntity.cpp				\
-				Gui/src/Inventory/Inventory.cpp			\
-				Gui/src/Tile/Tile.cpp
+				Gui/src/Inventory/Inventory.cpp
 
 TEST_SRC =
 
@@ -49,7 +50,9 @@ SERVER_NAME = zappy_server
 SERVER_FLAGS = -I Server/include -I Debug
 GUI_FLAGS = -lraylib -lpthread -lGL -I Debug 		\
         											\
+			-I Gui/src/Tile			 				\
 			-I Gui/src/Items 						\
+			-I Gui/src/Scene						\
 			-I Gui/src/Player 						\
 			-I Gui/src/Button 						\
 			-I Gui/src/AEntity 						\
@@ -63,7 +66,6 @@ GUI_FLAGS = -lraylib -lpthread -lGL -I Debug 		\
 			-I Gui/src/Items/Thystame 				\
 			-I Gui/include/interfaces				\
 			-I Gui/src/Items/Deraumere 				\
-			-I Gui/src/Tile			 				\
 
 ALL_FLAGS = $(SERVER_FLAGS) $(GUI_FLAGS)
 CFLAGS = -Werror -Wall -Wextra -Iinclude

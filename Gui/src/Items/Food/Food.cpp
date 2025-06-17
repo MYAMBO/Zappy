@@ -9,6 +9,8 @@
 
 #include <raymath.h>
 
+#include "Logger.hpp"
+
 
 /************************************************************
 **         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
