@@ -14,7 +14,7 @@
     #include "AEntity.hpp"
     #include "Inventory.hpp"
 
-enum orientation {
+enum Orientation {
     North,
     Est,
     South,
@@ -24,32 +24,22 @@ enum orientation {
 namespace gui {
     class Player : public AEntity {
         public:
-            Player(Vector3 position, float scale, Color color, int screenWidth, int screenHeight, Camera3D &camera, int &sceneState);
+            Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team, float scale, int screenWidth, int screenHeight, Camera3D &camera, int &sceneState);
             ~Player();
 
-            /**
-             * @brief Move the model to the left.
-             * This function changes the direction of the model to the left.
-             */
-            void Left();
+            int getId() const;
+            int getLevel() const;
+            Orientation getOrientation() const;
+            std::string getTeam() const;
+
+            void setLevel(int level);
+            void setOrientation(Orientation orientation);
 
             /**
              * @brief Draw the Player on the screen.
              * This function draws the Player.
              */
             void draw();
-
-            /**
-             * @brief Move the model to the right.
-             * This function changes the direction of the model to the right.
-             */
-            void Right();
-
-            /**
-             * @brief Move the model forward.
-             * This function moves the model in the current direction.
-             */
-            void forward();
 
             /**
              * @brief Draw the UI of the Player.
@@ -77,12 +67,15 @@ namespace gui {
              */
             void updateUI();
         private:
+            int _id;
+            int _level;
+            std::string _team;
             bool _isSelected = false;
 
             ui::Button _camButton;
-            orientation _direction;
+            Orientation _direction;
             ui::Inventory _inventory;
     };
-};
+}
 
-#endif
+#endif //ZAPPY_PLAYER_HPP

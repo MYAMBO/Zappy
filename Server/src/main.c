@@ -14,6 +14,30 @@
 #include "logger.h"
 #include "options_parser.h"
 
+#include "map_protocol.h"
+#include "technical_protocol.h"
+#include "player_informations_protocol.h"
+#include <time.h>
+
+map_t *init_test_map(int width, int height)
+{
+    map_t *map = my_malloc(sizeof(map_t));
+
+    srand(time(NULL));
+    map->width = width;
+    map->height = height;
+    map->tiles = my_malloc(sizeof(ressources_t *) * height);
+    for (int y = 0; y < height; y++) {
+        map->tiles[y] = my_malloc(sizeof(ressources_t) * width);
+        for (int x = 0; x < width; x++) {
+            for (int i = 0; i < 7; i++)
+                map->tiles[y][x].resources[i] = rand() % 100;
+        }
+    }
+    printf("%s", get_map_content(map));
+    return map;
+}
+
 int parse_arguments(int ac, char **av, server_t *server)
 {
     if (ac < 2)

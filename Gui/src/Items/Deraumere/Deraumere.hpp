@@ -13,7 +13,7 @@
 namespace gui {
     class Deraumere : public AItem {
         public:
-            Deraumere(Vector3 position, float scale, Color color);
+            Deraumere(std::pair<int, int> position, float scale);
             ~Deraumere();
 
             std::string getType() override;

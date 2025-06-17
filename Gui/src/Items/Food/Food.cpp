@@ -15,8 +15,8 @@
 ************************************************************/
 
 
-gui::Food::Food(Vector3 position, float scale, Color color)
-    : AItem(position, scale, color)
+gui::Food::Food(std::pair<int, int> position, float scale)
+    : AItem(position, scale, WHITE)
 {
     float randomRotationY = (float)GetRandomValue(0, 360) * DEG2RAD;
     _model = LoadModel("assets/food/scene.gltf");
