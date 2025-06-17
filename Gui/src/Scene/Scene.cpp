@@ -8,12 +8,27 @@
 #include "Scene.hpp"
 #include "Player.hpp"
 
+
+/************************************************************
+**         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
+************************************************************/
+
+
 gui::Scene::Scene()
     : _camState(CamState::WORLD), _isOpen(true), _width(WIDTH), _height(HEIGHT), _currentState(SceneState::GAME)
 {
     Debug::ClearLogFile();
     Debug::InfoLog("Zappy started");
     
+    _itemDisplay = {
+        {"Food", 1},
+        {"Linemate", 1},
+        {"Deraumere", 1},
+        {"Sibur", 1},
+        {"Mendiane", 1},
+        {"Phiras", 1},
+        {"Thystame", 1}
+    };
     initWindow();
     initMap();
 }
@@ -22,6 +37,12 @@ gui::Scene::~Scene()
 {
     CloseWindow();
 }
+
+
+/************************************************************
+**               >>>>   MEMBER FUNCTIONS   <<<<            **
+************************************************************/
+
 
 void gui::Scene::initWindow()
 {
@@ -69,7 +90,7 @@ void gui::Scene::displayMap()
 void gui::Scene::displayEntity()
 {
     for (auto& tile : _map) {
-        tile->displayTile();
+        tile->displayTile(_itemDisplay);
     }
     for (auto& player : _players) {
         player->draw();
@@ -131,11 +152,67 @@ void gui::Scene::update()
 
     switch (_currentState) {
         case SceneState::GAME:
+            eventToggleDisplay();
             handleInput();
             render();
             break;
         case SceneState::EXIT:
             _isOpen = false;
             break;
+    }
+}
+
+void gui::Scene::eventToggleDisplay()
+{
+    // when & is pressed
+    if (IsKeyPressed(KEY_ONE)) {
+        if (_itemDisplay["Food"] == 0) {
+            _itemDisplay["Food"] = 1;
+        } else {
+            Debug::InfoLog("[GUI] Food display toggled");
+            _itemDisplay["Food"] = 0;
+        }
+    }
+    if (IsKeyPressed(KEY_TWO)) {
+        if (_itemDisplay["Linemate"] == 0) {
+            _itemDisplay["Linemate"] = 1;
+        } else {
+            _itemDisplay["Linemate"] = 0;
+        }
+    }
+    if (IsKeyPressed(KEY_THREE)) {
+        if (_itemDisplay["Deraumere"] == 0) {
+            _itemDisplay["Deraumere"] = 1;
+        } else {
+            _itemDisplay["Deraumere"] = 0;
+        }
+    }
+    if (IsKeyPressed(KEY_FOUR)) {
+        if (_itemDisplay["Sibur"] == 0) {
+            _itemDisplay["Sibur"] = 1;
+        } else {
+            _itemDisplay["Sibur"] = 0;
+        }
+    }
+    if (IsKeyPressed(KEY_FIVE)) {
+        if (_itemDisplay["Mendiane"] == 0) {
+            _itemDisplay["Mendiane"] = 1;
+        } else {
+            _itemDisplay["Mendiane"] = 0;
+        }
+    }
+    if (IsKeyPressed(KEY_SIX)) {
+        if (_itemDisplay["Phiras"] == 0) {
+            _itemDisplay["Phiras"] = 1;
+        } else {
+            _itemDisplay["Phiras"] = 0;
+        }
+    }
+    if (IsKeyPressed(KEY_SEVEN)) {
+        if (_itemDisplay["Thystame"] == 0) {
+            _itemDisplay["Thystame"] = 1;
+        } else {
+            _itemDisplay["Thystame"] = 0;
+        }
     }
 }

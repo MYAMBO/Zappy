@@ -97,6 +97,11 @@ namespace gui {
              */
             void displayEntity();
 
+            /**
+             * @brief Event handler for toggling item display.
+             * This function handles the events for toggling the display of items based on user input.
+             */
+            void eventToggleDisplay();
         private:
             Camera _camera;
             CamState _camState;
@@ -105,6 +110,7 @@ namespace gui {
             float _width;
             float _height;
             SceneState _currentState;
+            std::map<std::string, int> _itemDisplay;
             std::vector<std::shared_ptr<gui::Tile>> _map;
             std::vector<std::shared_ptr<gui::Player>> _players;
         

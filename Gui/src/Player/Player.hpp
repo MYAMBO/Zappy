@@ -33,7 +33,18 @@ namespace gui {
             Orientation getOrientation() const;
             std::string getTeam() const;
 
+            /**
+             * @brief Set the level of the Player.
+             * This function sets the level of the Player.
+             * @param level The new level of the Player.
+             */
             void setLevel(int level);
+
+            /**
+             * @brief Set the orientation of the Player.
+             * This function sets the orientation of the Player.
+             * @param orientation The new orientation of the Player.
+             */
             void setOrientation(Orientation orientation);
 
             /**
