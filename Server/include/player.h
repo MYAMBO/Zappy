@@ -35,6 +35,7 @@ typedef struct ai_stats_s {
     int nb_phiras;
     int nb_thystame;
     bool in_incantation;
+    bool is_alive;
     ressources_t inventory;
 } ai_stats_t;
 

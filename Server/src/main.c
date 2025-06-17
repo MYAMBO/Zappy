@@ -17,7 +17,9 @@
 #include "map_protocol.h"
 #include "technical_protocol.h"
 #include "player_informations_protocol.h"
+#include "actions_protocol.h"
 #include <time.h>
+#include <stdbool.h>
 
 map_t *init_test_map(int width, int height)
 {
