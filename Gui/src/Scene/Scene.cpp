@@ -15,7 +15,7 @@ gui::Scene::Scene()
     Debug::InfoLog("Zappy started");
     
     initWindow();
-    initEntities();
+    initMap();
 }
 
 gui::Scene::~Scene()
@@ -31,45 +31,27 @@ void gui::Scene::initWindow()
     _camera = { { -_width, 10.0f, -_height}, { _width / 2, 0.0f, _height / 2 }, { 0.0f, 1.0f, 0.0f }, 45.0f, 0 };
 }
 
-void gui::Scene::initEntities()
+void gui::Scene::initMap()
 {
-    _players = std::vector<gui::Player>();
-    _entities = std::vector<std::unique_ptr<gui::AItem>>();
-    for (int x = 0; x < (int)((_width * _height) / 2); ++x) {
-        int value1 = GetRandomValue(0, (int)_width - 1);
-        int value2 = GetRandomValue(0, (int)_height - 1);
-        int isKayu = GetRandomValue(0, 1);
+    for (int y = 0; y < HEIGHT; ++y) {
+        for (int x = 0; x < WIDTH; ++x) {
+            std::pair<int, int> coord = {x, y};
+            int food = GetRandomValue(0, 2);
+            int linemate = GetRandomValue(0, 2);
+            int deraumere = GetRandomValue(0, 2);
+            int sibur = GetRandomValue(0, 2);
+            int mendiane = GetRandomValue(0, 2);
+            int phiras = GetRandomValue(0, 2);
+            int thystame = GetRandomValue(0, 2);
 
-        if (isKayu == 0) {
-            // Create Food entity
-            auto food = std::make_unique<gui::Food>(gui::Food({(float)value1, 0.05f, (float)value2}, 0.7f, BROWN));
-            _entities.push_back(std::move(food));
-        } else if (isKayu == 1) {
-            // Create Player entity - use emplace_back to construct in place
-            _players.emplace_back(gui::Player({(float)value1, 0.05f, (float)value2}, 0.5f, BROWN, SCREEN_WIDTH, SCREEN_HEIGHT, _camera, _camState));
+            _map.emplace_back(std::make_shared<gui::Tile>(coord, food, linemate, deraumere, sibur, mendiane, phiras, thystame));
         }
-        //if (isKayu == 0)
-        //    _entities.push_back(std::make_unique<gui::Food>(gui::Food({(float)value1, 0.05f, (float)value2}, 0.7f, BROWN)));
-        //if (isKayu == 1)
-        //    _players.push_back(gui::Player({(float)value1, 0.05f, (float)value2}, 0.5f, BROWN, SCREEN_WIDTH, SCREEN_HEIGHT, _camera, _camState));
-        //if (isKayu == 2)
-        //    _entities.push_back(gui::Linemate({(float)value1, 0.05f, (float)value2}, 0.27f, BROWN));
-        //if (isKayu == 3)
-        //    _entities.push_back(gui::Deraumere({(float)value1, 0.05f, (float)value2}, 0.3f, BROWN));
-        //if (isKayu == 4)
-        //    _entities.push_back(gui::Phiras({(float)value1, 0.05f, (float)value2}, 0.3f, BROWN));
-        //if (isKayu == 5)
-        //    _entities.push_back(gui::Mendiane({(float)value1, 0.05f, (float)value2}, 0.3f, BROWN));
-        //if (isKayu == 6)
-        //    _entities.push_back(gui::Thystame({(float)value1, 0.05f, (float)value2}, 0.3f, BROWN));
-        //if (isKayu == 7)
-        //    _entities.push_back(gui::Sibur({(float)value1, 0.05f, (float)value2}, 0.7f, BROWN));
     }
-    for (auto & entity : _entities) {
-        Debug::InfoLog("Entity created: " + entity->getType() + " at position (" +
-                       std::to_string(entity->getPosition().x) + ", " +
-                       std::to_string(entity->getPosition().y) + ", " +
-                       std::to_string(entity->getPosition().z) + ")");
+
+    for (int x = 0; (float)x < 10; ++x) {
+        std::pair<int, int> coord = {GetRandomValue(0, (int)WIDTH - 1), GetRandomValue(0, (int)HEIGHT - 1)};
+
+        _players.emplace_back(std::make_shared<gui::Player>(x, coord, North, 1, "toto", 1, SCREEN_WIDTH, SCREEN_HEIGHT, _camera, _camState));
     }
 }
 
@@ -86,15 +68,11 @@ void gui::Scene::displayMap()
 
 void gui::Scene::displayEntity()
 {
-    for (auto& entity : _entities) {
-        Debug::InfoLog("Drawing entity: " + entity->getType() + " at position (" +
-                       std::to_string(entity->getPosition().x) + ", " +
-                       std::to_string(entity->getPosition().y) + ", " +
-                       std::to_string(entity->getPosition().z) + ")");
-        DrawModel(entity->getModel(), entity->getPosition(), entity->getScale(), entity->getColor());
+    for (auto& tile : _map) {
+        tile->displayTile();
     }
     for (auto& player : _players) {
-        player.draw();
+        player->draw();
     }
 }
 
@@ -111,7 +89,7 @@ void gui::Scene::handleInput()
         }
     }
     for (auto& player : _players)
-        player.update(_camera);
+        player->update(_camera);
     if (IsKeyDown(KEY_LEFT_CONTROL)) {
         if (_camState == CamState::WORLD) {
             UpdateCamera(&_camera, CAMERA_THIRD_PERSON);
@@ -134,8 +112,8 @@ void gui::Scene::render()
     displayEntity();
     EndMode3D();
     for (auto& player : _players) {
-        player.drawUI();
-        player.updateUI();
+        player->drawUI();
+        player->updateUI();
     }
     EndDrawing();
 }

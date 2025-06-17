@@ -8,6 +8,7 @@
 #ifndef ZAPPY_SCENE_HPP
     #define ZAPPY_SCENE_HPP
 
+    #include "Tile.hpp"
     #include "Food.hpp"
     #include "Sibur.hpp"
     #include "AItem.hpp"
@@ -27,6 +28,9 @@
 
     #define WIDTH 10
     #define HEIGHT 10
+
+    #define SCREEN_WIDTH 1920
+    #define SCREEN_HEIGHT 1080
 
     
 namespace gui {
@@ -85,7 +89,7 @@ namespace gui {
              * @brief Initialize entities in the scene.
              * This function creates and initializes the entities (items and players) in the scene.
              */
-            void initEntities();
+            void initMap();
 
             /**
              * @brief Display entities in the scene.
@@ -101,12 +105,10 @@ namespace gui {
             float _width;
             float _height;
             SceneState _currentState;
-            std::vector<std::unique_ptr<gui::AItem>> _entities;
-            std::vector<gui::Player> _players;
+            std::vector<std::shared_ptr<gui::Tile>> _map;
+            std::vector<std::shared_ptr<gui::Player>> _players;
         
             static const int TARGET_FPS = 60;
-            static const int SCREEN_WIDTH = 1920;
-            static const int SCREEN_HEIGHT = 1080;
     };
 };
 

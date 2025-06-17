@@ -25,7 +25,7 @@ enum Orientation {
 namespace gui {
     class Player : public AEntity {
         public:
-            Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team, float scale, int screenWidth, int screenHeight, Camera3D &camera, int &sceneState);
+            Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team, float scale, int screenWidth, int screenHeight, Camera3D &camera, CamState &sceneState);
             ~Player();
 
             int getId() const;

@@ -14,6 +14,5 @@ int main()
     while (scene.isOpen()) {
         scene.update();
     }
-    
     return 0;
 }

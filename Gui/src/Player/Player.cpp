@@ -15,7 +15,7 @@
 **         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
 ************************************************************/
 
-gui::Player::Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team, float scale, int screenWidth, int screenHeight, Camera3D &camera, int &sceneState)
+gui::Player::Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team, float scale, int screenWidth, int screenHeight, Camera3D &camera, CamState &sceneState)
     : AEntity({(float)position.first, 0.5, (float)position.second}, scale, RED), _id(id), _level(level), _team(std::move(team)),
     _camButton([this, &camera, &sceneState]() { HandleCamButton(camera, sceneState); }, Rectangle{0, static_cast<float>(screenHeight - 70), 150, 70}, "Camera"),
     _direction(orientation), _inventory(screenWidth, screenHeight)
@@ -23,7 +23,6 @@ gui::Player::Player(int id, std::pair<int, int> position, Orientation orientatio
     Mesh mesh = GenMeshCylinder(0.25f, 1.0f, 50);
     _model = LoadModelFromMesh(mesh);
 
-    Debug::DebugLog("Loading model Player: " + std::to_string(_model.meshCount) + " meshes");
 }
 
 gui::Player::~Player() = default;
@@ -113,9 +112,6 @@ void gui::Player::setOrientation(Orientation orientation)
 
 void gui::Player::HandleCamButton(Camera3D &camera, CamState &sceneState)
 {
-    Debug::InfoLog("[GUI] Camera button clicked");
-    Debug::InfoLog("[GUI] Current position: x = " + std::to_string(_position.x) +
-                   ", y = " + std::to_string(_position.y) + ", z = " + std::to_string(_position.z));
     camera = { { _position.x - 2, _position.y + 2, _position.z - 2 },
         { _position.x, _position.y, _position.z },
         { 0.0f, 1.0f, 0.0f },
