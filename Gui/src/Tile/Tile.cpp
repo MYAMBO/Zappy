@@ -5,24 +5,37 @@
 ** Tile.cpp
 */
 
-#include "Tile.hpp"
-
 #include <utility>
 
-gui::Tile::Tile(std::pair<int, int> coord, int food, int linemate, int deraumere, int sibur, int mendiane, int phiras, int thystame) : _foodQty(food), _linemateQty(linemate), _deraumereQty(deraumere), _siburQty(sibur), _mendianeQty(mendiane), _phirasQty(phiras), _thystameQty(thystame), _coord(std::move(coord))
+#include "Tile.hpp"
+
+
+/************************************************************
+**         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
+************************************************************/
+
+
+gui::Tile::Tile(std::pair<int, int> coord, int food, int linemate, int deraumere, int sibur, int mendiane, int phiras, int thystame)
+    : _foodQty(food), _siburQty(sibur), _phirasQty(phiras), _linemateQty(linemate), _mendianeQty(mendiane), _thystameQty(thystame),  _deraumereQty(deraumere), _coord(std::move(coord))
 {
     this->addFood(food);
-    this->addLinemate(linemate);
-    this->addDeraumere(deraumere);
     this->addSibur(sibur);
-    this->addMendiane(mendiane);
     this->addPhiras(phiras);
+    this->addLinemate(linemate);
+    this->addMendiane(mendiane);
     this->addThystame(thystame);
+    this->addDeraumere(deraumere);
 }
 
 gui::Tile::~Tile()
 {
 }
+
+
+/************************************************************
+**               >>>>   MEMBER FUNCTIONS   <<<<            **
+************************************************************/
+
 
 void gui::Tile::addFood(int qty)
 {
@@ -109,22 +122,29 @@ void gui::Tile::delThystame(int qty)
         this->_thystame.pop_back();
 }
 
-void gui::Tile::displayTile()
+void gui::Tile::displayTile(std::map<std::string, int> itemDisplay) const
 {
     for (auto food: this->_food)
-        DrawModel(food->getModel(), food->getPosition(), food->getScale(), food->getColor());
+        if (itemDisplay["Food"] > 0)
+            DrawModel(food->getModel(), food->getPosition(), food->getScale(), food->getColor());
     for (auto linemate: this->_linemate)
-        DrawModel(linemate->getModel(), linemate->getPosition(), linemate->getScale(), linemate->getColor());
+        if (itemDisplay["Linemate"] > 0)
+            DrawModel(linemate->getModel(), linemate->getPosition(), linemate->getScale(), linemate->getColor());
     for (auto deraumere: this->_deraumere)
-        DrawModel(deraumere->getModel(), deraumere->getPosition(), deraumere->getScale(), deraumere->getColor());
+        if (itemDisplay["Deraumere"] > 0)
+            DrawModel(deraumere->getModel(), deraumere->getPosition(), deraumere->getScale(), deraumere->getColor());
     for (auto sibur: this->_sibur)
-        DrawModel(sibur->getModel(), sibur->getPosition(), sibur->getScale(), sibur->getColor());
+        if (itemDisplay["Sibur"] > 0)
+            DrawModel(sibur->getModel(), sibur->getPosition(), sibur->getScale(), sibur->getColor());
     for (auto mendiane: this->_mendiane)
-        DrawModel(mendiane->getModel(), mendiane->getPosition(), mendiane->getScale(), mendiane->getColor());
+        if (itemDisplay["Mendiane"] > 0)
+            DrawModel(mendiane->getModel(), mendiane->getPosition(), mendiane->getScale(), mendiane->getColor());
     for (auto phiras: this->_phiras)
-        DrawModel(phiras->getModel(), phiras->getPosition(), phiras->getScale(), phiras->getColor());
+        if (itemDisplay["Phiras"] > 0)
+            DrawModel(phiras->getModel(), phiras->getPosition(), phiras->getScale(), phiras->getColor());
     for (auto thystame: this->_thystame)
-        DrawModel(thystame->getModel(), thystame->getPosition(), thystame->getScale(), thystame->getColor());
+        if (itemDisplay["Thystame"] > 0)
+            DrawModel(thystame->getModel(), thystame->getPosition(), thystame->getScale(), thystame->getColor());
 
     Vector3 position = {(float)this->_coord.first, 0, (float)this->_coord.second};
     DrawCube(position, 1.0f, 1.0f, 1.0f, {61, 110, 49, 255});
