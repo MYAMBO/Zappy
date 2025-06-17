@@ -23,6 +23,8 @@ namespace gui {
         public:
             Tile(std::pair<int, int> coord, int food, int linemate, int deraumere, int sibur, int mendiane, int phiras, int thystame);
             ~Tile();
+
+            void displayTile();
         private:
             void addFood(int qty);
             void addLinemate(int qty);
@@ -40,13 +42,13 @@ namespace gui {
             void delPhiras(int qty);
             void delThystame(int qty);
 
-            std::vector<gui::Food> _food;
-            std::vector<gui::Linemate> _linemate;
-            std::vector<gui::Deraumere> _deraumere;
-            std::vector<gui::Sibur> _sibur;
-            std::vector<gui::Mendiane> _mendiane;
-            std::vector<gui::Phiras> _phiras;
-            std::vector<gui::Thystame> _thystame;
+            std::vector<std::shared_ptr<gui::Food>> _food;
+            std::vector<std::shared_ptr<gui::Linemate>> _linemate;
+            std::vector<std::shared_ptr<gui::Deraumere>> _deraumere;
+            std::vector<std::shared_ptr<gui::Sibur>> _sibur;
+            std::vector<std::shared_ptr<gui::Mendiane>> _mendiane;
+            std::vector<std::shared_ptr<gui::Phiras>> _phiras;
+            std::vector<std::shared_ptr<gui::Thystame>> _thystame;
 
             int _foodQty;
             int _linemateQty;
