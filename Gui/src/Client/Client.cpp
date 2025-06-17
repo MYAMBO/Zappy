@@ -121,6 +121,19 @@ std::pair<int, int> gui::Client::msz() const
     }
 }
 
+// Name of team
+void gui::Client::tna(std::string string)
+{
+    std::string team_name;
+    std::vector<std::string> list = this->splitString(string);
+
+    if (list.size() != 2)
+        throw WrongTeamName();
+    team_name = list[1];
+    if (team_name[team_name.length() - 1] == '\n')
+        team_name[team_name.length() - 1] = '\0';
+}
+
 // New Player
 void gui::Client::pnw(const std::string& string)
 {
@@ -154,40 +167,6 @@ void gui::Client::pnw(const std::string& string)
     } else {
         throw gui::WrongPlayerValue();
     }
-}
-
-// Player Death
-void gui::Client::pdi(const std::string& string)
-{
-    std::vector<std::string> list;
-    int id;
-    int indice;
-
-    list = gui::Client::splitString(string);
-    id = atoi(list[1].c_str());
-
-    indice = findPlayer(id);
-
-    if (indice == -1)
-        throw WrongPlayerId();
-
-    if (id && id > 0) {
-        // replace by an other model
-        this->_Players.erase(this->_Players.begin() + findPlayer(id));
-    }
-}
-
-// Name of all the teams
-void gui::Client::tna(std::string string)
-{
-    std::string team_name;
-    std::vector<std::string> list = this->splitString(string);
-
-    if (list.size() != 2)
-        throw WrongTeamName();
-    team_name = list[1];
-    if (team_name[team_name.length() - 1] == '\n')
-        team_name[team_name.length() - 1] = '\0';
 }
 
 // Player's position
@@ -418,6 +397,27 @@ void gui::Client::pgt(std::string string)
         WrongResourceNumber();
 }
 
+// Player Death
+void gui::Client::pdi(const std::string& string)
+{
+    std::vector<std::string> list;
+    int id;
+    int indice;
+
+    list = gui::Client::splitString(string);
+    id = atoi(list[1].c_str());
+
+    indice = findPlayer(id);
+
+    if (indice == -1)
+        throw WrongPlayerId();
+
+    if (id && id > 0) {
+        // replace by an other model
+        this->_Players.erase(this->_Players.begin() + findPlayer(id));
+    }
+}
+
 // an egg was laid by a player
 void gui::Client::enw(std::string string)
 {
@@ -439,7 +439,7 @@ void gui::Client::enw(std::string string)
     if (posX < 0 || posX >= mapSize.first || posY < 0 || posY >= mapSize.second)
         throw InvalidPlayerPosition();
 
-    if (id && findPlayer(id) == -1)
+    if (eggId && findPlayer(eggId) == -1)
         throw WrongPlayerId();
 }
 
