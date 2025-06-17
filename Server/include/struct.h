@@ -13,6 +13,16 @@
     #include "poll_handling.h"
     #include <stdbool.h>
 
+typedef enum ressources_index_s {
+    FOOD,
+    LINEMATE,
+    DERAUMERE,
+    SIBUR,
+    MENDIANE,
+    PHIRAS,
+    THYSTAME
+}ressources_index_t;
+
 typedef struct server_s {
     long port;
     int server_fd;
