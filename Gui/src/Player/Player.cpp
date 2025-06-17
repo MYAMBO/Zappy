@@ -16,12 +16,14 @@
 ************************************************************/
 
 
-gui::Player::Player(Vector3 position, float scale, Color color, int screenWidth, int screenHeight, Camera3D &camera, int &sceneState)
+gui::Player::Player(Vector3 position, float scale, Color color, int screenWidth, int screenHeight, Camera3D &camera, CamState &sceneState)
     : AEntity(position, scale, color), _camButton([this, &camera, &sceneState]() { HandleCamButton(camera, sceneState); },
     Rectangle{0, static_cast<float>(screenHeight - 70), 150, 70}, "Camera"), _direction(North), _inventory(screenWidth, screenHeight)
 {
     Mesh mesh = GenMeshCylinder(0.25f, 1.0f, 50);
     _model = LoadModelFromMesh(mesh);
+
+    Debug::DebugLog("Loading model Player: " + std::to_string(_model.meshCount) + " meshes");
 }
 
 gui::Player::~Player() = default;
@@ -137,7 +139,7 @@ void gui::Player::forward()
     }
 }
 
-void gui::Player::HandleCamButton(Camera3D &camera, int &sceneState)
+void gui::Player::HandleCamButton(Camera3D &camera, CamState &sceneState)
 {
     Debug::InfoLog("[GUI] Camera button clicked");
     Debug::InfoLog("[GUI] Current position: x = " + std::to_string(_position.x) +
@@ -147,5 +149,5 @@ void gui::Player::HandleCamButton(Camera3D &camera, int &sceneState)
         { 0.0f, 1.0f, 0.0f },
         45.0f,
         0 };
-    sceneState = 2;
+    sceneState = CamState::PLAYER;
 }
