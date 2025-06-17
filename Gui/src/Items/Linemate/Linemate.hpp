@@ -13,7 +13,7 @@
 namespace gui {
     class Linemate : public AItem {
         public:
-            Linemate(Vector3 position, float scale, Color color);
+            Linemate(std::pair<int, int> position, float scale);
             ~Linemate();
 
             std::string getType() override;

@@ -6,15 +6,18 @@
 ##
 
 
-SERVER_SRC = 								\
-				Server/src/main.c 			\
-				Server/src/garbage.c 		\
-				Server/src/init_server.c 	\
-				Server/src/handle_event.c	\
-				Server/src/init_density.c 	\
-				Server/src/start_server.c 	\
-				Server/src/poll_handling.c  \
-				Server/src/options_parser.c \
+SERVER_SRC = 												\
+				Server/src/main.c 							\
+				Server/src/garbage.c 						\
+				Server/src/init_server.c 					\
+				Server/src/handle_event.c					\
+				Server/src/init_density.c 					\
+				Server/src/start_server.c 					\
+				Server/src/map_protocol.c   				\
+				Server/src/poll_handling.c  				\
+				Server/src/options_parser.c 				\
+				Server/src/technical_protocol.c 			\
+				Server/src/player_informations_protocol.c 	\
 
 GUI_SRC = 												\
 				Gui/src/main.cpp 						\
@@ -32,7 +35,8 @@ GUI_SRC = 												\
 				Gui/src/Button/Button.cpp 				\
 				Gui/src/Player/Player.cpp				\
 				Gui/src/AEntity/AEntity.cpp				\
-				Gui/src/Inventory/Inventory.cpp
+				Gui/src/Inventory/Inventory.cpp			\
+				Gui/src/Tile/Tile.cpp
 
 TEST_SRC =
 
@@ -61,6 +65,7 @@ GUI_FLAGS = -lraylib -lpthread -lGL -I Debug 		\
 			-I Gui/src/Items/Thystame 				\
 			-I Gui/include/interfaces				\
 			-I Gui/src/Items/Deraumere 				\
+			-I Gui/src/Tile			 				\
 
 ALL_FLAGS = $(SERVER_FLAGS) $(GUI_FLAGS)
 CFLAGS = -Werror -Wall -Wextra -Iinclude
