@@ -63,4 +63,14 @@ char *player_turns_right(ai_stats_t *ai)
     return "ok";
 }
 
+char *player_turns_left(ai_stats_t *ai)
+{
+    if (ai->direction == 0) {
+        ai->direction = 3;
+        return "ok";
+    }
+    ai->direction -= 1;
+    return "ok";
+}
+
 
