@@ -73,4 +73,7 @@ char *player_turns_left(ai_stats_t *ai)
     return "ok";
 }
 
-
+//char *player_looks_around(ai_stats_t *ai, server_t *server)
+//{
+//
+//}
