@@ -22,6 +22,7 @@ SERVER_SRC = 												\
                 Server/src/handle_connection.c				\
 				Server/src/technical_protocol.c 			\
                 Server/src/commands/command_quit.c			\
+				Server/src/movements_communication.c        \
                 Server/src/unique_connection_id_getter.c 	\
 				Server/src/player_informations_protocol.c 	\
 
