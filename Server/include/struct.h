@@ -25,8 +25,8 @@ typedef enum ressources_index_s {
 
 typedef enum direction_s {
     NORTH,
-    SOUTH,
     EAST,
+    SOUTH,
     WEST
 } direction_t;
 
