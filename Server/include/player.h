@@ -10,6 +10,8 @@
 #ifndef PLAYER_H
     #define PLAYER_H
 
+    #include <stdbool.h>
+
 typedef struct ressources_s {
     int resources[7]; // all possible ressources
 } ressources_t;
