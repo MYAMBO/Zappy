@@ -53,4 +53,14 @@ char *handle_forward_action(ai_stats_t *ai, server_t *server)
     return "ok";
 }
 
+char *player_turns_right(ai_stats_t *ai)
+{
+    if (ai->direction == 3) {
+        ai->direction = 0;
+        return "ok";
+    }
+    ai->direction += 1;
+    return "ok";
+}
+
 

@@ -20,6 +20,7 @@
 #include "actions_protocol.h"
 #include <time.h>
 #include <stdbool.h>
+#include "movements_communication.h"
 
 map_t *init_test_map(int width, int height)
 {
@@ -40,6 +41,36 @@ map_t *init_test_map(int width, int height)
     return map;
 }
 
+ai_stats_t *create_test_ai(int id, const char *team_name, server_t *server)
+{
+    ai_stats_t *ai = malloc(sizeof(ai_stats_t));
+
+    if (!ai)
+        return NULL;
+    ai->connected = true;
+    ai->fd = id + 3;
+    ai->tmp_command = NULL;
+    ai->id = id;
+    ai->life = 126;
+    ai->x = server->map_height - 1;
+    ai->y = server->map_width;
+    ai->direction = NORTH;
+    ai->level = 1;
+    ai->team_name = strdup(team_name);
+    ai->nb_food = 3;
+    ai->nb_linemate = 1;
+    ai->nb_deraumere = 0;
+    ai->nb_sibur = 0;
+    ai->nb_mendiane = 0;
+    ai->nb_phiras = 0;
+    ai->nb_thystame = 0;
+    ai->in_incantation = false;
+    for (int i = 0; i < 7; i++)
+        ai->inventory.resources[i] = rand() % 3;
+
+    return ai;
+}
+
 int parse_arguments(int ac, char **av, server_t *server)
 {
     if (ac < 2)
@@ -54,6 +85,15 @@ int parse_arguments(int ac, char **av, server_t *server)
         return FAILURE;
     if (parse_freq(av, server) == FAILURE)
         return FAILURE;
+
+    //test part
+
+    ai_stats_t *ai = create_test_ai(0, "noot", server);
+    printf("%d\n", ai->direction);
+    player_turns_right(ai);
+    printf("%d\n", ai->direction);
+
+
     return SUCCESS;
 }
 
