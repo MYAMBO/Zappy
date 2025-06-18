@@ -32,6 +32,7 @@ GUI_SRC = 												\
 				Gui/src/Items/Deraumere/Deraumere.cpp	\
 														\
 				Gui/src/Tile/Tile.cpp					\
+				Gui/src/Menu/Menu.cpp					\
 				Gui/src/Scene/Scene.cpp					\
 				Gui/src/Button/Button.cpp 				\
 				Gui/src/Player/Player.cpp				\
@@ -51,6 +52,7 @@ SERVER_FLAGS = -I Server/include -I Debug
 GUI_FLAGS = -lraylib -lpthread -lGL -I Debug 		\
         											\
 			-I Gui/src/Tile			 				\
+			-I Gui/src/Menu 						\
 			-I Gui/src/Items 						\
 			-I Gui/src/Scene						\
 			-I Gui/src/Player 						\
