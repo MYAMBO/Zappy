@@ -22,6 +22,7 @@
 #include <stdbool.h>
 #include "movements_communication.h"
 #include "inventory_communication.h"
+#include "actions_communication.h"
 
 map_t *init_test_map(int width, int height)
 {
