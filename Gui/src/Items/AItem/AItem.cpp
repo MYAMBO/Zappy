@@ -21,7 +21,7 @@ gui::AItem::AItem(std::pair<int, int> position, float scale, Color color)
 
     Vector3 new_pos = {(float)position.first + value1, 0.55, (float)position.second + value2};
 
-    setPosition(new_pos);
+    AEntity::setPosition(new_pos);
 }
 
 gui::AItem::~AItem() = default;

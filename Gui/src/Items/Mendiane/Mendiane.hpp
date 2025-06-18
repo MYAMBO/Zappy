@@ -13,7 +13,7 @@
 namespace gui {
     class Mendiane : public AItem {
         public:
-            Mendiane(std::pair<int, int> position, float scale);
+            Mendiane(std::pair<int, int> position, float scale, std::shared_ptr<Model> model);
             ~Mendiane();
 
             std::string getType() override;

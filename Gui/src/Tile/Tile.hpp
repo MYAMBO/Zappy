@@ -10,6 +10,7 @@
 
     #include <utility>
     #include <memory>
+    #include <raylib.h>
     #include "Food.hpp"
     #include "Linemate.hpp"
     #include "Deraumere.hpp"
@@ -21,42 +22,31 @@
 namespace gui {
     class Tile {
         public:
-            Tile(std::pair<int, int> coord, int food, int linemate, int deraumere, int sibur, int mendiane, int phiras, int thystame);
+            Tile(std::pair<int, int> coord, std::vector<int> qty, std::vector<std::shared_ptr<Model>> model);
             ~Tile();
 
             void displayTile();
-        private:
-            void addFood(int qty);
-            void addLinemate(int qty);
-            void addDeraumere(int qty);
-            void addSibur(int qty);
-            void addMendiane(int qty);
-            void addPhiras(int qty);
-            void addThystame(int qty);
 
-            void delFood(int qty);
-            void delLinemate(int qty);
-            void delDeraumere(int qty);
-            void delSibur(int qty);
-            void delMendiane(int qty);
-            void delPhiras(int qty);
-            void delThystame(int qty);
+            enum Type {
+                FOOD,
+                LINEMATE,
+                DERAUMERE,
+                SIBUR,
+                MENDIANE,
+                PHIRAS,
+                THYSTAME
+            };
 
-            std::vector<std::shared_ptr<gui::Food>> _food;
-            std::vector<std::shared_ptr<gui::Linemate>> _linemate;
-            std::vector<std::shared_ptr<gui::Deraumere>> _deraumere;
-            std::vector<std::shared_ptr<gui::Sibur>> _sibur;
-            std::vector<std::shared_ptr<gui::Mendiane>> _mendiane;
-            std::vector<std::shared_ptr<gui::Phiras>> _phiras;
-            std::vector<std::shared_ptr<gui::Thystame>> _thystame;
+            void addItem(int qty, int itemId);
+            void delItem(int qty, int type);
 
-            int _foodQty;
-            int _linemateQty;
-            int _deraumereQty;
-            int _siburQty;
-            int _mendianeQty;
-            int _phirasQty;
-            int _thystameQty;
+    private:
+
+            std::vector<std::vector<std::shared_ptr<gui::AItem>>> _items;
+
+            std::vector<int> _qty;
+
+            std::vector<std::shared_ptr<Model>> _models;
 
             std::pair<int, int> _coord;
     };

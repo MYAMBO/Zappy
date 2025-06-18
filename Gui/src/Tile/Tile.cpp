@@ -8,123 +8,62 @@
 #include "Tile.hpp"
 
 #include <utility>
+#include <functional>
 
-gui::Tile::Tile(std::pair<int, int> coord, int food, int linemate, int deraumere, int sibur, int mendiane, int phiras, int thystame) : _foodQty(food), _linemateQty(linemate), _deraumereQty(deraumere), _siburQty(sibur), _mendianeQty(mendiane), _phirasQty(phiras), _thystameQty(thystame), _coord(std::move(coord))
+gui::Tile::Tile(std::pair<int, int> coord, std::vector<int> qty, std::vector<std::shared_ptr<Model>> model) : _items(7) ,_qty(qty), _models(std::move(model)), _coord(std::move(coord))
 {
-    this->addFood(food);
-    this->addLinemate(linemate);
-    this->addDeraumere(deraumere);
-    this->addSibur(sibur);
-    this->addMendiane(mendiane);
-    this->addPhiras(phiras);
-    this->addThystame(thystame);
+    std::vector<std::shared_ptr<gui::AItem>> list;
+
+    this->addItem(qty[FOOD], FOOD);
+    this->addItem(qty[LINEMATE], LINEMATE);
+    this->addItem(qty[DERAUMERE], DERAUMERE);
+    this->addItem(qty[SIBUR], SIBUR);
+    this->addItem(qty[MENDIANE], MENDIANE);
+    this->addItem(qty[PHIRAS], PHIRAS);
+    this->addItem(qty[THYSTAME], THYSTAME);
 }
 
 gui::Tile::~Tile()
 {
 }
 
-void gui::Tile::addFood(int qty)
+void gui::Tile::addItem(int qty, int type)
 {
-    for (int i = 0; i < qty; ++i)
-        this->_food.emplace_back(std::make_shared<Food>(this->_coord, 0.7));
-}
+    const std::unordered_map<int, std::function<std::shared_ptr<gui::AItem>()>> factoryMap = {
+        { FOOD,      [this]() { return std::make_shared<gui::Food>(this->_coord, 0.7, this->_models[FOOD]); } },
+        { LINEMATE,  [this]() { return std::make_shared<gui::Linemate>(this->_coord, 0.27, this->_models[LINEMATE]); } },
+        { DERAUMERE, [this]() { return std::make_shared<gui::Deraumere>(this->_coord, 0.3, this->_models[DERAUMERE]); } },
+        { SIBUR,     [this]() { return std::make_shared<gui::Sibur>(this->_coord, 0.07, this->_models[SIBUR]); } },
+        { MENDIANE,  [this]() { return std::make_shared<gui::Mendiane>(this->_coord, 0.025, this->_models[MENDIANE]); } },
+        { PHIRAS,    [this]() { return std::make_shared<gui::Phiras>(this->_coord, 0.04, this->_models[PHIRAS]); } },
+        { THYSTAME,  [this]() { return std::make_shared<gui::Thystame>(this->_coord, 0.4, this->_models[THYSTAME]); } }
+    };
 
-void gui::Tile::addLinemate(int qty)
-{
-    for (int i = 0; i < qty; ++i)
-       this->_linemate.emplace_back(std::make_shared<Linemate>(this->_coord, 0.27));
-}
+    auto it = factoryMap.find(type);
+    if (it == factoryMap.end())
+        throw ;
 
-void gui::Tile::addDeraumere(int qty)
-{
     for (int i = 0; i < qty; ++i)
-       this->_deraumere.emplace_back(std::make_shared<Deraumere>(this->_coord, 0.3));
-}
-
-void gui::Tile::addSibur(int qty)
-{
-    for (int i = 0; i < qty; ++i)
-       this->_sibur.emplace_back(std::make_shared<Sibur>(this->_coord, 0.07));
-}
-
-void gui::Tile::addMendiane(int qty)
-{
-    for (int i = 0; i < qty; ++i)
-       this->_mendiane.emplace_back(std::make_shared<Mendiane>(this->_coord, 0.025));
-}
-
-void gui::Tile::addPhiras(int qty)
-{
-    for (int i = 0; i < qty; ++i)
-       this->_phiras.emplace_back(std::make_shared<Phiras>(this->_coord, 0.04));
-}
-
-void gui::Tile::addThystame(int qty)
-{
-    for (int i = 0; i < qty; ++i)
-       this->_thystame.emplace_back(std::make_shared<Thystame>(this->_coord, 0.4));
+        this->_items[type].emplace_back(it->second());
+    this->_qty[type] += qty;
 }
 
 
-void gui::Tile::delFood(int qty)
+void gui::Tile::delItem(int qty, int type)
 {
-    for (int i = 0; i < qty; ++i)
-       this->_food.pop_back();
-}
-
-void gui::Tile::delLinemate(int qty)
-{
-    for (int i = 0; i < qty; ++i)
-       this->_linemate.pop_back();
-}
-
-void gui::Tile::delDeraumere(int qty)
-{
-    for (int i = 0; i < qty; ++i)
-       this->_deraumere.pop_back();
-}
-
-void gui::Tile::delSibur(int qty)
-{
-    for (int i = 0; i < qty; ++i)
-       this->_sibur.pop_back();
-}
-
-void gui::Tile::delMendiane(int qty)
-{
-    for (int i = 0; i < qty; ++i)
-       this->_mendiane.pop_back();
-}
-
-void gui::Tile::delPhiras(int qty)
-{
-    for (int i = 0; i < qty; ++i)
-        this->_phiras.pop_back();
-}
-
-void gui::Tile::delThystame(int qty)
-{
-    for (int i = 0; i < qty; ++i)
-        this->_thystame.pop_back();
+    auto& itemVec = this->_items[type];
+    for (int i = 0; i < qty && !itemVec.empty(); ++i)
+        itemVec.pop_back();
+    this->_qty[type] -= qty;
 }
 
 void gui::Tile::displayTile()
 {
-    for (auto food: this->_food)
-        DrawModel(food->getModel(), food->getPosition(), food->getScale(), food->getColor());
-    for (auto linemate: this->_linemate)
-        DrawModel(linemate->getModel(), linemate->getPosition(), linemate->getScale(), linemate->getColor());
-    for (auto deraumere: this->_deraumere)
-        DrawModel(deraumere->getModel(), deraumere->getPosition(), deraumere->getScale(), deraumere->getColor());
-    for (auto sibur: this->_sibur)
-        DrawModel(sibur->getModel(), sibur->getPosition(), sibur->getScale(), sibur->getColor());
-    for (auto mendiane: this->_mendiane)
-        DrawModel(mendiane->getModel(), mendiane->getPosition(), mendiane->getScale(), mendiane->getColor());
-    for (auto phiras: this->_phiras)
-        DrawModel(phiras->getModel(), phiras->getPosition(), phiras->getScale(), phiras->getColor());
-    for (auto thystame: this->_thystame)
-        DrawModel(thystame->getModel(), thystame->getPosition(), thystame->getScale(), thystame->getColor());
+    for (const auto& type: this->_items) {
+        for (const auto& item: type) {
+            DrawModel(*item->getModel(), item->getPosition(), item->getScale(), item->getColor()); // ask if bad practice
+        }
+    }
 
     Vector3 position = {(float)this->_coord.first, 0, (float)this->_coord.second};
     DrawCube(position, 1.0f, 1.0f, 1.0f, {61, 110, 49, 255});

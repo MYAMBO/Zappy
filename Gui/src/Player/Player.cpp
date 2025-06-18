@@ -21,7 +21,7 @@ gui::Player::Player(int id, std::pair<int, int> position, Orientation orientatio
     _direction(orientation), _inventory(screenWidth, screenHeight)
 {
     Mesh mesh = GenMeshCylinder(0.25f, 1.0f, 50);
-    _model = LoadModelFromMesh(mesh);
+    this->_model = std::make_unique<Model>(LoadModelFromMesh(mesh));
 
 }
 
@@ -35,25 +35,25 @@ gui::Player::~Player() = default;
 
 void gui::Player::draw()
 {
-    DrawModel(_model, _position, _scale, _color);
+    DrawModel(*this->_model, this->_position, this->_scale, this->_color);
 
     if (_isSelected) {
-        DrawCubeWires(_position, _scale, _scale, _scale, {255, 0, 0, 255});
+        DrawCubeWires(this->_position, this->_scale, this->_scale, this->_scale, {255, 0, 0, 255});
     }
 }
 
 void gui::Player::drawUI()
 {
-    if (_isSelected) {
-        _inventory.draw();
-        _camButton.draw();
+    if (this->_isSelected) {
+        this->_inventory.draw();
+        this->_camButton.draw();
     }
 }
 
 void gui::Player::updateUI()
 {
-    if (_isSelected) {
-        _camButton.update();
+    if (this->_isSelected) {
+        this->_camButton.update();
     }
 }
 
@@ -62,8 +62,8 @@ int gui::Player::update(Camera3D camera)
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         Ray ray = GetMouseRay(GetMousePosition(), camera);
         BoundingBox box = {
-            { _position.x - _scale/4, _position.y - _scale/4, _position.z - _scale/4 },
-            { _position.x + _scale/4, _position.y + _scale/4, _position.z + _scale/4 }
+            { this->_position.x - this->_scale/4, this->_position.y - this->_scale/4, this->_position.z - this->_scale/4 },
+            { this->_position.x + this->_scale/4, this->_position.y + this->_scale/4, this->_position.z + this->_scale/4 }
         };
         RayCollision collision = GetRayCollisionBox(ray, box);
         if (collision.hit) {
@@ -71,10 +71,10 @@ int gui::Player::update(Camera3D camera)
             Debug::InfoLog("[GUI] Player selected via ray picking");
         } else {
             Vector2 mousePos = GetMousePosition();
-            Rectangle bounds = _camButton.getBounds();
+            Rectangle bounds = this->_camButton.getBounds();
             if (!(mousePos.x >= bounds.x && mousePos.x <= bounds.x + bounds.width &&
                   mousePos.y >= bounds.y && mousePos.y <= bounds.y + bounds.height))
-                _isSelected = false;
+                this->_isSelected = false;
         }
     }
     return 0;
@@ -112,8 +112,8 @@ void gui::Player::setOrientation(Orientation orientation)
 
 void gui::Player::HandleCamButton(Camera3D &camera, CamState &sceneState)
 {
-    camera = { { _position.x - 2, _position.y + 2, _position.z - 2 },
-        { _position.x, _position.y, _position.z },
+    camera = { { this->_position.x - 2, this->_position.y + 2, this->_position.z - 2 },
+        { this->_position.x, this->_position.y, this->_position.z },
         { 0.0f, 1.0f, 0.0f },
         45.0f,
         0 };

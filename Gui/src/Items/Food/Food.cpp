@@ -8,25 +8,23 @@
 #include "Food.hpp"
 
 #include <raymath.h>
-
-#include "Logger.hpp"
-
+#include <utility>
 
 /************************************************************
 **         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
 ************************************************************/
 
 
-gui::Food::Food(std::pair<int, int> position, float scale)
+gui::Food::Food(std::pair<int, int> position, float scale, std::shared_ptr<Model> model)
     : AItem(position, scale, WHITE)
 {
     float randomRotationY = (float)GetRandomValue(0, 360) * DEG2RAD;
-    _model = LoadModel("assets/food/scene.gltf");
+    _model = std::move(model);
 
     Matrix scaleMatrix = MatrixScale(_scale, _scale, _scale);
     Matrix rotationMatrix = MatrixRotateY(randomRotationY);
     
-    _model.transform = MatrixMultiply(scaleMatrix, rotationMatrix);
+    _model->transform = MatrixMultiply(scaleMatrix, rotationMatrix);
 }
 
 gui::Food::~Food()
