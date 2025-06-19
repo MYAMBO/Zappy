@@ -82,12 +82,6 @@ namespace gui {
             void initWindow();
 
             /**
-             * @brief Display the map.
-             * This function draws the grid of the map based on the width and height.
-             */
-            void displayMap();
-
-            /**
              * @brief Handle user input for controlling the camera and entities.
              * This function processes keyboard and mouse input to change the camera state and control player actions.
              */
@@ -124,9 +118,20 @@ namespace gui {
             std::map<std::string, int> _itemDisplay;
             std::vector<std::shared_ptr<gui::Tile>> _map;
             std::vector<std::shared_ptr<gui::Player>> _players;
-        
+
+            static std::shared_ptr<Model> safeModelLoader(const std::string& string);
+
+            std::vector<std::shared_ptr<Model>> _models;
+
             static const int TARGET_FPS = 60;
 
+    };
+
+    class FailedLoadModel : public std::exception {
+    public:
+        [[nodiscard]] const char *what() const noexcept override {
+            return "Failed to load a model, make sure there is no error.";
+        };
     };
 };
 

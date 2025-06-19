@@ -16,11 +16,21 @@
 
 
 gui::Scene::Scene()
-    : _camState(CamState::WORLD), _isOpen(true), _width(WIDTH), _height(HEIGHT), _currentState(SceneState::MENU)
+    : _camState(CamState::WORLD), _isOpen(true), _width(WIDTH), _height(HEIGHT), _currentState(SceneState::GAME), _models()
 {
     Debug::ClearLogFile();
     Debug::InfoLog("Zappy started");
-    
+
+    initWindow();
+
+    this->_models.emplace_back(safeModelLoader("assets/food/scene.gltf"));
+    this->_models.emplace_back(safeModelLoader("assets/linemate/scene.gltf"));
+    this->_models.emplace_back(safeModelLoader("assets/deraumere/scene.gltf"));
+    this->_models.emplace_back(safeModelLoader("assets/sibur/scene.gltf"));
+    this->_models.emplace_back(safeModelLoader("assets/mendiane/scene.gltf"));
+    this->_models.emplace_back(safeModelLoader("assets/phiras/scene.gltf"));
+    this->_models.emplace_back(safeModelLoader("assets/thystame/scene.gltf"));
+
     _menu = std::make_unique<gui::ui::Menu>(_currentState, SCREEN_WIDTH, SCREEN_HEIGHT);
     _itemDisplay = {
         {"Food", 1},
@@ -31,7 +41,6 @@ gui::Scene::Scene()
         {"Phiras", 1},
         {"Thystame", 1}
     };
-    initWindow();
     _menu->initMenuUI();
     initMap();
 }
@@ -60,31 +69,23 @@ void gui::Scene::initMap()
     for (int y = 0; y < HEIGHT; ++y) {
         for (int x = 0; x < WIDTH; ++x) {
             std::pair<int, int> coord = {x, y};
-            int food = GetRandomValue(0, 2);
-            int linemate = GetRandomValue(0, 0);
-            int deraumere = GetRandomValue(0, 0);
-            int sibur = GetRandomValue(0, 0);
-            int mendiane = GetRandomValue(0, 0);
-            int phiras = GetRandomValue(0, 0);
-            int thystame = GetRandomValue(0, 0);
 
-            _map.emplace_back(std::make_shared<gui::Tile>(coord, food, linemate, deraumere, sibur, mendiane, phiras, thystame));
+            std::vector<int> qty;
+
+            qty.emplace_back(1);
+            qty.emplace_back(1);
+            qty.emplace_back(1);
+            qty.emplace_back(1);
+            qty.emplace_back(1);
+            qty.emplace_back(1);
+            qty.emplace_back(1);
+
+            _map.emplace_back(std::make_shared<gui::Tile>(coord, qty, this->_models));
         }
     }
     for (int x = 0; (float)x < 10; ++x) {
         std::pair<int, int> coord = {GetRandomValue(0, (int)WIDTH - 1), GetRandomValue(0, (int)HEIGHT - 1)};
         _players.emplace_back(std::make_shared<gui::Player>(x, coord, North, 1, "toto", 1, SCREEN_WIDTH, SCREEN_HEIGHT, _camera, _camState));
-    }
-}
-
-void gui::Scene::displayMap()
-{
-    for (int x = 0; x < (int)_width; x++) {
-        for (int z = 0; z < (int)_height; z++) {
-            Vector3 position = { (float)x, -0.5f, (float)z };
-            DrawCube(position, 1.0f, 1.0f, 1.0f, {61, 110, 49, 255});
-            DrawCubeWires(position, 1.0f, 1.0f, 1.0f, {61, 0, 49, 255});
-        }
     }
 }
 
@@ -97,7 +98,6 @@ void gui::Scene::displayEntity()
         player->draw();
     }
 }
-
 
 void gui::Scene::handleInput()
 {
@@ -129,7 +129,6 @@ void gui::Scene::render()
     }
     ClearBackground(BLACK);
     BeginMode3D(_camera);
-    displayMap();
     displayEntity();
     EndMode3D();
     for (auto& player : _players) {
@@ -166,7 +165,18 @@ void gui::Scene::update()
     }
 }
 
-void gui::Scene::eventToggleDisplay()
+std::shared_ptr<Model> gui::Scene::safeModelLoader(const std::string& string)
+{
+    std::cout << string << std::endl;
+    std::shared_ptr<Model> model = std::make_shared<Model>(LoadModel(string.c_str()));
+
+    if (model->meshCount == 0 || model->meshes == nullptr)
+        throw gui::FailedLoadModel();
+
+    return model;
+}
+
+      void gui::Scene::eventToggleDisplay()
 {
     // when & is pressed
     if (IsKeyPressed(KEY_ONE)) {
