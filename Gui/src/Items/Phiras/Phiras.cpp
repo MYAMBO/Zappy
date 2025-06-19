@@ -16,7 +16,7 @@
 
 
 gui::Phiras::Phiras(std::pair<int, int> position, float scale)
-    : AItem(position, scale, WHITE)
+    : AItem(position, scale, BLUE)
 {
     float randomRotationY = (float)GetRandomValue(0, 360) * DEG2RAD;
     _model = LoadModel("assets/phiras/scene.gltf");
