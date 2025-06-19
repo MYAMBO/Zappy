@@ -37,6 +37,7 @@ GUI_SRC = 												\
 				Gui/src/Button/Button.cpp 				\
 				Gui/src/Player/Player.cpp				\
 				Gui/src/AEntity/AEntity.cpp				\
+				Gui/src/Settings/Settings.cpp			\
 				Gui/src/Inventory/Inventory.cpp
 
 TEST_SRC =
@@ -58,6 +59,7 @@ GUI_FLAGS = -lraylib -lpthread -lGL -I Debug 		\
 			-I Gui/src/Player 						\
 			-I Gui/src/Button 						\
 			-I Gui/src/AEntity 						\
+			-I Gui/src/Settings						\
 			-I Gui/src/Inventory 					\
 			-I Gui/src/Items/Food 					\
 			-I Gui/src/Items/Sibur 					\
@@ -67,7 +69,7 @@ GUI_FLAGS = -lraylib -lpthread -lGL -I Debug 		\
 			-I Gui/src/Items/Mendiane 				\
 			-I Gui/src/Items/Thystame 				\
 			-I Gui/include/interfaces				\
-			-I Gui/src/Items/Deraumere 				\
+			-I Gui/src/Items/Deraumere
 
 ALL_FLAGS = $(SERVER_FLAGS) $(GUI_FLAGS)
 CFLAGS = -Werror -Wall -Wextra -Iinclude
