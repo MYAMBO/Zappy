@@ -21,7 +21,14 @@ typedef enum ressources_index_s {
     MENDIANE,
     PHIRAS,
     THYSTAME
-}ressources_index_t;
+} ressources_index_t;
+
+typedef enum direction_s {
+    NORTH,
+    EAST,
+    SOUTH,
+    WEST
+} direction_t;
 
 typedef struct server_s {
     long port;
