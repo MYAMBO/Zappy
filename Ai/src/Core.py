@@ -41,6 +41,7 @@ def update_command_list(currentList, ai):
         else:
             newList = follow_message(ai.get_tile_to_follow())
             if newList != None:
+                newList.append("Look")
                 return newList
             else:
                 return ["Broadcast \"" + str(ai.get_id()) + ";en position !\""]

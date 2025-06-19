@@ -64,11 +64,8 @@ def handle_follow(ai, reply):
 
 def handle_reply(reply, ai, command, name):
     if "follow me !;" in reply:
-        try:
-            handle_follow(ai, reply)
-        except:
-            return False
-        return True
+        handle_follow(ai, reply)
+        return False
     if "hey_je_suis_:" in reply:
         _, id = reply.rsplit(':', 1)
         ai.add_in_team_inventory(id, {"sibur" : 0, "phiras" : 0, "thystame" : 0, "mendiane" : 0, "linemate" : 0, "deraumere" : 0})
