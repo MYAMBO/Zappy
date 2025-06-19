@@ -7,13 +7,15 @@
 
 def get_better_way(layer_len, tile, resources, actual_tile, way, direction, needed):
     if tile == actual_tile:
-        if needed and needed in resources:
-            way.append("Take " + needed)
-            resources.remove(needed)
-        else:
+        if not needed:
             for elt in resources:
                 if elt != "player" and elt != None:
                     way.append("Take " + elt)
+            return way
+        for elt in resources:
+            if elt in needed:
+                way.append("Take " + elt)
+                resources.remove(elt)
         return way
     elif tile < actual_tile:
         if direction == "nord":
@@ -51,7 +53,8 @@ def get_better_way_to_resources(tiles, resourcesList, needed):
     for tile in tiles:
         for current in tile:
             resources = resourcesList[current]
-            if (needed and needed in resources and keep['tile'] == -1) or (not needed and len(keep['resources']) < len(resources)):
+            if (needed and any(need in resources for need in needed) and keep['tile'] == -1) or \
+                (not needed and len(keep['resources']) < len(resources)):
                 keep['tile'] = current
                 keep['resources'] = resources
 
