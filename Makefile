@@ -23,6 +23,8 @@ SERVER_SRC = 												\
                 Server/src/unique_connection_id_getter.c \
                 Server/src/commands/command_quit.c	\
                 Server/src/handle_connection.c	\
+                Server/src/command_execution.c	\
+                Server/src/slot_handler.c	\
 
 GUI_SRC = 												\
 				Gui/src/main.cpp 						\

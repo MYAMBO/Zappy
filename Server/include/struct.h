@@ -13,17 +13,18 @@
     #include "poll_handling.h"
     #include <stdbool.h>
 
+    #include "slot_handler.h"
+
 typedef struct server_s {
     long port;
     int server_fd;
     poll_handling_t *poll_list;
     int poll_count;
-
     int map_width;
     int map_height;
-    char **team_names;
+    slot_table_t **team_names;
     int team_count;
-    int nb_clients;
+    int client_per_slot;
     int freq;
     double food_density;
     double linemate_density;
