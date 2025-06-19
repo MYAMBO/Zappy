@@ -36,6 +36,7 @@ void gui::ui::Menu::initMenuUI()
     _backgroundColor = DARKGRAY;
     _inputBoxActiveColor = SKYBLUE;
 
+    _errorInput = 0;
     _titleFontSize = 40;
     _inputFontSize = 20;
     _buttonFontSize = 20;

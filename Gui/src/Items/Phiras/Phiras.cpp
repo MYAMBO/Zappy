@@ -8,23 +8,23 @@
 #include "Phiras.hpp"
 
 #include <raymath.h>
-
+#include <utility>
 
 /************************************************************
 **         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
 ************************************************************/
 
 
-gui::Phiras::Phiras(std::pair<int, int> position, float scale)
+gui::Phiras::Phiras(std::pair<int, int> position, float scale, std::shared_ptr<Model> model)
     : AItem(position, scale, BLUE)
 {
     float randomRotationY = (float)GetRandomValue(0, 360) * DEG2RAD;
-    _model = LoadModel("assets/phiras/scene.gltf");
+    _model = std::move(model);
 
     Matrix scaleMatrix = MatrixScale(_scale, _scale, _scale);
     Matrix rotationMatrix = MatrixRotateY(randomRotationY);
     
-    _model.transform = MatrixMultiply(scaleMatrix, rotationMatrix);
+    _model->transform = MatrixMultiply(scaleMatrix, rotationMatrix);
 }
 
 gui::Phiras::~Phiras()

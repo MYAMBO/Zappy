@@ -9,6 +9,7 @@
     #define ZAPPY_AENTITY_HPP
 
     #include <string>
+    #include <memory>
     #include "IEntity.hpp"
 
 namespace gui {
@@ -27,7 +28,7 @@ namespace gui {
          * @brief Getters for the model of the entity.
          * @return Model of the entity.
          */
-        Model getModel() override;
+        std::shared_ptr<Model> getModel() override;
 
         /**
          * @brief Getters for the scale of the entity.
@@ -64,7 +65,7 @@ namespace gui {
          * @brief Setters for the position of the entity.
          * @param position Position to set for the entity.
          */
-        void setModel(Model model) override;
+        void setModel(std::shared_ptr<Model> model) override;
 
         /**
          * @brief Setters for the position of the entity.
@@ -76,7 +77,7 @@ namespace gui {
         Color _color;
         Vector3 _position;
         float _scale;
-        Model _model;
+        std::shared_ptr<Model> _model;
     };
 };
 

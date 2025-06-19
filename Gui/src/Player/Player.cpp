@@ -22,7 +22,7 @@ gui::Player::Player(int id, std::pair<int, int> position, Orientation orientatio
     _direction(orientation), _inventory(screenWidth, screenHeight)
 {
     Mesh mesh = GenMeshCylinder(0.25f, 1.0f, 50);
-    _model = LoadModelFromMesh(mesh);
+    _model = std::make_unique<Model>(LoadModelFromMesh(mesh));
 
 }
 
@@ -36,7 +36,7 @@ gui::Player::~Player() = default;
 
 void gui::Player::draw()
 {
-    DrawModel(_model, _position, _scale, _color);
+    DrawModel(*_model, _position, _scale, _color);
 
     if (_isSelected) {
         DrawCubeWires(_position, _scale, _scale, _scale, {255, 0, 0, 255});
@@ -78,37 +78,39 @@ int gui::Player::update(Camera3D camera)
                 _isSelected = false;
         }
     }
+    if (IsKeyPressed(KEY_ESCAPE))
+        _isSelected = false;
     return 0;
 }
 
 int gui::Player::getId() const
 {
-    return this->_id;
+    return _id;
 }
 
 int gui::Player::getLevel() const
 {
-    return this->_level;
+    return _level;
 }
 
 Orientation gui::Player::getOrientation() const
 {
-    return this->_direction;
+    return _direction;
 }
 
 std::string gui::Player::getTeam() const
 {
-    return  this->_team;
+    return  _team;
 }
 
 void gui::Player::setLevel(int level)
 {
-    this->_level = level;
+    _level = level;
 }
 
 void gui::Player::setOrientation(Orientation orientation)
 {
-    this->_direction = orientation;
+    _direction = orientation;
 }
 
 void gui::Player::HandleCamButton(Camera3D &camera, CamState &sceneState)
