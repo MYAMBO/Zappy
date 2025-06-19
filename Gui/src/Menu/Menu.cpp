@@ -10,8 +10,9 @@
 
 gui::ui::Menu::Menu(SceneState &SceneState, int screenWidth, int screenHeight)
     :   _sceneState(SceneState),
-        _playButton([this]() { playClicked(); }, Rectangle{static_cast<float>(screenWidth) / 2 - 100, static_cast<float>(screenHeight) / 2 - 200, 200.0f, 100.0f}, "Play"),
+        _playButton([this]() { playClicked(); }, Rectangle{static_cast<float>(screenWidth) / 2 - 100, static_cast<float>(screenHeight) / 2.6f - 200, 200.0f, 100.0f}, "Play"),
         _exitButton([this]() { closeWindow(); }, Rectangle{static_cast<float>(screenWidth) / 2 - 100, static_cast<float>(screenHeight) / 1.5f - 200, 200.0f, 100.0f}, "Exit"),
+        _settingButton([this]() { settingClicked(); }, Rectangle{static_cast<float>(screenWidth) / 2 - 100, static_cast<float>(screenHeight) / 1.9f - 200, 200.0f, 100.0f}, "Settings"),
         _screenWidth(screenWidth), _screenHeight(screenHeight)
 {
     Debug::InfoLog("[GUI] Menu initialized");
@@ -46,6 +47,8 @@ void gui::ui::Menu::playClicked()
         // call func for try connecting to server 
         // if (connection good)
         _sceneState = SceneState::GAME;
+        _serverIdActive = false;
+        Debug::InfoLog("[GUI] Play button clicked, connecting to server with ID: " + _serverId);
     } else {
         _errorInput = 60;
     }
@@ -54,16 +57,25 @@ void gui::ui::Menu::playClicked()
 void gui::ui::Menu::closeWindow()
 {
     _sceneState = SceneState::EXIT;
+    Debug::InfoLog("[GUI] Exit button clicked, closing window");
+}
+
+void gui::ui::Menu::settingClicked()
+{
+    _sceneState = SceneState::SETTINGS;
+    Debug::InfoLog("[GUI] Settings button clicked");
 }
 
 void gui::ui::Menu::handleMenuInput()
 {
     _playButton.update();
     _exitButton.update();
+    _settingButton.update();
     if (IsKeyPressed(KEY_ENTER)) {
         playClicked();
     }
     if (IsKeyPressed(KEY_ESCAPE)) {
+        Debug::InfoLog("[GUI] Escape key pressed, closing window");
         closeWindow();
     }
     handleTextInput();
@@ -102,6 +114,7 @@ void gui::ui::Menu::drawMainMenu()
 
     _playButton.draw();
     _exitButton.draw();
+    _settingButton.draw();
 
     if (_errorInput > 0)
         DrawText("Server ID is required!", static_cast<float>(_screenWidth) / 2 - 330, static_cast<float>(_screenHeight) / 1.2f - 220, _inputFontSize, WHITE);
