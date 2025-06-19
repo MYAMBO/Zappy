@@ -8,6 +8,7 @@
 #include "Menu.hpp"
 #include "Scene.hpp"
 #include "Player.hpp"
+#include "Settings.hpp"
 
 
 /************************************************************
@@ -22,6 +23,7 @@ gui::Scene::Scene()
     Debug::InfoLog("Zappy started");
     
     _menu = std::make_unique<gui::ui::Menu>(_currentState, SCREEN_WIDTH, SCREEN_HEIGHT);
+    _settings = std::make_unique<gui::ui::Settings>(_currentState, SCREEN_WIDTH, SCREEN_HEIGHT);
     _itemDisplay = {
         {"Food", 1},
         {"Linemate", 1},
@@ -141,7 +143,7 @@ void gui::Scene::render()
 
 bool gui::Scene::isOpen() const
 {
-    return _isOpen && !WindowShouldClose();
+    return _isOpen;
 }
 
 void gui::Scene::update()
@@ -149,7 +151,6 @@ void gui::Scene::update()
     if (!_isOpen) {
         return;
     }
-
     switch (_currentState) {
         case SceneState::GAME:
             eventToggleDisplay();
@@ -157,18 +158,22 @@ void gui::Scene::update()
             render();
             break;
         case SceneState::EXIT:
+            Debug::InfoLog("[GUI] Exit state reached, closing window");
             _isOpen = false;
             break;
         case SceneState::MENU:
             _menu->handleMenuInput();
             _menu->drawMainMenu();
             break;
+        case SceneState::SETTINGS:
+            _settings->handleSettingsInputs();
+            _settings->drawSettings();
+            break;
     }
 }
 
 void gui::Scene::eventToggleDisplay()
 {
-    // when & is pressed
     if (IsKeyPressed(KEY_ONE)) {
         if (_itemDisplay["Food"] == 0) {
             _itemDisplay["Food"] = 1;
@@ -181,6 +186,7 @@ void gui::Scene::eventToggleDisplay()
         if (_itemDisplay["Linemate"] == 0) {
             _itemDisplay["Linemate"] = 1;
         } else {
+            Debug::InfoLog("[GUI] Linemate display toggled");
             _itemDisplay["Linemate"] = 0;
         }
     }
@@ -188,6 +194,7 @@ void gui::Scene::eventToggleDisplay()
         if (_itemDisplay["Deraumere"] == 0) {
             _itemDisplay["Deraumere"] = 1;
         } else {
+            Debug::InfoLog("[GUI] Deraumere display toggled");
             _itemDisplay["Deraumere"] = 0;
         }
     }
@@ -195,6 +202,7 @@ void gui::Scene::eventToggleDisplay()
         if (_itemDisplay["Sibur"] == 0) {
             _itemDisplay["Sibur"] = 1;
         } else {
+            Debug::InfoLog("[GUI] Sibur display toggled");
             _itemDisplay["Sibur"] = 0;
         }
     }
@@ -202,6 +210,7 @@ void gui::Scene::eventToggleDisplay()
         if (_itemDisplay["Mendiane"] == 0) {
             _itemDisplay["Mendiane"] = 1;
         } else {
+            Debug::InfoLog("[GUI] Mendiane display toggled");
             _itemDisplay["Mendiane"] = 0;
         }
     }
@@ -209,6 +218,7 @@ void gui::Scene::eventToggleDisplay()
         if (_itemDisplay["Phiras"] == 0) {
             _itemDisplay["Phiras"] = 1;
         } else {
+            Debug::InfoLog("[GUI] Phiras display toggled");
             _itemDisplay["Phiras"] = 0;
         }
     }
@@ -216,6 +226,7 @@ void gui::Scene::eventToggleDisplay()
         if (_itemDisplay["Thystame"] == 0) {
             _itemDisplay["Thystame"] = 1;
         } else {
+            Debug::InfoLog("[GUI] Thystame display toggled");
             _itemDisplay["Thystame"] = 0;
         }
     }

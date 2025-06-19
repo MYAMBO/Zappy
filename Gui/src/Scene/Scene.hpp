@@ -36,6 +36,7 @@
 namespace gui {
     namespace ui {
         class Menu;
+        class Settings;
     };
 
     class Player;
@@ -49,7 +50,8 @@ namespace gui {
     enum class SceneState {
         MENU = 0,
         GAME = 1,
-        EXIT = 2
+        SETTINGS = 2,
+        EXIT = 3
     };
 
     class Scene {
@@ -120,6 +122,7 @@ namespace gui {
             float _width;
             float _height;
             std::unique_ptr<ui::Menu> _menu;
+            std::unique_ptr<ui::Settings> _settings;
             SceneState _currentState;
             std::map<std::string, int> _itemDisplay;
             std::vector<std::shared_ptr<gui::Tile>> _map;
