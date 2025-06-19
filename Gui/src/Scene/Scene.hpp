@@ -115,7 +115,7 @@ namespace gui {
             float _height;
             std::unique_ptr<ui::Menu> _menu;
             SceneState _currentState;
-            std::map<std::string, int> _itemDisplay;
+            std::vector<int> _itemDisplay;
             std::vector<std::shared_ptr<gui::Tile>> _map;
             std::vector<std::shared_ptr<gui::Player>> _players;
 

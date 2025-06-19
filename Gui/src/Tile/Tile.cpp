@@ -12,8 +12,6 @@
 #include <utility>
 #include <functional>
 
-
-
 /************************************************************
 **         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
 ************************************************************/
@@ -70,12 +68,16 @@ void gui::Tile::delItem(int qty, int type)
     this->_qty[type] -= qty;
 }
 
-void gui::Tile::displayTile(std::map<std::string, int> itemDisplay) const
+void gui::Tile::displayTile(std::vector<int> displayItem)
 {
+    int eltType = FOOD;
+
     for (const auto& type: this->_items) {
         for (const auto& item: type) {
-            DrawModel(*item->getModel(), item->getPosition(), item->getScale(), item->getColor()); // ask if bad practice
+            if (displayItem[eltType] == 1)
+                DrawModel(*item->getModel(), item->getPosition(), item->getScale(), item->getColor()); // ask if bad practice
         }
+        ++eltType;
     }
 
 

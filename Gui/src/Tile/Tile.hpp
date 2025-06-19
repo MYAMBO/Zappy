@@ -27,7 +27,7 @@ namespace gui {
             Tile(std::pair<int, int> coord, std::vector<int> qty, std::vector<std::shared_ptr<Model>> model);
             ~Tile();
 
-            void displayTile();
+            void displayTile(std::vector<int> displayItem);
 
             enum Type {
                 FOOD,

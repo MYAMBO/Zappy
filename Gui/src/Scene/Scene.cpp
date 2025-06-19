@@ -31,17 +31,9 @@ gui::Scene::Scene()
     this->_models.emplace_back(safeModelLoader("assets/phiras/scene.gltf"));
     this->_models.emplace_back(safeModelLoader("assets/thystame/scene.gltf"));
 
-    _menu = std::make_unique<gui::ui::Menu>(_currentState, SCREEN_WIDTH, SCREEN_HEIGHT);
-    _itemDisplay = {
-        {"Food", 1},
-        {"Linemate", 1},
-        {"Deraumere", 1},
-        {"Sibur", 1},
-        {"Mendiane", 1},
-        {"Phiras", 1},
-        {"Thystame", 1}
-    };
-    _menu->initMenuUI();
+    this->_menu = std::make_unique<gui::ui::Menu>(this->_currentState, SCREEN_WIDTH, SCREEN_HEIGHT);
+    this->_itemDisplay = {1, 1, 1, 1, 1, 1, 1};
+    this->_menu->initMenuUI();
     initMap();
 }
 
@@ -61,7 +53,7 @@ void gui::Scene::initWindow()
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Zappy");
     SetTargetFPS(TARGET_FPS);
 
-    _camera = { { -_width, 10.0f, -_height}, { _width / 2, 0.0f, _height / 2 }, { 0.0f, 1.0f, 0.0f }, 45.0f, 0 };
+    this->_camera = { { -_width, 10.0f, -_height}, { _width / 2, 0.0f, _height / 2 }, { 0.0f, 1.0f, 0.0f }, 45.0f, 0 };
 }
 
 void gui::Scene::initMap()
@@ -80,21 +72,21 @@ void gui::Scene::initMap()
             qty.emplace_back(1);
             qty.emplace_back(1);
 
-            _map.emplace_back(std::make_shared<gui::Tile>(coord, qty, this->_models));
+            this->_map.emplace_back(std::make_shared<gui::Tile>(coord, qty, this->_models));
         }
     }
     for (int x = 0; (float)x < 10; ++x) {
         std::pair<int, int> coord = {GetRandomValue(0, (int)WIDTH - 1), GetRandomValue(0, (int)HEIGHT - 1)};
-        _players.emplace_back(std::make_shared<gui::Player>(x, coord, North, 1, "toto", 1, SCREEN_WIDTH, SCREEN_HEIGHT, _camera, _camState));
+        this->_players.emplace_back(std::make_shared<gui::Player>(x, coord, North, 1, "toto", 1, SCREEN_WIDTH, SCREEN_HEIGHT, this->_camera, this->_camState));
     }
 }
 
 void gui::Scene::displayEntity()
 {
-    for (auto& tile : _map) {
-        tile->displayTile(_itemDisplay);
+    for (auto& tile : this->_map) {
+        tile->displayTile(this->_itemDisplay);
     }
-    for (auto& player : _players) {
+    for (auto& player : this->_players) {
         player->draw();
     }
 }
@@ -102,21 +94,21 @@ void gui::Scene::displayEntity()
 void gui::Scene::handleInput()
 {
     if (IsKeyPressed(KEY_ESCAPE)) {
-        if (_camState == CamState::WORLD) {
-            _currentState = SceneState::MENU;
+        if (this->_camState == CamState::WORLD) {
+            this->_currentState = SceneState::MENU;
         }
-        else if (_camState == CamState::PLAYER) {
-            _camState = CamState::WORLD;
+        else if (this->_camState == CamState::PLAYER) {
+            this->_camState = CamState::WORLD;
         }
     }
-    for (auto& player : _players)
-        player->update(_camera);
+    for (auto& player : this->_players)
+        player->update(this->_camera);
     if (IsKeyDown(KEY_LEFT_CONTROL)) {
-        if (_camState == CamState::WORLD) {
-            UpdateCamera(&_camera, CAMERA_THIRD_PERSON);
+        if (this->_camState == CamState::WORLD) {
+            UpdateCamera(&this->_camera, CAMERA_THIRD_PERSON);
         }
-        else if (_camState == CamState::PLAYER) {
-            UpdateCamera(&_camera, CAMERA_ORBITAL);
+        else if (this->_camState == CamState::PLAYER) {
+            UpdateCamera(&this->_camera, CAMERA_ORBITAL);
         }
     }
 }
@@ -124,14 +116,14 @@ void gui::Scene::handleInput()
 void gui::Scene::render()
 {
     BeginDrawing();
-    if (_camera.position.y < 0.1f) {
-        _camera.position.y = 0.1f;
+    if (this->_camera.position.y < 0.1f) {
+        this->_camera.position.y = 0.1f;
     }
     ClearBackground(BLACK);
-    BeginMode3D(_camera);
+    BeginMode3D(this->_camera);
     displayEntity();
     EndMode3D();
-    for (auto& player : _players) {
+    for (auto& player : this->_players) {
         player->drawUI();
         player->updateUI();
     }
@@ -140,27 +132,27 @@ void gui::Scene::render()
 
 bool gui::Scene::isOpen() const
 {
-    return _isOpen && !WindowShouldClose();
+    return this->_isOpen && !WindowShouldClose();
 }
 
 void gui::Scene::update()
 {
-    if (!_isOpen) {
+    if (!this->_isOpen) {
         return;
     }
 
-    switch (_currentState) {
+    switch (this->_currentState) {
         case SceneState::GAME:
             eventToggleDisplay();
             handleInput();
             render();
             break;
         case SceneState::EXIT:
-            _isOpen = false;
+            this->_isOpen = false;
             break;
         case SceneState::MENU:
-            _menu->handleMenuInput();
-            _menu->drawMainMenu();
+            this->_menu->handleMenuInput();
+            this->_menu->drawMainMenu();
             break;
     }
 }
@@ -180,53 +172,53 @@ std::shared_ptr<Model> gui::Scene::safeModelLoader(const std::string& string)
 {
     // when & is pressed
     if (IsKeyPressed(KEY_ONE)) {
-        if (_itemDisplay["Food"] == 0) {
-            _itemDisplay["Food"] = 1;
+        if (this->_itemDisplay[gui::Tile::FOOD] == 0) {
+            this->_itemDisplay[gui::Tile::FOOD] = 1;
         } else {
             Debug::InfoLog("[GUI] Food display toggled");
-            _itemDisplay["Food"] = 0;
+            this->_itemDisplay[gui::Tile::FOOD] = 0;
         }
     }
     if (IsKeyPressed(KEY_TWO)) {
-        if (_itemDisplay["Linemate"] == 0) {
-            _itemDisplay["Linemate"] = 1;
+        if (this->_itemDisplay[gui::Tile::LINEMATE] == 0) {
+            this->_itemDisplay[gui::Tile::LINEMATE] = 1;
         } else {
-            _itemDisplay["Linemate"] = 0;
+            this->_itemDisplay[gui::Tile::LINEMATE] = 0;
         }
     }
     if (IsKeyPressed(KEY_THREE)) {
-        if (_itemDisplay["Deraumere"] == 0) {
-            _itemDisplay["Deraumere"] = 1;
+        if (this->_itemDisplay[gui::Tile::DERAUMERE] == 0) {
+            this->_itemDisplay[gui::Tile::DERAUMERE] = 1;
         } else {
-            _itemDisplay["Deraumere"] = 0;
+            this->_itemDisplay[gui::Tile::DERAUMERE] = 0;
         }
     }
     if (IsKeyPressed(KEY_FOUR)) {
-        if (_itemDisplay["Sibur"] == 0) {
-            _itemDisplay["Sibur"] = 1;
+        if (this->_itemDisplay[gui::Tile::SIBUR] == 0) {
+            this->_itemDisplay[gui::Tile::SIBUR] = 1;
         } else {
-            _itemDisplay["Sibur"] = 0;
+            this->_itemDisplay[gui::Tile::SIBUR] = 0;
         }
     }
     if (IsKeyPressed(KEY_FIVE)) {
-        if (_itemDisplay["Mendiane"] == 0) {
-            _itemDisplay["Mendiane"] = 1;
+        if (this->_itemDisplay[gui::Tile::MENDIANE] == 0) {
+            this->_itemDisplay[gui::Tile::MENDIANE] = 1;
         } else {
-            _itemDisplay["Mendiane"] = 0;
+            this->_itemDisplay[gui::Tile::MENDIANE] = 0;
         }
     }
     if (IsKeyPressed(KEY_SIX)) {
-        if (_itemDisplay["Phiras"] == 0) {
-            _itemDisplay["Phiras"] = 1;
+        if (this->_itemDisplay[gui::Tile::PHIRAS] == 0) {
+            this->_itemDisplay[gui::Tile::PHIRAS] = 1;
         } else {
-            _itemDisplay["Phiras"] = 0;
+            this->_itemDisplay[gui::Tile::PHIRAS] = 0;
         }
     }
     if (IsKeyPressed(KEY_SEVEN)) {
-        if (_itemDisplay["Thystame"] == 0) {
-            _itemDisplay["Thystame"] = 1;
+        if (this->_itemDisplay[gui::Tile::THYSTAME] == 0) {
+            this->_itemDisplay[gui::Tile::THYSTAME] = 1;
         } else {
-            _itemDisplay["Thystame"] = 0;
+            this->_itemDisplay[gui::Tile::THYSTAME] = 0;
         }
     }
 }
