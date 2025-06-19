@@ -22,11 +22,11 @@ static bool verif_out_map_player(server_t *serv, ai_stats_t *ai, int x, int y)
         return true;
     }
     if (ai->x + x < 0) {
-        ai->x = serv->map_height;
+        ai->x = serv->map_height - 1;
         return true;
     }
     if (ai->y + y < 0) {
-        ai->y = serv->map_width;
+        ai->y = serv->map_width - 1;
         return true;
     }
     return false;

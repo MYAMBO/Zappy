@@ -45,4 +45,3 @@ char *can_player_takes_items(ai_stats_t *ai, map_t *map)
     // subject pretty blur about it
     return "ok";
 }
-
