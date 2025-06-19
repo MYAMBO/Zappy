@@ -9,6 +9,7 @@ import uuid
 from Ai import Ai
 from Client import *
 from CommandHandler import *
+from Message import follow_message
 from getWay import get_better_way_to_resources
 from SortTiles import get_visible_tiles_sorted_by_distance
 
@@ -32,8 +33,17 @@ def get_inventory_string(ai):
 
 
 def update_command_list(currentList, ai):
-    if ai.team_inventory_is_ready():
-        currentList = ["Broadcast \"follow me !\""]
+    if ai.team_inventory_is_ready() and ai.get_ai_to_follow() == None:
+        ai.set_ai_to_follow(ai.get_id())
+    if ai.get_ai_to_follow() != None and len(currentList) == 0:
+        if ai.get_ai_to_follow() == ai.get_id():
+            currentList = ["Broadcast \"follow me !;" + str(ai.get_id()) + "\""]
+        else:
+            newList = follow_message(ai.get_tile_to_follow())
+            if newList != None:
+                return newList
+            else:
+                return ["Broadcast \"" + str(ai.get_id()) + ";en position !\""]
     if len(currentList) == 0:
         view = ai.get_view()
         if view == None:
@@ -60,8 +70,6 @@ def handle_command(client):
         return None
     return reply
 
-
-def core(name):
 
 def core(name, port, machine):
     ai = Ai()
