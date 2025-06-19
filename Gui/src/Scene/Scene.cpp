@@ -5,8 +5,15 @@
 ** Scene
 */
 
+#include "Menu.hpp"
 #include "Scene.hpp"
 #include "Player.hpp"
+
+
+/************************************************************
+**         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
+************************************************************/
+
 
 gui::Scene::Scene()
     : _camState(CamState::WORLD), _isOpen(true), _width(WIDTH), _height(HEIGHT), _currentState(SceneState::GAME), _models()
@@ -24,6 +31,17 @@ gui::Scene::Scene()
     this->_models.emplace_back(safeModelLoader("assets/phiras/scene.gltf"));
     this->_models.emplace_back(safeModelLoader("assets/thystame/scene.gltf"));
 
+    _menu = std::make_unique<gui::ui::Menu>(_currentState, SCREEN_WIDTH, SCREEN_HEIGHT);
+    _itemDisplay = {
+        {"Food", 1},
+        {"Linemate", 1},
+        {"Deraumere", 1},
+        {"Sibur", 1},
+        {"Mendiane", 1},
+        {"Phiras", 1},
+        {"Thystame", 1}
+    };
+    _menu->initMenuUI();
     initMap();
 }
 
@@ -31,6 +49,12 @@ gui::Scene::~Scene()
 {
     CloseWindow();
 }
+
+
+/************************************************************
+**               >>>>   MEMBER FUNCTIONS   <<<<            **
+************************************************************/
+
 
 void gui::Scene::initWindow()
 {
@@ -59,10 +83,8 @@ void gui::Scene::initMap()
             _map.emplace_back(std::make_shared<gui::Tile>(coord, qty, this->_models));
         }
     }
-
     for (int x = 0; (float)x < 10; ++x) {
         std::pair<int, int> coord = {GetRandomValue(0, (int)WIDTH - 1), GetRandomValue(0, (int)HEIGHT - 1)};
-
         _players.emplace_back(std::make_shared<gui::Player>(x, coord, North, 1, "toto", 1, SCREEN_WIDTH, SCREEN_HEIGHT, _camera, _camState));
     }
 }
@@ -70,7 +92,7 @@ void gui::Scene::initMap()
 void gui::Scene::displayEntity()
 {
     for (auto& tile : _map) {
-        tile->displayTile();
+        tile->displayTile(_itemDisplay);
     }
     for (auto& player : _players) {
         player->draw();
@@ -81,8 +103,7 @@ void gui::Scene::handleInput()
 {
     if (IsKeyPressed(KEY_ESCAPE)) {
         if (_camState == CamState::WORLD) {
-            _currentState = SceneState::EXIT;
-            _isOpen = false;
+            _currentState = SceneState::MENU;
         }
         else if (_camState == CamState::PLAYER) {
             _camState = CamState::WORLD;
@@ -130,11 +151,16 @@ void gui::Scene::update()
 
     switch (_currentState) {
         case SceneState::GAME:
+            eventToggleDisplay();
             handleInput();
             render();
             break;
         case SceneState::EXIT:
             _isOpen = false;
+            break;
+        case SceneState::MENU:
+            _menu->handleMenuInput();
+            _menu->drawMainMenu();
             break;
     }
 }
@@ -148,4 +174,59 @@ std::shared_ptr<Model> gui::Scene::safeModelLoader(const std::string& string)
         throw gui::FailedLoadModel();
 
     return model;
+}
+
+      void gui::Scene::eventToggleDisplay()
+{
+    // when & is pressed
+    if (IsKeyPressed(KEY_ONE)) {
+        if (_itemDisplay["Food"] == 0) {
+            _itemDisplay["Food"] = 1;
+        } else {
+            Debug::InfoLog("[GUI] Food display toggled");
+            _itemDisplay["Food"] = 0;
+        }
     }
+    if (IsKeyPressed(KEY_TWO)) {
+        if (_itemDisplay["Linemate"] == 0) {
+            _itemDisplay["Linemate"] = 1;
+        } else {
+            _itemDisplay["Linemate"] = 0;
+        }
+    }
+    if (IsKeyPressed(KEY_THREE)) {
+        if (_itemDisplay["Deraumere"] == 0) {
+            _itemDisplay["Deraumere"] = 1;
+        } else {
+            _itemDisplay["Deraumere"] = 0;
+        }
+    }
+    if (IsKeyPressed(KEY_FOUR)) {
+        if (_itemDisplay["Sibur"] == 0) {
+            _itemDisplay["Sibur"] = 1;
+        } else {
+            _itemDisplay["Sibur"] = 0;
+        }
+    }
+    if (IsKeyPressed(KEY_FIVE)) {
+        if (_itemDisplay["Mendiane"] == 0) {
+            _itemDisplay["Mendiane"] = 1;
+        } else {
+            _itemDisplay["Mendiane"] = 0;
+        }
+    }
+    if (IsKeyPressed(KEY_SIX)) {
+        if (_itemDisplay["Phiras"] == 0) {
+            _itemDisplay["Phiras"] = 1;
+        } else {
+            _itemDisplay["Phiras"] = 0;
+        }
+    }
+    if (IsKeyPressed(KEY_SEVEN)) {
+        if (_itemDisplay["Thystame"] == 0) {
+            _itemDisplay["Thystame"] = 1;
+        } else {
+            _itemDisplay["Thystame"] = 0;
+        }
+    }
+}

@@ -15,6 +15,7 @@
 **         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
 ************************************************************/
 
+
 gui::Player::Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team, float scale, int screenWidth, int screenHeight, Camera3D &camera, CamState &sceneState)
     : AEntity({(float)position.first, 0.5, (float)position.second}, scale, RED), _id(id), _level(level), _team(std::move(team)),
     _camButton([this, &camera, &sceneState]() { HandleCamButton(camera, sceneState); }, Rectangle{0, static_cast<float>(screenHeight - 70), 150, 70}, "Camera"),

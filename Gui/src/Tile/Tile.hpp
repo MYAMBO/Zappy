@@ -8,16 +8,18 @@
 #ifndef ZAPPY_TILE_HPP
     #define ZAPPY_TILE_HPP
 
-    #include <utility>
+    #include <map>
     #include <memory>
     #include <raylib.h>
+    #include <utility>
+
     #include "Food.hpp"
-    #include "Linemate.hpp"
-    #include "Deraumere.hpp"
     #include "Sibur.hpp"
-    #include "Mendiane.hpp"
     #include "Phiras.hpp"
+    #include "Linemate.hpp"
+    #include "Mendiane.hpp"
     #include "Thystame.hpp"
+    #include "Deraumere.hpp"
 
 namespace gui {
     class Tile {

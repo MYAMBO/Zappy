@@ -5,10 +5,19 @@
 ** Tile.cpp
 */
 
+#include <utility>
+
 #include "Tile.hpp"
 
 #include <utility>
 #include <functional>
+
+
+
+/************************************************************
+**         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
+************************************************************/
+
 
 gui::Tile::Tile(std::pair<int, int> coord, std::vector<int> qty, std::vector<std::shared_ptr<Model>> model) : _items(7) ,_qty(qty), _models(std::move(model)), _coord(std::move(coord))
 {
@@ -26,6 +35,10 @@ gui::Tile::Tile(std::pair<int, int> coord, std::vector<int> qty, std::vector<std
 gui::Tile::~Tile()
 {
 }
+
+/************************************************************
+**               >>>>   MEMBER FUNCTIONS   <<<<            **
+************************************************************/
 
 void gui::Tile::addItem(int qty, int type)
 {
@@ -57,13 +70,14 @@ void gui::Tile::delItem(int qty, int type)
     this->_qty[type] -= qty;
 }
 
-void gui::Tile::displayTile()
+void gui::Tile::displayTile(std::map<std::string, int> itemDisplay) const
 {
     for (const auto& type: this->_items) {
         for (const auto& item: type) {
             DrawModel(*item->getModel(), item->getPosition(), item->getScale(), item->getColor()); // ask if bad practice
         }
     }
+
 
     Vector3 position = {(float)this->_coord.first, 0, (float)this->_coord.second};
     DrawCube(position, 1.0f, 1.0f, 1.0f, {61, 110, 49, 255});

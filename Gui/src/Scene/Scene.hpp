@@ -34,16 +34,24 @@
 
     
 namespace gui {
+    namespace ui {
+        class Menu;
+    };
+
     class Player;
+
     enum CamState {
         EXIT = 0,
         WORLD = 1,
         PLAYER = 2
     };
+
     enum class SceneState {
+        MENU = 0,
         GAME = 1,
-        EXIT = 0
+        EXIT = 2
     };
+
     class Scene {
         public:
             Scene();
@@ -91,14 +99,23 @@ namespace gui {
              */
             void displayEntity();
 
+            /**
+             * @brief Event handler for toggling item display.
+             * This function handles the events for toggling the display of items based on user input.
+             */
+            void eventToggleDisplay();
+
         private:
             Camera _camera;
             CamState _camState;
 
+            
             bool _isOpen;
             float _width;
             float _height;
+            std::unique_ptr<ui::Menu> _menu;
             SceneState _currentState;
+            std::map<std::string, int> _itemDisplay;
             std::vector<std::shared_ptr<gui::Tile>> _map;
             std::vector<std::shared_ptr<gui::Player>> _players;
 
@@ -107,6 +124,7 @@ namespace gui {
             std::vector<std::shared_ptr<Model>> _models;
 
             static const int TARGET_FPS = 60;
+
     };
 
     class FailedLoadModel : public std::exception {
