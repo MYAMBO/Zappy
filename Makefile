@@ -116,7 +116,7 @@ obj/test/%.o: %.c
 obj:
 	@mkdir -p obj obj/Server obj/Gui
 
-unit_test:
+unit_test: Debug/libLogger.so
 	@echo -e "$(GREEN)Compiling unit tests...$(NC)"
 	@gcc -o unit_tests $(SRC_NO_MAIN) $(TEST_SRC) $(TEST_FLAGS)
 
