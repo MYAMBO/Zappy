@@ -20,5 +20,6 @@ typedef struct garbage_s {
 void *my_malloc(size_t size);
 void free_garbage(void);
 void my_free(void *ptr);
+void my_free_array(char **ptr);
 
 #endif //GARBAGE_H

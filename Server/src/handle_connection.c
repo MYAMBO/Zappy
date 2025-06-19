@@ -9,13 +9,30 @@
 
 #include "handle_connection.h"
 
-static int send_message_connection(int client_fd)
+static int send_message_connection(server_t *server)
+{
+    char *message = my_malloc(sizeof(char) * 1024);
+    poll_handling_t *last_node;
+
+    for (last_node = server->poll_list; last_node != NULL &&
+        last_node->next != NULL; last_node = last_node->next);
+    if (message == NULL || last_node == NULL)
+        return FAILURE;
+    sprintf(message, "Client connected with id: %d, "
+        "local fd : %d", last_node->player->id, last_node->player->fd);
+    logger_info(message, FILE_OUTPUT, true);
+    my_free(message);
+    return SUCCESS;
+}
+
+int send_message_disconnect(poll_handling_t *node)
 {
     char *message = my_malloc(sizeof(char) * 1024);
 
     if (message == NULL)
         return FAILURE;
-    sprintf(message, "Client connected with local fd : %d", client_fd);
+    sprintf(message, "Client disconnected with id : %d, "
+        "local fd : %d", node->player->id, node->poll_fd.fd);
     logger_info(message, FILE_OUTPUT, true);
     my_free(message);
     return SUCCESS;
@@ -36,7 +53,7 @@ int create_new_connection(server_t *server)
     if (write(client_fd, "WELCOME\n", 8) < 0)
         return FAILURE;
     server->poll_count++;
-    if (send_message_connection(client_fd) == FAILURE)
+    if (send_message_connection(server) == FAILURE)
         return FAILURE;
     return SUCCESS;
 }
