@@ -25,13 +25,38 @@ enum Orientation {
 namespace gui {
     class Player : public AEntity {
         public:
-            Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team, float scale, int screenWidth, int screenHeight, Camera3D &camera, CamState &sceneState);
+            Player(int id, std::pair<int, int> position, Orientation orientation, int level,
+                std::string team, float scale, int screenWidth, int screenHeight, Camera3D &camera,
+                CamState &sceneState);
             ~Player();
 
-            int getId() const;
-            int getLevel() const;
-            Orientation getOrientation() const;
+            /**
+             * @brief Get the team of the Player.
+             * This function returns the team of the Player.
+             * @return The team of the Player as a string.
+             */
             std::string getTeam() const;
+            
+            /**
+             * @brief Get the level of the Player.
+             * This function returns the level of the Player.
+             * @return The level of the Player as an integer.
+             */
+            int getLevel() const;
+
+            /**
+             * @brief Get the orientation of the Player.
+             * This function returns the orientation of the Player.
+             * @return The orientation of the Player as an Orientation enum.
+             */
+            Orientation getOrientation() const;
+
+            /**
+             * @brief Get the team of the Player.
+             * This function returns the team of the Player.
+             * @return The team of the Player as a string.
+             */
+            int getId() const;
 
             /**
              * @brief Set the level of the Player.
@@ -78,15 +103,74 @@ namespace gui {
              * This function updates the UI of the Player.
              */
             void updateUI();
+
+            /**
+             * @brief Stop the Player from moving.
+             * This function stops the Player's movement and resets the animation state.
+             */
+            void stopMoving();
+
+            /**
+             * @brief Set the animation speed of the Player.
+             * This function sets the speed at which the Player's animations are played.
+             * @param speed The new animation speed.
+             */
+            void setAnimationSpeed(float speed);
+
+            /**
+             * @brief Start moving the Player to a new position.
+             * This function initiates the movement of the Player to a specified position.
+             * @param newPosition The target position to move the Player to.
+             */
+            void startMoveTo(Vector3 newPosition);
+
+            /**
+             * @brief Check if the Player is selected.
+             * This function checks if the Player is currently selected.
+             * @return true if the Player is selected, false otherwise.
+             */
+            bool getSelected() const;
+
+            /**
+             * @brief Check if the Player is currently moving.
+             * This function checks if the Player is in a moving state.
+             * @return true if the Player is moving, false otherwise.
+             */
+            bool getIsMoving() const;
         private:
+            enum class AnimState {
+                IDLE = 0,
+                WALKING = 1
+            };
+            /**
+             * @brief Set the animation state of the Player.
+             * This function sets the current animation state of the Player.
+             * @param newState The new animation state to set.
+             */
+            void setAnimationState(AnimState newState);
+
             int _id;
             int _level;
-            std::string _team;
+            int _animCount;
+            int _currentAnim;
+            int _animFrameCounter;
+
+            bool _isMoving;
             bool _isSelected = false;
 
+            std::string _team;
+
+            float _moveSpeed;
+            float _animationSpeed;
+
+            Vector3 _targetPosition;
+            
             ui::Button _camButton;
-            Orientation _direction;
             ui::Inventory _inventory;
+
+            Orientation _direction;
+            AnimState _currentAnimState;
+            ModelAnimation* _animations;        
     };
 }
 

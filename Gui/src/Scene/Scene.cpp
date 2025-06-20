@@ -4,6 +4,7 @@
 ** File description:
 ** Scene
 */
+#include <math.h>
 
 #include "Menu.hpp"
 #include "Scene.hpp"
@@ -30,7 +31,7 @@ gui::Scene::Scene()
     _models.emplace_back(safeModelLoader("assets/mendiane/scene.gltf"));
     _models.emplace_back(safeModelLoader("assets/phiras/scene.gltf"));
     _models.emplace_back(safeModelLoader("assets/thystame/scene.gltf"));
-    
+
     _menu = std::make_unique<gui::ui::Menu>(_currentState, SCREEN_WIDTH, SCREEN_HEIGHT);
     _settings = std::make_unique<gui::ui::Settings>(_currentState, SCREEN_WIDTH, SCREEN_HEIGHT);
     _itemDisplay = {1, 1, 1, 1, 1, 1, 1};
@@ -63,9 +64,7 @@ void gui::Scene::initMap()
     for (int y = 0; y < HEIGHT; ++y) {
         for (int x = 0; x < WIDTH; ++x) {
             std::pair<int, int> coord = {x, y};
-
             std::vector<int> qty;
-
             qty.emplace_back(1);
             qty.emplace_back(1);
             qty.emplace_back(1);
@@ -73,13 +72,12 @@ void gui::Scene::initMap()
             qty.emplace_back(1);
             qty.emplace_back(1);
             qty.emplace_back(1);
-
             _map.emplace_back(std::make_shared<gui::Tile>(coord, qty, _models));
         }
     }
     for (int x = 0; (float)x < 10; ++x) {
         std::pair<int, int> coord = {GetRandomValue(0, (int)WIDTH - 1), GetRandomValue(0, (int)HEIGHT - 1)};
-        _players.emplace_back(std::make_shared<gui::Player>(x, coord, North, 1, "toto", 1, SCREEN_WIDTH, SCREEN_HEIGHT, _camera, _camState));
+        _players.emplace_back(std::make_shared<gui::Player>(x, coord, North, 1, "toto", 0.8f, SCREEN_WIDTH, SCREEN_HEIGHT, _camera, _camState));
     }
 }
 
@@ -92,6 +90,23 @@ void gui::Scene::displayEntity()
         player->draw();
     }
 }
+
+void gui::Scene::initOrbitalCamera(const Vector3& target, float distance)
+{
+    float theta = 45.0f * DEG2RAD;
+    float phi = 30.0f * DEG2RAD;
+
+    _camera.target = target;
+    _camera.position = {
+        target.x + distance * cosf(phi) * cosf(theta),
+        target.y + distance * sinf(phi),
+        target.z + distance * cosf(phi) * sinf(theta)
+    };
+    _camera.up = {0.0f, 1.0f, 0.0f};
+    _camera.fovy = 45.0f;
+    _camera.projection = CAMERA_PERSPECTIVE;
+}
+
 
 void gui::Scene::handleInput()
 {
@@ -111,7 +126,25 @@ void gui::Scene::handleInput()
             UpdateCamera(&_camera, CAMERA_THIRD_PERSON);
         }
         else if (_camState == CamState::PLAYER) {
-            UpdateCamera(&_camera, CAMERA_ORBITAL);
+            for (auto& player : _players) {
+                if (player->getSelected() && !player->getIsMoving()) {
+                    UpdateCamera(&_camera, CAMERA_ORBITAL);
+                }
+            }
+        }
+    }
+    if (_camState == CamState::PLAYER) {
+        for (auto& player : _players) {
+            if (player->getSelected()) {
+                if (player->getIsMoving()) {
+                    _camera.target = player->getPosition();
+                    _camera.position = {
+                        player->getPosition().x - 2.0f,
+                        player->getPosition().y + 2.0f,
+                        player->getPosition().z - 2.0f
+                    };
+                }
+            }
         }
     }
 }
@@ -148,6 +181,10 @@ void gui::Scene::update()
             eventToggleDisplay();
             handleInput();
             render();
+            if (IsKeyPressed(KEY_J)) {                                                                  // Debugging key to move players
+                _players[0]->startMoveTo({static_cast<float>(GetRandomValue(0,                          // remove this when finish debugging
+                    (int)WIDTH - 1)), 0.5f, static_cast<float>(GetRandomValue(0, (int)HEIGHT - 1))});
+            }
             break;
         case SceneState::EXIT:
             Debug::InfoLog("[GUI] Exit state reached, closing window");
@@ -181,7 +218,6 @@ std::shared_ptr<Model> gui::Scene::safeModelLoader(const std::string& string)
         if (_itemDisplay[gui::Tile::FOOD] == 0) {
             _itemDisplay[gui::Tile::FOOD] = 1;
         } else {
-            Debug::InfoLog("[GUI] Food display toggled");
             _itemDisplay[gui::Tile::FOOD] = 0;
         }
     }
