@@ -11,14 +11,14 @@ class Ai:
     def __init__(self):
         self.__id = 0
         self.__view = None
-        self.__is_first = False
-        self.__inventory = {"sibur" : 0, "phiras" : 0, "thystame" : 0, "mendiane" : 0, "linemate" : 0, "deraumere" : 0}
         self.__unused_slots = 0
+        self.__is_ready = False
+        self.__mates_to_wait = 0
         self.__tile_to_follow = 0
         self.__ai_to_follow = None
         self.__team_inventory = {}
-        self.__must_follow = False
         self.__needed_list = ["food", "sibur", "phiras", "thystame", "mendiane", "linemate", "deraumere"]
+        self.__inventory = {"sibur" : 0, "phiras" : 0, "thystame" : 0, "mendiane" : 0, "linemate" : 0, "deraumere" : 0}
 
     def set_id(self, id):
         self.__id = id
@@ -26,27 +26,30 @@ class Ai:
     def set_view(self, view):
         self.__view = view
 
-    def set_is_first(self, is_first):
-        self.__is_first = is_first
-
     def set_inventory(self, inventory):
         self.__inventory = inventory
 
     def set_unused_slots(self, unused_slots):
         self.__unused_slots = unused_slots
 
+    def set_is_ready(self, is_ready):
+        self.__is_ready = is_ready
+
+    def set_mates_to_wait(self):
+        self.__mates_to_wait = len(self.__team_inventory)
+
     def set_ai_to_follow(self, id):
         self.__ai_to_follow = id
-
-    def set_must_follow(self, must_follow):
-        self.__must_follow = must_follow
+        self.set_mates_to_wait()
 
     def set_tile_to_follow(self, tile):
-        print(tile)
         self.__tile_to_follow = tile
 
     def add_in_team_inventory(self, id, inventory):
         self.__team_inventory[id] = inventory
+
+    def decrease_mates_to_wait(self):
+        self.__mates_to_wait -= 1
 
     def team_inventory_is_ready(self):
         sibur = 0
@@ -89,14 +92,14 @@ class Ai:
             self.__needed_list.remove("deraumere")
         return len(self.__needed_list) == 1
 
+    def is_ready(self):
+        return self.__is_ready
+
     def get_id(self):
         return self.__id
 
     def get_view(self):
         return self.__view
-
-    def get_is_first(self):
-        return self.__is_first
 
     def get_inventory(self):
         return self.__inventory
@@ -106,6 +109,9 @@ class Ai:
     
     def get_needed_list(self):
         return self.__needed_list
+    
+    def get_mates_to_wait(self):
+        return self.__mates_to_wait
 
     def add_object_to_inventory(self, object):
         try:
@@ -125,6 +131,3 @@ class Ai:
     
     def get_tile_to_follow(self):
         return self.__tile_to_follow
-    
-    def get_must_follow(self):
-        return self.__must_follow

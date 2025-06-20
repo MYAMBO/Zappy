@@ -32,18 +32,37 @@ def get_inventory_string(ai):
     return to_send
 
 
+def get_droping_items_commands(ai):
+    commands = []
+    for name, quantity in ai.get_inventory().items():
+        if name == "food":
+            continue
+        for i in range(quantity):
+            commands.append("Set " + name)
+    return commands
+
+
 def update_command_list(currentList, ai):
+    if ai.is_ready():
+        return ["Broadcast j'attend"]
     if ai.team_inventory_is_ready() and ai.get_ai_to_follow() == None:
         ai.set_ai_to_follow(ai.get_id())
     if ai.get_ai_to_follow() != None and len(currentList) == 0:
         if ai.get_ai_to_follow() == ai.get_id():
-            currentList = ["Broadcast \"follow me !;" + str(ai.get_id()) + "\""]
+            if ai.get_mates_to_wait() == 0:
+                newList = get_droping_items_commands(ai)
+                newList.insert("Broadcast \"etttt c'est partieee !!!\"", 0)
+                newList.append("j'ai tout posé")
+                ai.set_mates_to_wait()
+                return newList
+            return ["Broadcast \"follow me !;" + str(ai.get_id()) + "\""]
         else:
             newList = follow_message(ai.get_tile_to_follow())
             if newList != None:
                 newList.append("Look")
                 return newList
-            else:
+            elif ai.is_ready() == False:
+                ai.set_is_ready(True)
                 return ["Broadcast \"" + str(ai.get_id()) + ";en position !\""]
     if len(currentList) == 0:
         view = ai.get_view()
