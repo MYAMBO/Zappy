@@ -137,6 +137,19 @@ namespace gui {
              * @return true if the Player is moving, false otherwise.
              */
             bool getIsMoving() const;
+
+            /**
+             * @brief Animation of the broadcast.
+             * This function handles the animation broadcast for the Player.
+             */
+            void broadcastAnimation();
+
+            /**
+             * @brief Set the broadcasting state of the Player.
+             * This function sets whether the Player is currently broadcasting.
+             * @param broadcasting true if the Player is broadcasting, false otherwise.
+             */
+            void setBroadcasting(bool broadcasting);
         private:
             enum class AnimState {
                 IDLE = 0,
@@ -154,14 +167,17 @@ namespace gui {
             int _animCount;
             int _currentAnim;
             int _animFrameCounter;
-
+            
             bool _isMoving;
             bool _isSelected = false;
-
+            bool _isBroadcasting = false;
+            
             std::string _team;
-
+            
             float _moveSpeed;
+            float _broadcastTimer;
             float _animationSpeed;
+            float _broadcastDuration = 0.5f;
 
             Vector3 _targetPosition;
             
