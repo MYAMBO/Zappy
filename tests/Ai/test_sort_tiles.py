@@ -5,7 +5,7 @@
 ## test
 ##
 
-from Ai.src.SortTiles import get_visible_tiles_sorted_by_distance
+from SortTiles import get_visible_tiles_sorted_by_distance
 
 def test_get_visible_tiles_sorted_by_distance():
     tiles = []
