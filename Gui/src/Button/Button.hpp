@@ -34,12 +34,6 @@ namespace gui {
                  */
                 void update();
                 
-                /** 
-                 * @brief Check if the button is clicked and execute the action if it is.
-                 * This function checks if the button is pressed and calls the action function if it is.
-                */
-                void isClicked();
-
                 /**
                  * @brief Setter for the font size.
                  * This function allows you to set the font size of the text displayed on the button.
@@ -99,6 +93,12 @@ namespace gui {
                 Rectangle getBounds() const;
         
             private:
+                /** 
+                 * @brief Check if the button is clicked and execute the action if it is.
+                 * This function checks if the button is pressed and calls the action function if it is.
+                */
+                void isClicked();
+
                 int _fontSize;
                 bool _isHovered;
                 bool _isPressed;
