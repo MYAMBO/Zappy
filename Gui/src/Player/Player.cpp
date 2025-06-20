@@ -108,8 +108,8 @@ int gui::Player::update(Camera3D camera)
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         Ray ray = GetMouseRay(GetMousePosition(), camera);
         BoundingBox box = {
-            { _position.x - _scale/2, _position.y - _scale/2, _position.z - _scale/2 },
-            { _position.x + _scale/2, _position.y + _scale/2, _position.z + _scale/2 }
+            { _position.x - _scale/4, _position.y - _scale/4, _position.z - _scale/4 },
+            { _position.x + _scale/4, _position.y + _scale/4, _position.z + _scale/4 }
         };
         RayCollision collision = GetRayCollisionBox(ray, box);
         if (collision.hit) {
