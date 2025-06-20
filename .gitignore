@@ -15,3 +15,5 @@ obj
 *.a
 *.o
 *.so
+
+startAi.*
