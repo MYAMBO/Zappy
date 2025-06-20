@@ -15,6 +15,23 @@
 
     #include "slot_handler.h"
 
+typedef enum ressources_index_s {
+    FOOD,
+    LINEMATE,
+    DERAUMERE,
+    SIBUR,
+    MENDIANE,
+    PHIRAS,
+    THYSTAME
+} ressources_index_t;
+
+typedef enum direction_s {
+    NORTH,
+    EAST,
+    SOUTH,
+    WEST
+} direction_t;
+
 typedef struct server_s {
     long port;
     int server_fd;

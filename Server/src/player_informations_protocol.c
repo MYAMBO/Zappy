@@ -61,3 +61,14 @@ char *get_player_inventory(ai_stats_t *ai, int x, int y)
 
     return return_player_resources(ai, alloc, x, y);
 }
+
+char *end_of_game(ai_stats_t *ai)
+{
+    int alloc = snprintf(NULL, 0, "seg %s\n", ai->team_name);
+    char *result = my_malloc(alloc + 1);
+
+    if (!result)
+        return NULL;
+    snprintf(result, alloc + 1, "seg %s\n", ai->team_name);
+    return result;
+}

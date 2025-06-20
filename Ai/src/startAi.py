@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 ##
 ## EPITECH PROJECT, 2024
 ## Zappy
@@ -6,12 +5,15 @@
 ## zappy_ai
 ##
 
-from Debug.logger import Logger, Output
-from Ai.src.Core import core
+import sys
+from Core import core
+from Logger import logger, Output
+from ParsingAi import parsing_ai
 
-logger = Logger()
-
+logger.clear_log_file()
 logger.info("Starting Zappy AI", Output.FILE_OUTPUT, True)
 
-returnValue = core()
-exit(returnValue)
+port, name, machine = parsing_ai(sys.argv)
+
+returnValue = core(name, port, machine)
+sys.exit(returnValue)
