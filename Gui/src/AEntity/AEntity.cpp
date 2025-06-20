@@ -60,3 +60,13 @@ std::string gui::AEntity::getType()
 {
     return "AEntity";
 }
+
+float gui::AEntity::getRotationY()
+{
+    return _rotationY;
+}
+
+void gui::AEntity::setRotationY(float rotationY)
+{
+    _rotationY = rotationY;
+}
