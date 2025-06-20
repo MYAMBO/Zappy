@@ -12,8 +12,10 @@
 #include "server.h"
 #include "garbage.h"
 #include "poll_handling.h"
+#include <stdio.h>
+#include "init_player.h"
 
-poll_handling_t *create_node_poll_handling(int fd)
+poll_handling_t *create_node_poll_handling(int fd, bool create_client)
 {
     poll_handling_t *node = my_malloc(sizeof(poll_handling_t));
 
@@ -22,13 +24,19 @@ poll_handling_t *create_node_poll_handling(int fd)
     node->poll_fd.fd = fd;
     node->poll_fd.events = POLLIN;
     node->poll_fd.revents = 0;
+    if (create_client) {
+        node->player = init_new_player(fd, 0, 0, "TEST");
+        if (node->player == NULL)
+            return NULL;
+    }
     node->next = NULL;
     return node;
 }
 
-int append_node_poll_handling(poll_handling_t **head, int fd)
+int append_node_poll_handling(poll_handling_t **head,
+    int fd, bool create_client)
 {
-    poll_handling_t *new_node = create_node_poll_handling(fd);
+    poll_handling_t *new_node = create_node_poll_handling(fd, create_client);
     poll_handling_t *node;
 
     if (new_node == NULL)
@@ -42,6 +50,20 @@ int append_node_poll_handling(poll_handling_t **head, int fd)
     return SUCCESS;
 }
 
+static void handle_node_removing(poll_handling_t *prev, poll_handling_t *node,
+    poll_handling_t *next, poll_handling_t **head)
+{
+    if (prev == NULL)
+        *head = next;
+    else
+        prev->next = next;
+    if (node->player->tmp_command != NULL)
+        my_free(node->player->tmp_command);
+    my_free(node->player->team_name);
+    my_free(node->player);
+    my_free(node);
+}
+
 void remove_node_poll_handling(poll_handling_t **head, int fd)
 {
     poll_handling_t *node = *head;
@@ -50,12 +72,9 @@ void remove_node_poll_handling(poll_handling_t **head, int fd)
 
     while (node != NULL) {
         next = node->next;
-        if (node->poll_fd.fd == fd) {
-            if (prev == NULL)
-                *head = next;
-            else
-                prev->next = next;
-        } else
+        if (node->poll_fd.fd == fd)
+            handle_node_removing(prev, node, next, head);
+        else
             prev = node;
         node = next;
     }

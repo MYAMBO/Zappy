@@ -14,6 +14,7 @@
     #include "garbage.h"
 
 char *get_unknown_command(void);
+char *get_command_parameter(void);
 char *get_server_message(char *message);
 
 #endif //ZAPPY_TECHNICAL_PROTOCOL_H

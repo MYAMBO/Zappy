@@ -73,9 +73,22 @@ namespace gui {
          */
         void setPosition(Vector3 position) override;
 
+        /**
+         * @brief Getters for the rotation around the Y-axis of the entity.
+         * @return Rotation around the Y-axis of the entity.
+         */
+        float getRotationY() override;
+
+        /**
+         * @brief Setters for the rotation around the Y-axis of the entity.
+         * @param rotationY Rotation around the Y-axis to set for the entity.
+         */
+        void setRotationY(float rotationY) override;
+
     protected:
         Color _color;
         Vector3 _position;
+        float _rotationY;
         float _scale;
         std::shared_ptr<Model> _model;
     };

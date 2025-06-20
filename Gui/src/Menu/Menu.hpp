@@ -57,6 +57,11 @@ namespace gui {
                  */
                 void closeWindow();
 
+                /**
+                 * @brief Handle the action when the settings button is clicked.
+                 */
+                void settingClicked();
+
                 SceneState &_sceneState;
                 int _frameCounter;
                 bool _serverIdActive;
@@ -64,6 +69,7 @@ namespace gui {
 
                 Button _playButton;
                 Button _exitButton;
+                Button _settingButton;
 
                 Rectangle _serverIdBox;
 

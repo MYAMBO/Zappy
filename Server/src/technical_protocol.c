@@ -30,3 +30,14 @@ char *get_unknown_command(void)
     snprintf(result, alloc + 1, "suc\n");
     return result;
 }
+
+char *get_command_parameter(void)
+{
+    int alloc = snprintf(NULL, 0, "sbp\n");
+    char *result = my_malloc(alloc + 1);
+
+    if (!result)
+        return NULL;
+    snprintf(result, alloc + 1, "sbp\n");
+    return result;
+}

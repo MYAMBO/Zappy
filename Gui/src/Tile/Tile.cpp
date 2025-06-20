@@ -5,11 +5,9 @@
 ** Tile.cpp
 */
 
-#include <utility>
-
 #include "Tile.hpp"
+#include "Logger.hpp"
 
-#include <utility>
 #include <functional>
 
 /************************************************************
@@ -17,17 +15,18 @@
 ************************************************************/
 
 
-gui::Tile::Tile(std::pair<int, int> coord, std::vector<int> qty, std::vector<std::shared_ptr<Model>> model) : _items(7) ,_qty(qty), _models(std::move(model)), _coord(std::move(coord))
+gui::Tile::Tile(std::pair<int, int> coord, std::vector<int> qty, std::vector<std::shared_ptr<Model>> model)
+    : _qty(qty), _coord(std::move(coord)), _models(std::move(model)), _items(7)
 {
     std::vector<std::shared_ptr<gui::AItem>> list;
 
-    this->addItem(qty[FOOD], FOOD);
-    this->addItem(qty[LINEMATE], LINEMATE);
-    this->addItem(qty[DERAUMERE], DERAUMERE);
-    this->addItem(qty[SIBUR], SIBUR);
-    this->addItem(qty[MENDIANE], MENDIANE);
-    this->addItem(qty[PHIRAS], PHIRAS);
-    this->addItem(qty[THYSTAME], THYSTAME);
+    addItem(qty[FOOD], FOOD);
+    addItem(qty[LINEMATE], LINEMATE);
+    addItem(qty[DERAUMERE], DERAUMERE);
+    addItem(qty[SIBUR], SIBUR);
+    addItem(qty[MENDIANE], MENDIANE);
+    addItem(qty[PHIRAS], PHIRAS);
+    addItem(qty[THYSTAME], THYSTAME);
 }
 
 gui::Tile::~Tile()
@@ -55,33 +54,32 @@ void gui::Tile::addItem(int qty, int type)
         throw ;
 
     for (int i = 0; i < qty; ++i)
-        this->_items[type].emplace_back(it->second());
-    this->_qty[type] += qty;
+        _items[type].emplace_back(it->second());
+    _qty[type] += qty;
 }
 
 
 void gui::Tile::delItem(int qty, int type)
 {
-    auto& itemVec = this->_items[type];
+    auto& itemVec = _items[type];
     for (int i = 0; i < qty && !itemVec.empty(); ++i)
         itemVec.pop_back();
-    this->_qty[type] -= qty;
+    _qty[type] -= qty;
 }
 
 void gui::Tile::displayTile(std::vector<int> displayItem)
 {
     int eltType = FOOD;
 
-    for (const auto& type: this->_items) {
+    for (const auto& type: _items) {
         for (const auto& item: type) {
-            if (displayItem[eltType] == 1)
-                DrawModel(*item->getModel(), item->getPosition(), item->getScale(), item->getColor()); // ask if bad practice
+            if (displayItem[eltType] == 1) {
+                DrawModelEx(*item->getModel(), item->getPosition(), Vector3{0, 1, 0}, item->getRotationY(), {item->getScale(), item->getScale(), item->getScale()}, item->getColor());
+            }
         }
         ++eltType;
     }
-
-
-    Vector3 position = {(float)this->_coord.first, 0, (float)this->_coord.second};
+    Vector3 position = {(float)_coord.first, 0, (float)_coord.second};
     DrawCube(position, 1.0f, 1.0f, 1.0f, {61, 110, 49, 255});
     DrawCubeWires(position, 1.0f, 1.0f, 1.0f, {61, 0, 49, 255});
 }

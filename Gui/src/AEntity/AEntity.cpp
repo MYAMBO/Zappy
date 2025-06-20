@@ -8,7 +8,8 @@
 #include "AEntity.hpp"
 
 #include "Logger.hpp"
-gui::AEntity::AEntity(Vector3 position, float scale, Color color) : _color(color), _position(position), _scale(scale)
+gui::AEntity::AEntity(Vector3 position, float scale, Color color)
+    : _color(color), _position(position), _scale(scale)
 {
 }
 
@@ -59,4 +60,14 @@ void gui::AEntity::setScale(float scale)
 std::string gui::AEntity::getType()
 {
     return "AEntity";
+}
+
+float gui::AEntity::getRotationY()
+{
+    return _rotationY;
+}
+
+void gui::AEntity::setRotationY(float rotationY)
+{
+    _rotationY = rotationY;
 }

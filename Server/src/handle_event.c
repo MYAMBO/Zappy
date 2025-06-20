@@ -8,81 +8,139 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "server.h"
 #include <arpa/inet.h>
 #include <unistd.h>
+#include "commands.h"
+#include "garbage.h"
+#include "handle_connection.h"
+#include "logger.h"
+#include "split_string.h"
 
-int create_new_connection(server_t *server)
+int handle_client_error(ssize_t bytes_read, server_t *server,
+    poll_handling_t *node)
 {
-    struct sockaddr_in peer_addr;
-    socklen_t addr_len = sizeof(peer_addr);
-    int client_fd = accept(server->server_fd,
-        (struct sockaddr*)(&peer_addr), &addr_len);
-
-    if (client_fd == -1)
+    if (bytes_read < 0) {
+        perror("read failed");
+        remove_node_poll_handling(&server->poll_list, node->poll_fd.fd);
+        close(node->poll_fd.fd);
+        server->poll_count--;
         return FAILURE;
-    if (append_node_poll_handling(&server->poll_list, client_fd) == FAILURE)
-        return FAILURE;
-    if (write(client_fd, "Welcome to Zappy\n", 17) < 0)
-        return FAILURE;
-    server->poll_count++;
-    return SUCCESS;
+    }
+    if (bytes_read == 0) {
+        if (send_message_disconnect(node) == FAILURE)
+            return FAILURE;
+        close(node->poll_fd.fd);
+        if (node->player->connected && disconnect_player
+            (server->team_names, node->player->id) == FAILURE)
+            return FAILURE;
+        remove_node_poll_handling(&server->poll_list, node->poll_fd.fd);
+        server->poll_count--;
+        return SUCCESS;
+    }
+    return 1;
 }
 
-int handle_connection(server_t *server, struct pollfd poll)
+int handle_command_concat(poll_handling_t *node, char *buffer)
 {
-    if (poll.revents & POLLIN && poll.fd == server->server_fd) {
-        if (create_new_connection(server) == 84)
+    char *tmp_concat = my_malloc(sizeof(node->player->tmp_command)
+            + sizeof(buffer) + 1);
+
+    if (node->player->tmp_command == NULL) {
+        node->player->tmp_command = my_malloc(sizeof(buffer));
+        if (node->player->tmp_command == NULL)
             return FAILURE;
-        return 1;
+        strcpy(node->player->tmp_command, buffer);
+    } else {
+        if (tmp_concat == NULL)
+            return FAILURE;
+        strcpy(tmp_concat, node->player->tmp_command);
+        strcat(tmp_concat, buffer);
+        my_free(node->player->tmp_command);
+        node->player->tmp_command = tmp_concat;
     }
     return SUCCESS;
 }
 
-// BE CAREFUL BUFFER LIMITED TO 1024 !
-int handle_command(server_t *server, struct pollfd poll)
+int handle_merge_command(char **concat_command, char *buffer,
+    poll_handling_t *node)
+{
+    char *command = strtok(buffer, "\n");
+
+    if (node->player->tmp_command != NULL) {
+        *concat_command = my_malloc(sizeof(node->player->tmp_command)
+            + sizeof(buffer) + 1);
+        if (*concat_command == NULL)
+            return FAILURE;
+        strcpy(*concat_command, node->player->tmp_command);
+        if (command == NULL)
+            return FAILURE;
+        strcat(*concat_command, command);
+        my_free(node->player->tmp_command);
+        node->player->tmp_command = NULL;
+    } else {
+        *concat_command = my_malloc(sizeof(buffer) + 1);
+        if (*concat_command == NULL)
+            return FAILURE;
+        strcpy(*concat_command, buffer);
+    }
+    return SUCCESS;
+}
+
+static int handle_command_execution(char *buffer, server_t *server,
+    poll_handling_t *node)
+{
+    char *concat_command = NULL;
+    int handle_value = 0;
+
+    if (strstr(buffer, "\n") == NULL) {
+        handle_value = handle_command_concat(node, buffer);
+        if (handle_value == FAILURE)
+            return FAILURE;
+        return SUCCESS;
+    }
+    if (handle_merge_command(&concat_command, buffer, node) == FAILURE)
+        return FAILURE;
+    if (execute_command(concat_command, server, node) == FAILURE)
+        return FAILURE;
+    return 1;
+}
+
+int handle_command(server_t *server, poll_handling_t *node)
 {
     char buffer[1024] = {0};
+    ssize_t bytes_read = 0;
+    int handle_value = 0;
 
-    if (poll.revents & POLLIN) {
-        ssize_t bytes_read = read(poll.fd, buffer, 1023);
-        buffer[bytes_read] = '\0';
-        if (bytes_read < 0) {
-            perror("read failed");
-            remove_node_poll_handling(&server->poll_list, poll.fd);
-            close(poll.fd);
-            server->poll_count--;
-            return FAILURE;
-        }
-        if (bytes_read == 0) {
-            close(poll.fd);
-            remove_node_poll_handling(&server->poll_list, poll.fd);
-            server->poll_count--;
-            return FAILURE;
-        }
-        if (strncmp(buffer, "quit", 4) == 0) {
-            close(poll.fd);
-            remove_node_poll_handling(&server->poll_list, poll.fd);
-            server->poll_count--;
-            return SUCCESS;
-        }
-    }
+    if (!(node->poll_fd.revents & POLLIN))
+        return SUCCESS;
+    bytes_read = read(node->poll_fd.fd, buffer,
+        sizeof(buffer) - 1);
+    handle_value = handle_client_error(bytes_read, server, node);
+    if (handle_value != 1)
+        return handle_value;
+    handle_value = handle_command_execution(buffer, server, node);
+    if (handle_value != 1)
+        return handle_value;
     return SUCCESS;
 }
 
 int handle_event(server_t *server)
 {
     int val_connection;
+    poll_handling_t *next = NULL;
 
     for (poll_handling_t *node = server->poll_list;
-        node != NULL; node = node->next) {
+        node != NULL; node = next) {
+        next = node->next;
         val_connection = handle_connection(server, node->poll_fd);
         if (val_connection == FAILURE)
             return FAILURE;
         if (val_connection == 1)
             continue;
-        val_connection = handle_command(server, node->poll_fd);
+        val_connection = handle_command(server, node);
         if (val_connection == FAILURE)
             return FAILURE;
     }

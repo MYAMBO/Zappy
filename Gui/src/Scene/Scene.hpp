@@ -31,11 +31,13 @@
 
     #define SCREEN_WIDTH 1920
     #define SCREEN_HEIGHT 1080
+    #define TARGET_FPS 60
 
     
 namespace gui {
     namespace ui {
         class Menu;
+        class Settings;
     };
 
     class Player;
@@ -49,7 +51,8 @@ namespace gui {
     enum class SceneState {
         MENU = 0,
         GAME = 1,
-        EXIT = 2
+        SETTINGS = 2,
+        EXIT = 3
     };
 
     class Scene {
@@ -105,29 +108,32 @@ namespace gui {
              */
             void eventToggleDisplay();
 
+            void initOrbitalCamera(const Vector3& target, float distance);
         private:
             Camera _camera;
             CamState _camState;
 
-            
             bool _isOpen;
             float _width;
             float _height;
-            std::unique_ptr<ui::Menu> _menu;
+
             SceneState _currentState;
+
+            std::unique_ptr<ui::Menu> _menu;
+            std::unique_ptr<ui::Settings> _settings;
+
+            std::shared_ptr<Model> _playerModel;
+
             std::vector<int> _itemDisplay;
             std::vector<std::shared_ptr<gui::Tile>> _map;
             std::vector<std::shared_ptr<gui::Player>> _players;
 
             // remove later from here
-
             static std::shared_ptr<Model> safeModelLoader(const std::string& string);
 
             std::vector<std::shared_ptr<Model>> _models;
 
             // to here
-
-            static const int TARGET_FPS = 60;
 
     };
 

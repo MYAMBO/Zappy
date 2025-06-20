@@ -8,6 +8,8 @@
 
 #include "options_parser.h"
 
+#include "slot_handler.h"
+
 int parse_port(char **av, server_t *server)
 {
     int found = 0;
@@ -100,31 +102,28 @@ int parse_clients_nb(char **av, server_t *server)
     nb_clients = atoi(av[nb + 1]);
     if (nb_clients <= 0)
         return FAILURE;
-    server->nb_clients = nb_clients;
+    server->client_per_slot = nb_clients;
     return SUCCESS;
 }
 
 static int show_current_team_name(server_t *server,
     char **av, int count, int back_nb)
 {
-    size_t len = 0;
-
     if (count == 0)
         return FAILURE;
-    server->team_names = my_malloc(sizeof(char *) * (count + 1));
+    server->team_names = my_malloc(sizeof(slot_table_t *) * (count + 1));
     if (!server->team_names)
         return FAILURE;
     for (int j = 0; j < count; j++) {
-        len = strlen(av[back_nb + j]);
-        server->team_names[j] = my_malloc(len + 1);
+        server->team_names[j] = create_slot_table(server->client_per_slot,
+            av[back_nb + j]);
         if (!server->team_names[j])
             return FAILURE;
-        strcpy(server->team_names[j], av[back_nb + j]);
     }
     server->team_names[count] = NULL;
     server->team_count = count;
     for (int k = 0; server->team_names[k] != NULL; k++)
-        printf("%s\n", server->team_names[k]);
+        printf("%s\n", server->team_names[k]->name);
     return SUCCESS;
 }
 

@@ -4,10 +4,12 @@
 ** File description:
 ** Scene
 */
+#include <math.h>
 
 #include "Menu.hpp"
 #include "Scene.hpp"
 #include "Player.hpp"
+#include "Settings.hpp"
 
 
 /************************************************************
@@ -16,11 +18,10 @@
 
 
 gui::Scene::Scene()
-    : _camState(CamState::WORLD), _isOpen(true), _width(WIDTH), _height(HEIGHT), _currentState(SceneState::GAME), _models() //don't forget here
+    : _camState(CamState::WORLD), _isOpen(true), _width(WIDTH), _height(HEIGHT), _currentState(SceneState::MENU), _models() //don't forget here
 {
     Debug::ClearLogFile();
     Debug::InfoLog("Zappy started");
-
     initWindow();
 
     // remove later from here
@@ -35,9 +36,11 @@ gui::Scene::Scene()
 
     // to here
 
-    this->_menu = std::make_unique<gui::ui::Menu>(this->_currentState, SCREEN_WIDTH, SCREEN_HEIGHT);
-    this->_itemDisplay = {1, 1, 1, 1, 1, 1, 1};
-    this->_menu->initMenuUI();
+    _menu = std::make_unique<gui::ui::Menu>(_currentState, SCREEN_WIDTH, SCREEN_HEIGHT);
+    _settings = std::make_unique<gui::ui::Settings>(_currentState, SCREEN_WIDTH, SCREEN_HEIGHT);
+    _itemDisplay = {1, 1, 1, 1, 1, 1, 1};
+    _menu->initMenuUI();
+    _settings->initSettingsUI();
     initMap();
 }
 
@@ -65,9 +68,7 @@ void gui::Scene::initMap()
     for (int y = 0; y < HEIGHT; ++y) {
         for (int x = 0; x < WIDTH; ++x) {
             std::pair<int, int> coord = {x, y};
-
             std::vector<int> qty;
-
             qty.emplace_back(1);
             qty.emplace_back(1);
             qty.emplace_back(1);
@@ -75,44 +76,79 @@ void gui::Scene::initMap()
             qty.emplace_back(1);
             qty.emplace_back(1);
             qty.emplace_back(1);
-
-            this->_map.emplace_back(std::make_shared<gui::Tile>(coord, qty, this->_models)); // remove model here
+            _map.emplace_back(std::make_shared<gui::Tile>(coord, qty, _models));
         }
     }
     for (int x = 0; (float)x < 10; ++x) {
         std::pair<int, int> coord = {GetRandomValue(0, (int)WIDTH - 1), GetRandomValue(0, (int)HEIGHT - 1)};
-        this->_players.emplace_back(std::make_shared<gui::Player>(x, coord, North, 1, "toto", 1, SCREEN_WIDTH, SCREEN_HEIGHT, this->_camera, this->_camState));
+        _players.emplace_back(std::make_shared<gui::Player>(x, coord, North, 1, "toto", 0.8f, SCREEN_WIDTH, SCREEN_HEIGHT, _camera, _camState));
     }
 }
 
 void gui::Scene::displayEntity()
 {
-    for (auto& tile : this->_map) {
-        tile->displayTile(this->_itemDisplay);
+    for (auto& tile : _map) {
+        tile->displayTile(_itemDisplay);
     }
-    for (auto& player : this->_players) {
+    for (auto& player : _players) {
         player->draw();
     }
 }
 
+void gui::Scene::initOrbitalCamera(const Vector3& target, float distance)
+{
+    float theta = 45.0f * DEG2RAD;
+    float phi = 30.0f * DEG2RAD;
+
+    _camera.target = target;
+    _camera.position = {
+        target.x + distance * cosf(phi) * cosf(theta),
+        target.y + distance * sinf(phi),
+        target.z + distance * cosf(phi) * sinf(theta)
+    };
+    _camera.up = {0.0f, 1.0f, 0.0f};
+    _camera.fovy = 45.0f;
+    _camera.projection = CAMERA_PERSPECTIVE;
+}
+
+
 void gui::Scene::handleInput()
 {
     if (IsKeyPressed(KEY_ESCAPE)) {
-        if (this->_camState == CamState::WORLD) {
-            this->_currentState = SceneState::MENU;
+        if (_camState == CamState::WORLD) {
+            _currentState = SceneState::MENU;
         }
-        else if (this->_camState == CamState::PLAYER) {
-            this->_camState = CamState::WORLD;
+        else if (_camState == CamState::PLAYER) {
+            _camera = { { -_width, 10.0f, -_height}, { _width / 2, 0.0f, _height / 2 }, { 0.0f, 1.0f, 0.0f }, 45.0f, 0 };
+            _camState = CamState::WORLD;
         }
     }
-    for (auto& player : this->_players)
-        player->update(this->_camera);
+    for (auto& player : _players)
+        player->update(_camera);
     if (IsKeyDown(KEY_LEFT_CONTROL)) {
-        if (this->_camState == CamState::WORLD) {
-            UpdateCamera(&this->_camera, CAMERA_THIRD_PERSON);
+        if (_camState == CamState::WORLD) {
+            UpdateCamera(&_camera, CAMERA_THIRD_PERSON);
         }
-        else if (this->_camState == CamState::PLAYER) {
-            UpdateCamera(&this->_camera, CAMERA_ORBITAL);
+        else if (_camState == CamState::PLAYER) {
+            for (auto& player : _players) {
+                if (player->getSelected() && !player->getIsMoving()) {
+                    UpdateCamera(&_camera, CAMERA_ORBITAL);
+                }
+            }
+        }
+    }
+    if (_camState == CamState::PLAYER) {
+        for (auto& player : _players) {
+            if (player->getSelected()) {
+                if (player->getIsMoving()) {
+                    _camera.target = player->getPosition();
+                    _camera.position = {
+                        player->getPosition().x - 2.0f,
+                        player->getPosition().y + 2.0f,
+                        player->getPosition().z - 2.0f
+                    };
+                }
+            }
         }
     }
 }
@@ -120,14 +156,14 @@ void gui::Scene::handleInput()
 void gui::Scene::render()
 {
     BeginDrawing();
-    if (this->_camera.position.y < 0.1f) {
-        this->_camera.position.y = 0.1f;
+    if (_camera.position.y < 0.1f) {
+        _camera.position.y = 0.1f;
     }
     ClearBackground(BLACK);
-    BeginMode3D(this->_camera);
+    BeginMode3D(_camera);
     displayEntity();
     EndMode3D();
-    for (auto& player : this->_players) {
+    for (auto& player : _players) {
         player->drawUI();
         player->updateUI();
     }
@@ -136,27 +172,34 @@ void gui::Scene::render()
 
 bool gui::Scene::isOpen() const
 {
-    return this->_isOpen && !WindowShouldClose();
+    return _isOpen;
 }
 
 void gui::Scene::update()
 {
-    if (!this->_isOpen) {
+    if (!_isOpen) {
         return;
     }
-
-    switch (this->_currentState) {
+    switch (_currentState) {
         case SceneState::GAME:
             eventToggleDisplay();
             handleInput();
             render();
+            if (IsKeyPressed(KEY_J)) {                                                                  // Debugging key to move players
+                _players[0]->setBroadcasting(true);
+            }
             break;
         case SceneState::EXIT:
-            this->_isOpen = false;
+            Debug::InfoLog("[GUI] Exit state reached, closing window");
+            _isOpen = false;
             break;
         case SceneState::MENU:
-            this->_menu->handleMenuInput();
-            this->_menu->drawMainMenu();
+            _menu->handleMenuInput();
+            _menu->drawMainMenu();
+            break;
+        case SceneState::SETTINGS:
+            _settings->handleSettingsInputs();
+            _settings->drawSettings();
             break;
     }
 }
@@ -172,57 +215,55 @@ std::shared_ptr<Model> gui::Scene::safeModelLoader(const std::string& string)
     return model;
 }
 
-      void gui::Scene::eventToggleDisplay()
+void gui::Scene::eventToggleDisplay()
 {
-    // when & is pressed
     if (IsKeyPressed(KEY_ONE)) {
-        if (this->_itemDisplay[gui::Tile::FOOD] == 0) {
-            this->_itemDisplay[gui::Tile::FOOD] = 1;
+        if (_itemDisplay[gui::Tile::FOOD] == 0) {
+            _itemDisplay[gui::Tile::FOOD] = 1;
         } else {
-            Debug::InfoLog("[GUI] Food display toggled");
-            this->_itemDisplay[gui::Tile::FOOD] = 0;
+            _itemDisplay[gui::Tile::FOOD] = 0;
         }
     }
     if (IsKeyPressed(KEY_TWO)) {
-        if (this->_itemDisplay[gui::Tile::LINEMATE] == 0) {
-            this->_itemDisplay[gui::Tile::LINEMATE] = 1;
+        if (_itemDisplay[gui::Tile::LINEMATE] == 0) {
+            _itemDisplay[gui::Tile::LINEMATE] = 1;
         } else {
-            this->_itemDisplay[gui::Tile::LINEMATE] = 0;
+            _itemDisplay[gui::Tile::LINEMATE] = 0;
         }
     }
     if (IsKeyPressed(KEY_THREE)) {
-        if (this->_itemDisplay[gui::Tile::DERAUMERE] == 0) {
-            this->_itemDisplay[gui::Tile::DERAUMERE] = 1;
+        if (_itemDisplay[gui::Tile::DERAUMERE] == 0) {
+            _itemDisplay[gui::Tile::DERAUMERE] = 1;
         } else {
-            this->_itemDisplay[gui::Tile::DERAUMERE] = 0;
+            _itemDisplay[gui::Tile::DERAUMERE] = 0;
         }
     }
     if (IsKeyPressed(KEY_FOUR)) {
-        if (this->_itemDisplay[gui::Tile::SIBUR] == 0) {
-            this->_itemDisplay[gui::Tile::SIBUR] = 1;
+        if (_itemDisplay[gui::Tile::SIBUR] == 0) {
+            _itemDisplay[gui::Tile::SIBUR] = 1;
         } else {
-            this->_itemDisplay[gui::Tile::SIBUR] = 0;
+            _itemDisplay[gui::Tile::SIBUR] = 0;
         }
     }
     if (IsKeyPressed(KEY_FIVE)) {
-        if (this->_itemDisplay[gui::Tile::MENDIANE] == 0) {
-            this->_itemDisplay[gui::Tile::MENDIANE] = 1;
+        if (_itemDisplay[gui::Tile::MENDIANE] == 0) {
+            _itemDisplay[gui::Tile::MENDIANE] = 1;
         } else {
-            this->_itemDisplay[gui::Tile::MENDIANE] = 0;
+            _itemDisplay[gui::Tile::MENDIANE] = 0;
         }
     }
     if (IsKeyPressed(KEY_SIX)) {
-        if (this->_itemDisplay[gui::Tile::PHIRAS] == 0) {
-            this->_itemDisplay[gui::Tile::PHIRAS] = 1;
+        if (_itemDisplay[gui::Tile::PHIRAS] == 0) {
+            _itemDisplay[gui::Tile::PHIRAS] = 1;
         } else {
-            this->_itemDisplay[gui::Tile::PHIRAS] = 0;
+            _itemDisplay[gui::Tile::PHIRAS] = 0;
         }
     }
     if (IsKeyPressed(KEY_SEVEN)) {
-        if (this->_itemDisplay[gui::Tile::THYSTAME] == 0) {
-            this->_itemDisplay[gui::Tile::THYSTAME] = 1;
+        if (_itemDisplay[gui::Tile::THYSTAME] == 0) {
+            _itemDisplay[gui::Tile::THYSTAME] = 1;
         } else {
-            this->_itemDisplay[gui::Tile::THYSTAME] = 0;
+            _itemDisplay[gui::Tile::THYSTAME] = 0;
         }
     }
 }

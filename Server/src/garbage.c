@@ -9,8 +9,9 @@
 
 #include <stdlib.h>
 #include "garbage.h"
+#include <string.h>
 
-garbage_t *create_node_garbage(void *ptr)
+static garbage_t *create_node_garbage(void *ptr)
 {
     garbage_t *node = malloc(sizeof(garbage_t));
 
@@ -21,7 +22,7 @@ garbage_t *create_node_garbage(void *ptr)
     return node;
 }
 
-int append_node_garbage(garbage_t **head, void *data)
+static int append_node_garbage(garbage_t **head, void *data)
 {
     garbage_t *new_node = create_node_garbage(data);
 
@@ -36,7 +37,7 @@ int append_node_garbage(garbage_t **head, void *data)
     return 0;
 }
 
-garbage_t **get_garbage(void)
+static garbage_t **get_garbage(void)
 {
     static garbage_t *head = NULL;
 
@@ -69,5 +70,30 @@ void *my_malloc(size_t size)
         free(pointer);
         return NULL;
     }
+    memset(pointer, 0, size);
     return pointer;
+}
+
+void my_free(void *ptr)
+{
+    garbage_t **current = get_garbage();
+    garbage_t *temp;
+
+    while (*current) {
+        if ((*current)->data == ptr) {
+            temp = *current;
+            *current = (*current)->next;
+            free(temp->data);
+            free(temp);
+            return;
+        }
+        current = &(*current)->next;
+    }
+}
+
+void my_free_array(char **ptr)
+{
+    for (int i = 0; ptr[i] != NULL; i++)
+        my_free(ptr[i]);
+    my_free(ptr);
 }
