@@ -22,16 +22,13 @@ SERVER_SRC = 												\
                 Server/src/handle_connection.c				\
 				Server/src/technical_protocol.c 			\
 				Server/src/player_informations_protocol.c 	\
-				Server/src/split_string.c \
-                Server/src/init_player.c \
                 Server/src/unique_connection_id_getter.c \
                 Server/src/commands/command_quit.c	\
-                Server/src/handle_connection.c	\
-                Server/src/commands/command_quit.c			\
 				Server/src/actions_communication.c          \
 				Server/src/inventory_communication.c        \
 				Server/src/movements_communication.c		\
 				Server/src/slot_handler.c	\
+				Server/src/command_execution.c	\
 
 GUI_SRC = 												\
 				Gui/src/main.cpp 						\
