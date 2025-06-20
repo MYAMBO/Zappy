@@ -18,8 +18,15 @@
 **         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
 ************************************************************/
 
-gui::Client::Client() : _socket(), _serverAddr(), _Players()
+gui::Client::Client() : _socket(), _serverAddr(), _Players(), _models()
 {
+    this->_models.emplace_back(safeModelLoader("assets/food/scene.gltf"));
+    this->_models.emplace_back(safeModelLoader("assets/linemate/scene.gltf"));
+    this->_models.emplace_back(safeModelLoader("assets/deraumere/scene.gltf"));
+    this->_models.emplace_back(safeModelLoader("assets/sibur/scene.gltf"));
+    this->_models.emplace_back(safeModelLoader("assets/mendiane/scene.gltf"));
+    this->_models.emplace_back(safeModelLoader("assets/phiras/scene.gltf"));
+    this->_models.emplace_back(safeModelLoader("assets/thystame/scene.gltf"));
 }
 
 gui::Client::~Client()
@@ -60,13 +67,7 @@ void gui::Client::bct(const std::string& string)
 {
     std::vector<std::string> list;
     std::pair<int, int> coord;
-    int food;
-    int linemate;
-    int deraumere;
-    int sibur;
-    int mendiane;
-    int phiras;
-    int thystame;
+    std::vector<int> quantity;
 
     list = gui::Client::splitString(string);
 
@@ -75,18 +76,11 @@ void gui::Client::bct(const std::string& string)
 
     coord.first = atoi(list[1].c_str());
     coord.first = atoi(list[2].c_str());
-    food = atoi(list[3].c_str());
-    linemate = atoi(list[4].c_str());
-    deraumere = atoi(list[5].c_str());
-    sibur = atoi(list[6].c_str());
-    mendiane = atoi(list[7].c_str());
-    phiras = atoi(list[8].c_str());
-    thystame = atoi(list[9].c_str());
+    for (int i = 3; i < 9 && i < list.size(); ++i)
+        quantity.push_back(atoi(list[i].c_str()));
 
-    if (coord.first && coord.second &&
-        food && linemate && deraumere &&
-        sibur && mendiane && phiras && thystame)
-        this->_Map.emplace_back(std::make_shared<Tile>(coord, food, linemate, deraumere, sibur, mendiane, phiras, thystame));
+    if (coord.first && coord.second && quantity.size() == 7)
+        this->_Map.emplace_back(std::make_shared<Tile>(coord, quantity, this->_models));
     else
         throw gui::WrongTileValue();
 }

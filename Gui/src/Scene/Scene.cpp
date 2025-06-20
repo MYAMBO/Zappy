@@ -16,12 +16,14 @@
 
 
 gui::Scene::Scene()
-    : _camState(CamState::WORLD), _isOpen(true), _width(WIDTH), _height(HEIGHT), _currentState(SceneState::GAME), _models()
+    : _camState(CamState::WORLD), _isOpen(true), _width(WIDTH), _height(HEIGHT), _currentState(SceneState::GAME), _models() //don't forget here
 {
     Debug::ClearLogFile();
     Debug::InfoLog("Zappy started");
 
     initWindow();
+
+    // remove later from here
 
     this->_models.emplace_back(safeModelLoader("assets/food/scene.gltf"));
     this->_models.emplace_back(safeModelLoader("assets/linemate/scene.gltf"));
@@ -30,6 +32,8 @@ gui::Scene::Scene()
     this->_models.emplace_back(safeModelLoader("assets/mendiane/scene.gltf"));
     this->_models.emplace_back(safeModelLoader("assets/phiras/scene.gltf"));
     this->_models.emplace_back(safeModelLoader("assets/thystame/scene.gltf"));
+
+    // to here
 
     this->_menu = std::make_unique<gui::ui::Menu>(this->_currentState, SCREEN_WIDTH, SCREEN_HEIGHT);
     this->_itemDisplay = {1, 1, 1, 1, 1, 1, 1};
@@ -72,7 +76,7 @@ void gui::Scene::initMap()
             qty.emplace_back(1);
             qty.emplace_back(1);
 
-            this->_map.emplace_back(std::make_shared<gui::Tile>(coord, qty, this->_models));
+            this->_map.emplace_back(std::make_shared<gui::Tile>(coord, qty, this->_models)); // remove model here
         }
     }
     for (int x = 0; (float)x < 10; ++x) {

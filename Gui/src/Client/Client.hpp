@@ -70,6 +70,7 @@ namespace gui {
             void sbp(std::string string); // command parameter
 
             static std::vector<std::string> splitString(const std::string &string);
+            static std::shared_ptr<Model> safeModelLoader(const std::string& string);
             int findPlayer(int id);
 
 
@@ -77,6 +78,7 @@ namespace gui {
             sockaddr_in _serverAddr;
             std::vector<std::shared_ptr<gui::Player>> _Players;
             std::vector<std::shared_ptr<gui::Tile>> _Map;
+            std::vector<std::shared_ptr<Model>> _models;
     };
 
     class WrongPlayerValue : public std::exception {
