@@ -5,11 +5,9 @@
 ** Tile.cpp
 */
 
-#include <utility>
-
 #include "Tile.hpp"
+#include "Logger.hpp"
 
-#include <utility>
 #include <functional>
 
 /************************************************************
@@ -17,7 +15,8 @@
 ************************************************************/
 
 
-gui::Tile::Tile(std::pair<int, int> coord, std::vector<int> qty, std::vector<std::shared_ptr<Model>> model) : _items(7) ,_qty(qty), _models(std::move(model)), _coord(std::move(coord))
+gui::Tile::Tile(std::pair<int, int> coord, std::vector<int> qty, std::vector<std::shared_ptr<Model>> model)
+    : _qty(qty), _coord(std::move(coord)), _models(std::move(model)), _items(7)
 {
     std::vector<std::shared_ptr<gui::AItem>> list;
 
@@ -74,13 +73,12 @@ void gui::Tile::displayTile(std::vector<int> displayItem)
 
     for (const auto& type: _items) {
         for (const auto& item: type) {
-            if (displayItem[eltType] == 1)
-                DrawModel(*item->getModel(), item->getPosition(), item->getScale(), item->getColor()); // ask if bad practice
+            if (displayItem[eltType] == 1) {
+                DrawModelEx(*item->getModel(), item->getPosition(), Vector3{0, 1, 0}, item->getRotationY(), {item->getScale(), item->getScale(), item->getScale()}, item->getColor());
+            }
         }
         ++eltType;
     }
-
-
     Vector3 position = {(float)_coord.first, 0, (float)_coord.second};
     DrawCube(position, 1.0f, 1.0f, 1.0f, {61, 110, 49, 255});
     DrawCubeWires(position, 1.0f, 1.0f, 1.0f, {61, 0, 49, 255});
