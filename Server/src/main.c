@@ -44,7 +44,6 @@ map_t *init_test_map(int width, int height)
 }
 
 //create one AI to test
-
 ai_stats_t *create_test_ai(int id, const char *team_name, server_t *server)
 {
     ai_stats_t *ai = malloc(sizeof(ai_stats_t));
