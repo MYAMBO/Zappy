@@ -5,7 +5,7 @@
 ## test
 ##
 
-from Ai.src.getWay import get_better_way_to_resources
+from getWay import get_better_way_to_resources
 
 def test_get_better_way_to_resources():
     sorted_tiles = [[0], [2], [6], [3, 1], [7, 5], [8, 4]]

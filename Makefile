@@ -76,6 +76,8 @@ ALL_FLAGS = $(SERVER_FLAGS) $(GUI_FLAGS)
 CFLAGS = -Werror -Wall -Wextra -Iinclude
 TEST_FLAGS = --coverage -lcriterion $(CFLAGS) $(ALL_FLAGS)
 
+PYTHONPATH = Ai/src
+
 NC = \033[0m
 RED = \033[1;31m
 BLUE = \033[1;34m

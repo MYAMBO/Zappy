@@ -5,7 +5,7 @@
 ## test_Connection
 ##
 
-from Ai.src.Client import Client, ClientError
+from Client import Client, ClientError
 
 def test_connection():
     client = Client("a non existant server", 12345)
