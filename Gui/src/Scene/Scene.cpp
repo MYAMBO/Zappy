@@ -182,8 +182,7 @@ void gui::Scene::update()
             handleInput();
             render();
             if (IsKeyPressed(KEY_J)) {                                                                  // Debugging key to move players
-                _players[0]->startMoveTo({static_cast<float>(GetRandomValue(0,                          // remove this when finish debugging
-                    (int)WIDTH - 1)), 0.5f, static_cast<float>(GetRandomValue(0, (int)HEIGHT - 1))});
+                _players[0]->setBroadcasting(true);
             }
             break;
         case SceneState::EXIT:
@@ -212,7 +211,7 @@ std::shared_ptr<Model> gui::Scene::safeModelLoader(const std::string& string)
     return model;
 }
 
-      void gui::Scene::eventToggleDisplay()
+void gui::Scene::eventToggleDisplay()
 {
     if (IsKeyPressed(KEY_ONE)) {
         if (_itemDisplay[gui::Tile::FOOD] == 0) {
