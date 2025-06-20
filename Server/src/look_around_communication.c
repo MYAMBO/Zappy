@@ -41,12 +41,12 @@ static void fill_tile_string(char *result, tile_context_t *ctx)
         count = ctx->map->tiles[ctx->y][ctx->x].resources[i];
         for (int j = 0; j < count; j++)
             offset += snprintf(result + offset,
-                1024 - offset, "%s ", names[i]);
+                1000 - offset, "%s ", names[i]);
     }
     for (poll_handling_t *tmp = ctx->players; tmp; tmp = tmp->next) {
         if (tmp->player && tmp->player->x
             == ctx->x && tmp->player->y == ctx->y)
-            offset += snprintf(result + offset, 1024 - offset,
+            offset += snprintf(result + offset, 1000 - offset,
                 "player ");
     }
     if (offset > 0 && result[offset - 1] == ' ')

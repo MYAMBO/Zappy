@@ -34,6 +34,6 @@ int get_dy(int dir, int d, int p)
 void free_tiles(char **tiles, size_t tile_count)
 {
     for (size_t i = 0; i < tile_count; i++)
-        free(tiles[i]);
-    free(tiles);
+        my_free(tiles[i]);
+    my_free(tiles);
 }
