@@ -23,6 +23,7 @@
 #include "movements_communication.h"
 #include "inventory_communication.h"
 #include "actions_communication.h"
+#include "look_around_communication.h"
 
 map_t *init_test_map(int width, int height)
 {
@@ -36,10 +37,10 @@ map_t *init_test_map(int width, int height)
         map->tiles[y] = my_malloc(sizeof(ressources_t) * width);
         for (int x = 0; x < width; x++) {
             for (int i = 0; i < 7; i++)
-                map->tiles[y][x].resources[i] = rand() % 100;
+                map->tiles[y][x].resources[i] = rand() % 1;
         }
     }
-    printf("%s", get_map_content(map));
+   // printf("%s", get_map_content(map));
     return map;
 }
 
@@ -89,6 +90,17 @@ int parse_arguments(int ac, char **av, server_t *server)
         return FAILURE;
     if (parse_freq(av, server) == FAILURE)
         return FAILURE;
+
+    map_t *map = init_test_map(5, 10);
+    ai_stats_t *ai = create_test_ai(0, "noot", server);
+
+    poll_handling_t *node = malloc(sizeof(poll_handling_t));
+    node->player = ai;
+    node->next = NULL;
+    server->poll_list = node;
+
+    printf("%s", player_looks_around(ai, server->poll_list, map));
+
     return SUCCESS;
 }
 
