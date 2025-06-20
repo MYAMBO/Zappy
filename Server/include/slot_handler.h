@@ -20,6 +20,7 @@ typedef struct slot_table_s {
     char *name;
     int nb_slots;
     int slots_remaining;
+    int id_slot_current;
     slot_t *slots;
 } slot_table_t;
 

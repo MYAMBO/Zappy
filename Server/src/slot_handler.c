@@ -8,16 +8,21 @@
 */
 
 #include "slot_handler.h"
+
+#include <time.h>
+
 #include "garbage.h"
 #include "server.h"
 
-slot_t *init_slot(const slot_table_t *table)
+
+static slot_t *init_slot(slot_table_t *table)
 {
     slot_t *slot = my_malloc(sizeof(slot_t));
 
     if (!slot)
         return NULL;
-    slot->id_slot = table->nb_slots - table->slots_remaining;
+    slot->id_slot = table->id_slot_current;
+    table->id_slot_current = table->id_slot_current + 1;
     slot->id_user = -1;
     slot->next = NULL;
     return slot;
@@ -37,6 +42,32 @@ int add_slot(slot_table_t *slot_table)
     for (tmp = slot_table->slots; tmp->next; tmp = tmp->next);
     tmp->next = slot;
     return SUCCESS;
+}
+
+static void handle_node_removing(slot_t *prev, slot_t *node,
+    slot_t *next, slot_t **head)
+{
+    if (prev == NULL)
+        *head = next;
+    else
+        prev->next = next;
+    my_free(node);
+}
+
+void remove_slot(slot_t **slot_table, int id_slot)
+{
+    slot_t *node = *slot_table;
+    slot_t *prev = NULL;
+    slot_t *next;
+
+    while (node != NULL) {
+        next = node->next;
+        if (node->id_slot == id_slot)
+            handle_node_removing(prev, node, next, slot_table);
+        else
+            prev = node;
+        node = next;
+    }
 }
 
 int connect_player(slot_table_t *slot_table, int id_user)
@@ -60,8 +91,7 @@ static int disconnect_player_helper(slot_table_t **slot_table,
     for (slot_t *slot = slot_table[i]->slots; slot != NULL;
             slot = slot->next) {
         if (slot->id_user == id_user) {
-            slot->id_user = -1;
-            slot_table[i]->slots_remaining++;
+            remove_slot(&slot_table[i]->slots, slot->id_slot);
             return SUCCESS;
         }
     }
@@ -90,6 +120,7 @@ slot_table_t *create_slot_table(int nb_slots, char *name)
     slot_table->nb_slots = nb_slots;
     slot_table->name = name;
     slot_table->slots = NULL;
+    slot_table->id_slot_current = 0;
     for (int i = 0; i < nb_slots; i++) {
         error_num = add_slot(slot_table);
         if (error_num == FAILURE)
