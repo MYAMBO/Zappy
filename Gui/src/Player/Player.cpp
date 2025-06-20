@@ -69,6 +69,7 @@ void gui::Player::draw()
     if (_isSelected) {
         DrawCubeWires(_position, _scale, _scale, _scale, {255, 0, 0, 255});
     }
+    broadcastAnimation();
 }
 
 void gui::Player::drawUI()
@@ -138,6 +139,23 @@ void gui::Player::HandleCamButton(Camera3D &camera, CamState &sceneState)
     sceneState = CamState::PLAYER;
 }
 
+void gui::Player::broadcastAnimation()
+{
+    if (!_isBroadcasting)
+        return;
+    _broadcastTimer += GetFrameTime();
+    float t = _broadcastTimer / _broadcastDuration;
+    if (t > 1.0f) {
+        _isBroadcasting = false;
+        return;
+    }
+    float scale = Lerp(0.5f, 9.0f, t);
+    float alpha = Lerp(0.8f, 0.0f, t);
+    Color color = { 0, 150, 255, static_cast<unsigned char>(alpha * 255) };
+    Vector3 pos = getPosition();
+    DrawSphere(pos, scale, color);
+}
+
 
 /************************************************************
 **              >>>>   GETTERS FUNCTIONS   <<<<            **
@@ -201,5 +219,13 @@ void gui::Player::setAnimationState(AnimState newState)
         _currentAnimState = newState;
         _currentAnim = static_cast<int>(newState);
         _animFrameCounter = 0;
+    }
+}
+
+void gui::Player::setBroadcasting(bool broadcasting)
+{
+    _isBroadcasting = broadcasting;
+    if (broadcasting) {
+        _broadcastTimer = 0.0f;
     }
 }
