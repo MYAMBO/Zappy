@@ -29,6 +29,9 @@ int start_server(server_t *server)
     int poll_val;
 
     while (1) {
+        if (server->team_names[0]->nb_slots == 0 &&
+            add_slot(server->team_names[0]) == FAILURE)
+            return FAILURE;
         poll_val = call_poll(server);
         if (poll_val == -1)
             return FAILURE;
@@ -37,4 +40,5 @@ int start_server(server_t *server)
         if (handle_event(server) == FAILURE)
             return FAILURE;
     }
+    return SUCCESS;
 }

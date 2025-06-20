@@ -14,6 +14,7 @@
 #include "logger.h"
 #include "server.h"
 #include "split_string.h"
+#include "graphic_connect.h"
 
 static int send_map_size_message(server_t *server,
     poll_handling_t *node)
@@ -82,6 +83,8 @@ static int send_slot_remaining(int *val, server_t *server,
 static int execute_command_loop(server_t *server,
     poll_handling_t *node, char **args)
 {
+    if (is_graphic_user(server, node))
+        return SUCCESS;
     for (int i = 0; commands_list[i].command != NULL; i++) {
         if (strcmp(args[0], commands_list[i].command) != 0)
             continue;

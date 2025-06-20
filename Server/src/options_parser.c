@@ -111,16 +111,19 @@ static int show_current_team_name(server_t *server,
 {
     if (count == 0)
         return FAILURE;
-    server->team_names = my_malloc(sizeof(slot_table_t *) * (count + 1));
+    server->team_names = my_malloc(sizeof(slot_table_t *) * (count + 2));
     if (!server->team_names)
         return FAILURE;
-    for (int j = 0; j < count; j++) {
+    for (int j = 1; j < count + 1; j++) {
         server->team_names[j] = create_slot_table(server->client_per_slot,
-            av[back_nb + j]);
+            av[back_nb + j - 1]);
         if (!server->team_names[j])
             return FAILURE;
     }
-    server->team_names[count] = NULL;
+    server->team_names[0] = create_slot_table(1, "GRAPHIC");
+    if (!server->team_names[0])
+        return FAILURE;
+    server->team_names[count + 1] = NULL;
     server->team_count = count;
     for (int k = 0; server->team_names[k] != NULL; k++)
         printf("%s\n", server->team_names[k]->name);

@@ -29,6 +29,7 @@ SERVER_SRC = 												\
 				Server/src/movements_communication.c		\
 				Server/src/slot_handler.c	\
 				Server/src/command_execution.c	\
+				Server/src/graphic_connect.c \
 
 GUI_SRC = 												\
 				Gui/src/main.cpp 						\
