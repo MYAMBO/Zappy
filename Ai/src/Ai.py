@@ -18,6 +18,7 @@ class Ai:
         self.__ai_to_follow = None
         self.__team_inventory = {}
         self.__must_follow = False
+        self.__needed_list = ["food", "sibur", "phiras", "thystame", "mendiane", "linemate", "deraumere"]
 
     def set_id(self, id):
         self.__id = id
@@ -68,15 +69,25 @@ class Ai:
         linemate += self.__inventory["linemate"]
         deraumere += self.__inventory["deraumere"]
         logger.info("global inventory : sibur : " +
-                    str(sibur) + ", phiras : " +
-                    str(phiras) + ", thystame : " +
-                    str(thystame) + ", mendiane : " +
-                    str(mendiane) + ", linemate : " +
-                    str(linemate) + ", deraumere : " +
-                    str(deraumere), Output.BOTH)
-        if sibur < 10 or phiras < 6 or thystame < 1 or mendiane < 5 or linemate < 9 or deraumere < 8:
-            return False
-        return True
+                    str(sibur) + "/10, phiras : " +
+                    str(phiras) + "/6, thystame : " +
+                    str(thystame) + "/1, mendiane : " +
+                    str(mendiane) + "/5, linemate : " +
+                    str(linemate) + "/9, deraumere : " +
+                    str(deraumere) + "/8", Output.BOTH)
+        if "sibur" in self.__needed_list and sibur >= 10:
+            self.__needed_list.remove("sibur")
+        if "phiras" in self.__needed_list and phiras >= 6:
+            self.__needed_list.remove("phiras")
+        if "thystame" in self.__needed_list and thystame >= 1:
+            self.__needed_list.remove("thystame")
+        if "mendiane" in self.__needed_list and mendiane >= 5:
+            self.__needed_list.remove("mendiane")
+        if "linemate" in self.__needed_list and linemate >= 9:
+            self.__needed_list.remove("linemate")
+        if "deraumere" in self.__needed_list and deraumere >= 8:
+            self.__needed_list.remove("deraumere")
+        return len(self.__needed_list) == 1
 
     def get_id(self):
         return self.__id
@@ -92,6 +103,9 @@ class Ai:
 
     def get_unused_slots(self):
         return self.__unused_slots
+    
+    def get_needed_list(self):
+        return self.__needed_list
 
     def add_object_to_inventory(self, object):
         try:

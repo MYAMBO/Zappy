@@ -49,7 +49,7 @@ def update_command_list(currentList, ai):
         view = ai.get_view()
         if view == None:
             return currentList
-        currentList = get_better_way_to_resources(get_visible_tiles_sorted_by_distance(list(range(len(view)))), view, None)
+        currentList = get_better_way_to_resources(get_visible_tiles_sorted_by_distance(list(range(len(view)))), view, ai.get_needed_list())
         currentList.append("Look")
         if currentList[0] == "Look":
             currentList.insert(0, "Forward")
