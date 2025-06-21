@@ -254,12 +254,11 @@ void gui::Client::pin(std::string string)
 void gui::Client::pex(std::string string)
 {
     std::vector<std::string> list = this->splitString(string);
-    int id;
 
     if (list.size() != 2)
         throw Error("Command with the wrong number of argument.");
 
-    id = atoi(list[1].c_str());
+    int id = atoi(list[1].c_str());
 
     if (id && findPlayer(id) == -1)
         throw Error("No player with this Id.");
@@ -286,19 +285,16 @@ void gui::Client::pbc(const std::string& string)
 void gui::Client::pic(std::string string)
 {
     std::vector<std::string> list = this->splitString(string);
-    int incantationLevel;
-    int posX = 0;
-    int posY = 0;
     std::pair<int, int> mapSize = msz();
     std::vector<int> playersId;
-    int id;
 
     if (list.size() < 5)
         throw Error("Command with the wrong number of argument.");
 
-    posX = atoi(list[1].c_str());
-    posY = atoi(list[2].c_str());
-    incantationLevel = atoi(list[3].c_str());
+    int posX = atoi(list[1].c_str());
+    int posY = atoi(list[2].c_str());
+    int incantationLevel = atoi(list[3].c_str());
+    int id;
 
     if (incantationLevel < 1 || incantationLevel > 7)
         throw Error("Incantation level is invalid");
@@ -316,7 +312,7 @@ void gui::Client::pic(std::string string)
         id = atoi(list[i].substr(1).c_str());
         if (id && findPlayer(id) == -1)
             throw Error("No player with this Id.");
-        playersId.emplace(id);
+//        playersId.emplace(id);
     }
 }
 
@@ -359,20 +355,21 @@ void gui::Client::pfk(std::string string)
 void gui::Client::pdr(std::string string)
 {
     std::vector<std::string> list = this->splitString(string);
-    int id;
-    int nbResources = -1;
 
     if (list.size() != 3)
         throw Error("Command with the wrong number of argument.");
 
-    id = atoi(list[1].substr(1).c_str());
-    nbResources = atoi(list[1].c_str());
+    int id = atoi(list[1].substr(1).c_str());
+    int nbResources = atoi(list[1].c_str());
 
     if (id && findPlayer(id) == -1)
         throw Error("No player with this Id.");
 
     if (nbResources < 0)
         Error("Resources can't have negative value");
+
+    // get Player and remove item
+    // addItem on Tile
 }
 
 // Resource collecting
@@ -393,19 +390,19 @@ void gui::Client::pgt(std::string string)
 
     if (nbResources < 0)
         Error("Resources can't have negative value");
+
+    // get Player and add item
+    // removeItem on Tile
 }
 
 // Player Death
 void gui::Client::pdi(const std::string& string)
 {
-    std::vector<std::string> list;
-    int id;
-    int indice;
+    std::vector<std::string> list = gui::Client::splitString(string);
 
-    list = gui::Client::splitString(string);
-    id = atoi(list[1].c_str());
+    int id = atoi(list[1].c_str());
 
-    indice = findPlayer(id);
+    int indice = findPlayer(id);
 
     if (indice == -1)
         throw Error("No player with this Id.");
@@ -463,6 +460,68 @@ void gui::Client::edi(std::string string)
         throw Error("Command with the wrong number of argument.");
 
     id = atoi(list[1].substr(1).c_str());
+}
+
+// time unit request
+void gui::Client::sgt(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+
+    if (list.size() != 2)
+        throw Error("Wrong number of parameter.");
+
+    int time_unit = atoi(list[1].c_str());
+}
+
+// time unit modification
+void gui::Client::sst(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+
+    if (list.size() != 2)
+        throw Error("Wrong number of parameter.");
+
+    int time_unit = atoi(list[1].c_str());
+}
+
+// end of game
+void gui::Client::seg(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+
+    if (list.size() != 2)
+        throw Error("Wrong number of parameter.");
+
+    std::string winner = list[1];
+}
+
+// message from the server
+void gui::Client::smg(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+
+    if (list.size() != 2)
+        throw Error("Wrong number of parameter.");
+
+    std::string message = list[1];
+}
+
+// unknown command
+void gui::Client::suc(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+
+    if (list.size() != 1)
+        throw Error("Wrong number of parameter.");
+}
+
+// command parameter
+void gui::Client::sbp(std::string string)
+{
+    std::vector<std::string> list = this->splitString(string);
+
+    if (list.size() != 1)
+        throw Error("Wrong number of parameter.");
 }
 
 /************************************************************
