@@ -24,6 +24,7 @@
 #include "inventory_communication.h"
 #include "actions_communication.h"
 #include "look_around_communication.h"
+#include "eject_communication.h"
 
 map_t *init_test_map(int width, int height)
 {
@@ -57,9 +58,9 @@ ai_stats_t *create_test_ai(int id, const char *team_name, server_t *server)
     ai->tmp_command = NULL;
     ai->id = id;
     ai->life = 126;
-    ai->x = server->map_height - 1;
-    ai->y = server->map_width;
-    ai->direction = NORTH;
+    ai->x = server->map_width - 1;
+    ai->y = server->map_height - 1;
+    ai->direction = WEST;
     ai->level = 1;
     ai->team_name = strdup(team_name);
     ai->nb_food = 3;
@@ -91,15 +92,19 @@ int parse_arguments(int ac, char **av, server_t *server)
     if (parse_freq(av, server) == FAILURE)
         return FAILURE;
 
-    map_t *map = init_test_map(5, 10);
+    map_t *map = init_test_map(server->map_width, server->map_height);
     ai_stats_t *ai = create_test_ai(0, "noot", server);
-
-    poll_handling_t *node = malloc(sizeof(poll_handling_t));
-    node->player = ai;
-    node->next = NULL;
-    server->poll_list = node;
-
-    printf("%s", player_looks_around(ai, server->poll_list, map));
+    ai_stats_t *ai2 = create_test_ai(1, "noot", server);
+    poll_handling_t *node1 = malloc(sizeof(poll_handling_t));
+    poll_handling_t *node2 = malloc(sizeof(poll_handling_t));
+    node1->player = ai;
+    node1->next = node2;
+    node2->player = ai2;
+    node2->next = NULL;
+    server->poll_list = node1;
+    printf("ai2 BEFORE: id=%d, x=%d, y=%d\n", ai2->id, ai2->x, ai2->y);
+    printf("EJECT RESULT: %s\n", eject_player(ai, server->poll_list, map));
+    printf("ai2 AFTER: id=%d, x=%d, y=%d\n", ai2->id, ai2->x, ai2->y);
 
     return SUCCESS;
 }

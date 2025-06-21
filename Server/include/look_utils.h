@@ -14,9 +14,9 @@
     #include <stdbool.h>
     #include "garbage.h"
 
-size_t count_visible_tiles(int level);
 int get_dx(int dir, int d, int p);
 int get_dy(int dir, int d, int p);
+size_t count_visible_tiles(int level);
 void free_tiles(char **tiles, size_t tile_count);
 
 #endif //ZAPPY_LOOK_UTILS_H
