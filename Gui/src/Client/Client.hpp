@@ -28,10 +28,9 @@ namespace gui {
 
             void connect();
 
-            void sendCommand(std::string command) const;
+            void sendCommand(const std::string& command) const;
 
             void setPlayers(std::vector<std::shared_ptr<Player>> players);
-            void setItems(std::vector<std::shared_ptr<AItem>> items);
 
             [[nodiscard]] std::pair<int, int> msz() const; // map size
 

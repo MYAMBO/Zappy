@@ -30,9 +30,7 @@ gui::Client::Client() : _socket(), _serverAddr(), _Players(), _models(), _teams(
     this->_models.emplace_back(safeModelLoader("assets/thystame/scene.gltf"));
 }
 
-gui::Client::~Client()
-{
-}
+gui::Client::~Client() = default;
 
 gui::Client& gui::Client::getInstance()
 {
@@ -44,7 +42,7 @@ gui::Client& gui::Client::getInstance()
 **               >>>>   MEMBER FUNCTIONS   <<<<            **
 ************************************************************/
 
-void gui::Client::sendCommand(std::string command) const
+void gui::Client::sendCommand(const std::string& command) const
 {
     send(this->_socket, command.c_str(), command.size(), 0);
 }
@@ -102,7 +100,7 @@ std::pair<int, int> gui::Client::msz() const
         list = gui::Client::splitString(buffer);
 
         if (list.size() != 3)
-            throw gui::Error("Command with the wrong number of argument.");
+            throw Error("Command with the wrong number of argument.");
 
         if (list[0] != "msz")
             throw Error("Received an unexpected argument.");
@@ -155,18 +153,16 @@ void gui::Client::pnw(const std::string& string)
     position.second = y;
     int orientation = atoi(list[4].c_str());
     int level = atoi(list[5].c_str());
+    std::string team_name = list[6];
 
     if (this->findPlayer(id) != -1)
         throw Error("This Id is already used by an other player.");
 
-    if (id && x && y && orientation && level && id >= 0 &&
-        x >= 0 && x < coord.first &&
-        y >= 0 && y < coord.second &&
-        orientation > 0 && orientation < 5 &&
-        level > 0 && level < 9) {
+    if ( id >= 0 && x >= 0 && x < coord.first && y >= 0 && y < coord.second &&
+        orientation > 0 && orientation < 5 && level > 0 && level < 9) {
         this->_Players.push_back( std::make_shared<Player>(gui::Player(id, position, static_cast<Orientation>(orientation), level, list[6])));
     } else {
-        throw gui::Error("Player's value are wrong.");
+        throw Error("Player's value are wrong.");
     }
 }
 
@@ -195,7 +191,7 @@ void gui::Client::ppo(std::string string)
         throw Error("No player with this Id.");
 
     if (orientation < 1 || orientation > 4)
-        throw WrongPlayerValue();
+        throw Error("Player's value are wrong.");
 }
 
 // Player's level
@@ -319,7 +315,7 @@ void gui::Client::pic(std::string string)
         id = atoi(list[i].substr(1).c_str());
         if (id && findPlayer(id) == -1)
             throw Error("No player with this Id.");
-        playersId.emplace(id)
+        playersId.emplace(id);
     }
 }
 
@@ -499,11 +495,6 @@ int gui::Client::findPlayer(int id)
 **                  >>>>    SETTERS   <<<<                 **
 ************************************************************/
 
-void gui::Client::setItems(std::vector<std::shared_ptr<AItem>> items)
-{
-    this->_Items = std::move(items);
-}
-
 void gui::Client::setPlayers(std::vector<std::shared_ptr<Player>> players)
 {
     this->_Players = std::move(players);
@@ -512,3 +503,14 @@ void gui::Client::setPlayers(std::vector<std::shared_ptr<Player>> players)
 /************************************************************
 **               >>>>   GETTERS   <<<<                     **
 ************************************************************/
+
+std::shared_ptr<Model> gui::Client::safeModelLoader(const std::string& string)
+{
+    std::cout << string << std::endl;
+    std::shared_ptr<Model> model = std::make_shared<Model>(LoadModel(string.c_str()));
+
+    if (model->meshCount == 0 || model->meshes == nullptr)
+        throw gui::FailedLoadModel();
+
+    return model;
+}
