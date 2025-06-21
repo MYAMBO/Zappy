@@ -177,6 +177,11 @@ int gui::Player::getLevel() const
     return _level;
 }
 
+gui::ui::Inventory gui::Player::getInventory()
+{
+    return _inventory;
+}
+
 Orientation gui::Player::getOrientation() const
 {
     return _direction;

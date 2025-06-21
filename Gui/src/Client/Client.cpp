@@ -219,18 +219,15 @@ void gui::Client::plv(std::string string)
 void gui::Client::pin(std::string string)
 {
     std::vector<std::string> list = this->splitString(string);
-    int id;
-    int posX = 0;
-    int posY = 0;
     std::map<std::string, int> inventory;
     std::pair<int, int> mapSize = msz();
 
     if (list.size() != 11)
         throw Error("Command with the wrong number of argument.");
 
-    id = atoi(list[1].substr(1).c_str());
-    posX = atoi(list[2].c_str());
-    posY = atoi(list[3].c_str());
+    int id = atoi(list[1].substr(1).c_str());
+    int posX = atoi(list[2].c_str());
+    int posY = atoi(list[3].c_str());
     inventory.emplace("food", atoi(list[4].c_str()));
     inventory.emplace("linemate", atoi(list[5].c_str()));
     inventory.emplace("deraumere", atoi(list[6].c_str()));
@@ -242,12 +239,15 @@ void gui::Client::pin(std::string string)
     if (posX < 0 || posX >= mapSize.first || posY < 0 || posY >= mapSize.second)
         throw Error("Player's position out of map");
 
-    if (id && findPlayer(id) == -1)
+    if (findPlayer(id) == -1)
         throw Error("No player with this Id.");
 
-    for (auto elt = inventory.begin(); elt != inventory.end(); elt++)
-        if (elt->second < 0)
+    for (auto & elt : inventory)
+        if (elt.second < 0)
             throw Error("Player's inventory can't have negative value");
+
+    for (auto & item : inventory)
+        this->_Players[findPlayer(id)]->getInventory().setInventoryItem(item.first, item.second);
 }
 
 // Expulsion

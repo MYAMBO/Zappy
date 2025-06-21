@@ -124,6 +124,8 @@ namespace gui {
              */
             void startMoveTo(Vector3 newPosition);
 
+            ui::Inventory getInventory();
+
             /**
              * @brief Check if the Player is selected.
              * This function checks if the Player is currently selected.
