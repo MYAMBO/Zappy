@@ -8,30 +8,14 @@
 
 #include "eject_communication.h"
 
-static void eject_in_look_direction(ai_stats_t *ai,
-    ai_stats_t *target, map_t *map)
+static void eject_east_west(ai_stats_t *ai, ai_stats_t *target, map_t *map)
 {
-    if (ai->direction == NORTH){
-        if (ai->y == 0){
-            target->y = map->height - 1;
-            return;
-        }
-        target->y -= 1;
-
-    }
     if (ai->direction == EAST){
         if (ai->x == map->width - 1){
             target->x = 0;
             return;
         }
         target->x += 1;
-    }
-    if (ai->direction == SOUTH){
-        if (ai->y == map->height - 1){
-            target->y = 0;
-            return;
-        }
-        target->y += 1;
     }
     if (ai->direction == WEST){
         if (ai->x == 0){
@@ -42,12 +26,35 @@ static void eject_in_look_direction(ai_stats_t *ai,
     }
 }
 
+static void eject_north_south(ai_stats_t *ai, ai_stats_t *target, map_t *map)
+{
+    if (ai->direction == NORTH){
+        if (ai->y == 0){
+            target->y = map->height - 1;
+            return;
+        }
+        target->y -= 1;
+    }
+    if (ai->direction == SOUTH){
+        if (ai->y == map->height - 1){
+            target->y = 0;
+            return;
+        }
+        target->y += 1;
+    }
+}
+
+static void eject_in_look_direction(ai_stats_t *ai,
+    ai_stats_t *target, map_t *map)
+{
+    eject_north_south(ai, target, map);
+    eject_east_west(ai, target, map);
+}
 
 char *eject_player(ai_stats_t *ai, poll_handling_t *players, map_t *map)
 {
     bool ejected = false;
     ai_stats_t *current = NULL;
-
 
     for (poll_handling_t *poll = players; poll != NULL; poll = poll->next) {
         current = poll->player;

@@ -7,7 +7,7 @@
 
 
 #ifndef ZAPPY_EJECT_COMMUNICATION_H
-#define ZAPPY_EJECT_COMMUNICATION_H
+    #define ZAPPY_EJECT_COMMUNICATION_H
 
     #include <stdio.h>
     #include "string.h"

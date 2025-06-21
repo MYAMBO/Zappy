@@ -26,56 +26,56 @@
 #include "look_around_communication.h"
 #include "eject_communication.h"
 
-map_t *init_test_map(int width, int height)
-{
-    map_t *map = my_malloc(sizeof(map_t));
-
-    srand(time(NULL));
-    map->width = width;
-    map->height = height;
-    map->tiles = my_malloc(sizeof(ressources_t *) * height);
-    for (int y = 0; y < height; y++) {
-        map->tiles[y] = my_malloc(sizeof(ressources_t) * width);
-        for (int x = 0; x < width; x++) {
-            for (int i = 0; i < 7; i++)
-                map->tiles[y][x].resources[i] = rand() % 1;
-        }
-    }
-   // printf("%s", get_map_content(map));
-    return map;
-}
-
-//create one AI to test
-
-ai_stats_t *create_test_ai(int id, const char *team_name, server_t *server)
-{
-    ai_stats_t *ai = malloc(sizeof(ai_stats_t));
-
-    if (!ai)
-        return NULL;
-    ai->connected = true;
-    ai->fd = id + 3;
-    ai->tmp_command = NULL;
-    ai->id = id;
-    ai->life = 126;
-    ai->x = server->map_width - 1;
-    ai->y = server->map_height - 1;
-    ai->direction = WEST;
-    ai->level = 1;
-    ai->team_name = strdup(team_name);
-    ai->nb_food = 3;
-    ai->nb_linemate = 1;
-    ai->nb_deraumere = 6;
-    ai->nb_sibur = 5;
-    ai->nb_mendiane = 8;
-    ai->nb_phiras = 2;
-    ai->nb_thystame = 3;
-    ai->in_incantation = false;
-    for (int i = 0; i < 7; i++)
-        ai->inventory.resources[i] = rand() % 3;
-
-    return ai;
-}
+//map_t *init_test_map(int width, int height)
+//{
+//    map_t *map = my_malloc(sizeof(map_t));
+//
+//    srand(time(NULL));
+//    map->width = width;
+//    map->height = height;
+//    map->tiles = my_malloc(sizeof(ressources_t *) * height);
+//    for (int y = 0; y < height; y++) {
+//        map->tiles[y] = my_malloc(sizeof(ressources_t) * width);
+//        for (int x = 0; x < width; x++) {
+//            for (int i = 0; i < 7; i++)
+//                map->tiles[y][x].resources[i] = rand() % 1;
+//        }
+//    }
+//   // printf("%s", get_map_content(map));
+//    return map;
+//}
+//
+////create one AI to test
+//
+//ai_stats_t *create_test_ai(int id, const char *team_name, server_t *server)
+//{
+//    ai_stats_t *ai = malloc(sizeof(ai_stats_t));
+//
+//    if (!ai)
+//        return NULL;
+//    ai->connected = true;
+//    ai->fd = id + 3;
+//    ai->tmp_command = NULL;
+//    ai->id = id;
+//    ai->life = 126;
+//    ai->x = server->map_width - 1;
+//    ai->y = server->map_height - 1;
+//    ai->direction = SOUTH;
+//    ai->level = 1;
+//    ai->team_name = strdup(team_name);
+//    ai->nb_food = 3;
+//    ai->nb_linemate = 1;
+//    ai->nb_deraumere = 6;
+//    ai->nb_sibur = 5;
+//    ai->nb_mendiane = 8;
+//    ai->nb_phiras = 2;
+//    ai->nb_thystame = 3;
+//    ai->in_incantation = false;
+//    for (int i = 0; i < 7; i++)
+//        ai->inventory.resources[i] = rand() % 3;
+//
+//    return ai;
+//}
 
 int parse_arguments(int ac, char **av, server_t *server)
 {
@@ -91,21 +91,6 @@ int parse_arguments(int ac, char **av, server_t *server)
         return FAILURE;
     if (parse_freq(av, server) == FAILURE)
         return FAILURE;
-
-    map_t *map = init_test_map(server->map_width, server->map_height);
-    ai_stats_t *ai = create_test_ai(0, "noot", server);
-    ai_stats_t *ai2 = create_test_ai(1, "noot", server);
-    poll_handling_t *node1 = malloc(sizeof(poll_handling_t));
-    poll_handling_t *node2 = malloc(sizeof(poll_handling_t));
-    node1->player = ai;
-    node1->next = node2;
-    node2->player = ai2;
-    node2->next = NULL;
-    server->poll_list = node1;
-    printf("ai2 BEFORE: id=%d, x=%d, y=%d\n", ai2->id, ai2->x, ai2->y);
-    printf("EJECT RESULT: %s\n", eject_player(ai, server->poll_list, map));
-    printf("ai2 AFTER: id=%d, x=%d, y=%d\n", ai2->id, ai2->x, ai2->y);
-
     return SUCCESS;
 }
 
