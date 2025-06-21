@@ -61,6 +61,10 @@ void gui::Client::catchCommand()
     }
 }
 
+/************************************************************
+**               >>>>       COMMANDS       <<<<            **
+************************************************************/
+
 // Get map content
 void gui::Client::bct(const std::string& string)
 {
@@ -138,12 +142,10 @@ void gui::Client::pnw(const std::string& string)
 {
     std::vector<std::string> list = splitString(string);
 
-    if (list.size() != 7) {
-        // throw
-        return;
-    }
+    if (list.size() != 7)
+        throw Error("Wrong Number of parameter");
 
-    std::pair<int, int> coord = msz();
+    std::pair<int, int> size = msz();
 
     int id = atoi(list[1].c_str());
     int x = atoi(list[2].c_str());
@@ -158,9 +160,9 @@ void gui::Client::pnw(const std::string& string)
     if (this->findPlayer(id) != -1)
         throw Error("This Id is already used by an other player.");
 
-    if ( id >= 0 && x >= 0 && x < coord.first && y >= 0 && y < coord.second &&
+    if ( id >= 0 && x >= 0 && x < size.first && y >= 0 && y < size.second &&
         orientation > 0 && orientation < 5 && level > 0 && level < 9) {
-        this->_Players.push_back( std::make_shared<Player>(gui::Player(id, position, static_cast<Orientation>(orientation), level, list[6])));
+        this->_Players.push_back( std::make_shared<Player>(gui::Player(id, position, static_cast<Orientation>(orientation), level, team_name)));
     } else {
         throw Error("Player's value are wrong.");
     }
@@ -170,28 +172,27 @@ void gui::Client::pnw(const std::string& string)
 void gui::Client::ppo(std::string string)
 {
     std::vector<std::string> list = this->splitString(string);
-    int id;
-    int posX = 0;
-    int posY = 0;
-    int orientation = 0;
+
     std::pair<int, int> mapSize = msz();
 
     if (list.size() != 5)
         throw Error("Command with the wrong number of argument.");
 
-    id = atoi(list[1].substr(1).c_str());
-    posX = atoi(list[2].c_str());
-    posY = atoi(list[3].c_str());
-    orientation = atoi(list[4].c_str());
+    int id = atoi(list[1].substr(1).c_str());
+    int posX = atoi(list[2].c_str());
+    int posY = atoi(list[3].c_str());
+    int orientation = atoi(list[4].c_str());
 
     if (posX < 0 || posX >= mapSize.first || posY < 0 || posY >= mapSize.second)
         throw Error("Player's position out of map");
 
-    if (id && findPlayer(id) == -1)
+    if (findPlayer(id) == -1)
         throw Error("No player with this Id.");
 
-    if (orientation < 1 || orientation > 4)
+    if (orientation < 0 || orientation > 3)
         throw Error("Player's value are wrong.");
+
+    this->_Players[findPlayer(id)]->startMoveTo({(float)posX, 0.5, (float)posY});
 }
 
 // Player's level
