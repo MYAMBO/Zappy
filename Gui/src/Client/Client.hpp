@@ -15,6 +15,7 @@
     #include "AItem.hpp"
     #include "Player.hpp"
     #include "Tile.hpp"
+    #include "Error.hpp"
     #include <vector>
     #include <iostream>
     #include <memory>
@@ -79,97 +80,7 @@ namespace gui {
             std::vector<std::shared_ptr<gui::Player>> _Players;
             std::vector<std::shared_ptr<gui::Tile>> _Map;
             std::vector<std::shared_ptr<Model>> _models;
-    };
-
-    class WrongPlayerValue : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Player's value are wrong.";
-        };
-    };
-
-    class WrongTileValue : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "There is a wrong value for creating Tile.";
-        };
-    };
-
-    class WrongMapSize : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Value for Map size is invalid.";
-        };
-    };
-
-    class WrongTeamName : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Value for team name is invalid.";
-        };
-    };
-
-    class WrongPlayerId : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "No player with this Id.";
-        };
-    };
-
-    class PlayerIdAlreadyUsed : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "This Id is already used by an other player.";
-        };
-    };
-
-    class InvalidNumberOfParameter : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Command with the wrong number of argument.";
-        };
-    };
-
-    class UnexpectedArgumentError : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Received an unexpected argument.";
-        };
-    };
-
-    class WrongPlayerLevel : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Player's level can't have negative value";
-        };
-    };
-
-    class WrongInventoryValue : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Player's inventory can't have negative value";
-        };
-    };
-
-    class InvalidPlayerPosition : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Player's position out of map";
-        };
-    };
-
-    class InvalidIncantationLevel : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Incantation level is invalid";
-        };
-    };
-
-    class WrongResourceNumber : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Resources can't have negative value";
-        };
+            std::vector<std::string> _teams;
     };
 }
 

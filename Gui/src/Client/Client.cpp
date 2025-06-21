@@ -12,13 +12,14 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <algorithm>
 
 
 /************************************************************
 **         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
 ************************************************************/
 
-gui::Client::Client() : _socket(), _serverAddr(), _Players(), _models()
+gui::Client::Client() : _socket(), _serverAddr(), _Players(), _models(), _teams()
 {
     this->_models.emplace_back(safeModelLoader("assets/food/scene.gltf"));
     this->_models.emplace_back(safeModelLoader("assets/linemate/scene.gltf"));
@@ -72,7 +73,7 @@ void gui::Client::bct(const std::string& string)
     list = gui::Client::splitString(string);
 
     if (list.size() != 10)
-        throw InvalidNumberOfParameter();
+        throw Error("Command with the wrong number of argument.");
 
     coord.first = atoi(list[1].c_str());
     coord.first = atoi(list[2].c_str());
@@ -82,7 +83,7 @@ void gui::Client::bct(const std::string& string)
     if (coord.first && coord.second && quantity.size() == 7)
         this->_Map.emplace_back(std::make_shared<Tile>(coord, quantity, this->_models));
     else
-        throw gui::WrongTileValue();
+        throw Error("There is a wrong value for creating Tile.");
 }
 
 // Get map size
@@ -101,17 +102,17 @@ std::pair<int, int> gui::Client::msz() const
         list = gui::Client::splitString(buffer);
 
         if (list.size() != 3)
-            throw gui::InvalidNumberOfParameter();
+            throw gui::Error("Command with the wrong number of argument.");
 
         if (list[0] != "msz")
-            throw gui::UnexpectedArgumentError();
+            throw Error("Received an unexpected argument.");
 
         coord.first = atoi(list[1].c_str());
         coord.second = atoi(list[2].c_str());
 
         if (coord.first && coord.second && coord.first > 0 && coord.second > 0)
             return coord;
-        throw gui::WrongMapSize();
+        throw Error("Value for Map size is invalid.");
     }
 }
 
@@ -122,10 +123,16 @@ void gui::Client::tna(std::string string)
     std::vector<std::string> list = this->splitString(string);
 
     if (list.size() != 2)
-        throw WrongTeamName();
+        throw Error("Value for team name is invalid.");
     team_name = list[1];
     if (team_name[team_name.length() - 1] == '\n')
         team_name[team_name.length() - 1] = '\0';
+
+    if (std::find(this->_teams.begin(), this->_teams.end(), team_name) != this->_teams.end())
+        // throw error message
+        return;
+
+    this->_teams.push_back(team_name);
 }
 
 // New Player
@@ -150,7 +157,7 @@ void gui::Client::pnw(const std::string& string)
     int level = atoi(list[5].c_str());
 
     if (this->findPlayer(id) != -1)
-        throw PlayerIdAlreadyUsed();
+        throw Error("This Id is already used by an other player.");
 
     if (id && x && y && orientation && level && id >= 0 &&
         x >= 0 && x < coord.first &&
@@ -159,7 +166,7 @@ void gui::Client::pnw(const std::string& string)
         level > 0 && level < 9) {
         this->_Players.push_back( std::make_shared<Player>(gui::Player(id, position, static_cast<Orientation>(orientation), level, list[6])));
     } else {
-        throw gui::WrongPlayerValue();
+        throw gui::Error("Player's value are wrong.");
     }
 }
 
@@ -174,7 +181,7 @@ void gui::Client::ppo(std::string string)
     std::pair<int, int> mapSize = msz();
 
     if (list.size() != 5)
-        throw InvalidNumberOfParameter();
+        throw Error("Command with the wrong number of argument.");
 
     id = atoi(list[1].substr(1).c_str());
     posX = atoi(list[2].c_str());
@@ -182,10 +189,10 @@ void gui::Client::ppo(std::string string)
     orientation = atoi(list[4].c_str());
 
     if (posX < 0 || posX >= mapSize.first || posY < 0 || posY >= mapSize.second)
-        throw InvalidPlayerPosition();
+        throw Error("Player's position out of map");
 
     if (id && findPlayer(id) == -1)
-        throw WrongPlayerId();
+        throw Error("No player with this Id.");
 
     if (orientation < 1 || orientation > 4)
         throw WrongPlayerValue();
@@ -199,16 +206,16 @@ void gui::Client::plv(std::string string)
     int level = -1;
 
     if (list.size() != 3)
-        throw InvalidNumberOfParameter();
+        throw Error("Command with the wrong number of argument.");
 
     id = atoi(list[1].substr(1).c_str());
     level = atoi(list[2].c_str());
 
     if (id && findPlayer(id) == -1)
-        throw WrongPlayerId();
+        throw Error("No player with this Id.");
 
     if (level < 0)
-        throw WrongPlayerLevel();
+        throw Error("Player's level can't have negative value");
 }
 
 // Payer's inventory
@@ -222,7 +229,7 @@ void gui::Client::pin(std::string string)
     std::pair<int, int> mapSize = msz();
 
     if (list.size() != 11)
-        throw InvalidNumberOfParameter();
+        throw Error("Command with the wrong number of argument.");
 
     id = atoi(list[1].substr(1).c_str());
     posX = atoi(list[2].c_str());
@@ -236,14 +243,14 @@ void gui::Client::pin(std::string string)
     inventory.emplace("thystame", atoi(list[10].c_str()));
 
     if (posX < 0 || posX >= mapSize.first || posY < 0 || posY >= mapSize.second)
-        throw InvalidPlayerPosition();
+        throw Error("Player's position out of map");
 
     if (id && findPlayer(id) == -1)
-        throw WrongPlayerId();
+        throw Error("No player with this Id.");
 
     for (auto elt = inventory.begin(); elt != inventory.end(); elt++)
         if (elt->second < 0)
-            throw WrongInventoryValue();
+            throw Error("Player's inventory can't have negative value");
 }
 
 // Expulsion
@@ -253,12 +260,12 @@ void gui::Client::pex(std::string string)
     int id;
 
     if (list.size() != 2)
-        throw InvalidNumberOfParameter();
+        throw Error("Command with the wrong number of argument.");
 
     id = atoi(list[1].c_str());
 
     if (id && findPlayer(id) == -1)
-        throw WrongPlayerId();
+        throw Error("No player with this Id.");
 }
 
 // Broadcast
@@ -269,13 +276,13 @@ void gui::Client::pbc(std::string string)
     std::string message;
 
     if (list.size() != 3)
-        throw InvalidNumberOfParameter();
+        throw Error("Command with the wrong number of argument.");
 
     id = atoi(list[1].c_str());
     message = list[2];
 
     if (id && findPlayer(id) == -1)
-        throw WrongPlayerId();
+        throw Error("No player with this Id.");
 }
 
 // Start of an incantation
@@ -290,28 +297,28 @@ void gui::Client::pic(std::string string)
     int id;
 
     if (list.size() < 5)
-        throw InvalidNumberOfParameter();
+        throw Error("Command with the wrong number of argument.");
 
     posX = atoi(list[1].c_str());
     posY = atoi(list[2].c_str());
     incantationLevel = atoi(list[3].c_str());
 
     if (incantationLevel < 1 || incantationLevel > 7)
-        throw InvalidIncantationLevel();
+        throw Error("Incantation level is invalid");
 
     if ((incantationLevel == 1 && list.size() != 5) ||
         ((incantationLevel == 2 || incantationLevel == 3) && list.size() != 6) ||
         ((incantationLevel == 4 || incantationLevel == 5) && list.size() != 8) ||
         ((incantationLevel == 6 || incantationLevel == 7) && list.size() != 10))
-        throw InvalidNumberOfParameter();
+        throw Error("Command with the wrong number of argument.");
 
     if (posX < 0 || posX >= mapSize.first || posY < 0 || posY >= mapSize.second)
-        throw InvalidPlayerPosition();
+        throw Error("Player's position out of map");
 
     for (int i = 4; i < list.size(); i++){
         id = atoi(list[i].substr(1).c_str());
         if (id && findPlayer(id) == -1)
-            throw WrongPlayerId();
+            throw Error("No player with this Id.");
         playersId.emplace(id)
     }
 }
@@ -326,14 +333,14 @@ void gui::Client::pie(std::string string)
     int result;
 
     if (list.size() != 4)
-        throw InvalidNumberOfParameter();
+        throw Error("Command with the wrong number of argument.");
 
     posX = atoi(list[1].c_str());
     posY = atoi(list[2].c_str());
     result = atoi(list[3].c_str());
 
     if (posX < 0 || posX >= mapSize.first || posY < 0 || posY >= mapSize.second)
-        throw InvalidPlayerPosition();
+        throw Error("Player's position out of map");
 }
 
 // egg laying by the player
@@ -343,12 +350,12 @@ void gui::Client::pfk(std::string string)
     int id;
 
     if (list.size() != 2)
-        throw InvalidNumberOfParameter();
+        throw Error("Command with the wrong number of argument.");
 
     id = atoi(list[1].substr(1).c_str());
 
     if (id && findPlayer(id) == -1)
-        throw WrongPlayerId();
+        throw Error("No player with this Id.");
 }
 
 // Resource dropping
@@ -359,16 +366,16 @@ void gui::Client::pdr(std::string string)
     int nbResources = -1;
 
     if (list.size() != 3)
-        throw InvalidNumberOfParameter();
+        throw Error("Command with the wrong number of argument.");
 
     id = atoi(list[1].substr(1).c_str());
     nbResources = atoi(list[1].c_str());
 
     if (id && findPlayer(id) == -1)
-        throw WrongPlayerId();
+        throw Error("No player with this Id.");
 
     if (nbResources < 0)
-        WrongResourceNumber();
+        Error("Resources can't have negative value");
 }
 
 // Resource collecting
@@ -379,16 +386,16 @@ void gui::Client::pgt(std::string string)
     int nbResources = -1;
 
     if (list.size() != 3)
-        throw InvalidNumberOfParameter();
+        throw Error("Command with the wrong number of argument.");
 
     id = atoi(list[1].substr(1).c_str());
     nbResources = atoi(list[1].c_str());
 
     if (id && findPlayer(id) == -1)
-        throw WrongPlayerId();
+        throw Error("No player with this Id.");
 
     if (nbResources < 0)
-        WrongResourceNumber();
+        Error("Resources can't have negative value");
 }
 
 // Player Death
@@ -404,9 +411,9 @@ void gui::Client::pdi(const std::string& string)
     indice = findPlayer(id);
 
     if (indice == -1)
-        throw WrongPlayerId();
+        throw Error("No player with this Id.");
 
-    if (id && id > 0) {
+    if (id > 0) {
         // replace by an other model
         this->_Players.erase(this->_Players.begin() + findPlayer(id));
     }
@@ -423,7 +430,7 @@ void gui::Client::enw(std::string string)
     std::pair<int, int> mapSize = msz();
 
     if (list.size() != 5)
-        throw InvalidNumberOfParameter();
+        throw Error("Command with the wrong number of argument.");
 
     eggId = atoi(list[1].substr(1).c_str());
     playerId = atoi(list[2].substr(1).c_str());
@@ -431,10 +438,10 @@ void gui::Client::enw(std::string string)
     posY = atoi(list[4].c_str());
 
     if (posX < 0 || posX >= mapSize.first || posY < 0 || posY >= mapSize.second)
-        throw InvalidPlayerPosition();
+        throw Error("Player's position out of map");
 
     if (eggId && findPlayer(eggId) == -1)
-        throw WrongPlayerId();
+        throw Error("No player with this Id.");
 }
 
 // Player connection for an egg
@@ -444,7 +451,7 @@ void gui::Client::ebo(std::string string)
     int id;
 
     if (list.size() != 2)
-        throw InvalidNumberOfParameter();
+        throw Error("Command with the wrong number of argument.");
 
     id = atoi(list[1].substr(1).c_str());
 }
@@ -456,7 +463,7 @@ void gui::Client::edi(std::string string)
     int id;
 
     if (list.size() != 2)
-        throw InvalidNumberOfParameter();
+        throw Error("Command with the wrong number of argument.");
 
     id = atoi(list[1].substr(1).c_str());
 }
