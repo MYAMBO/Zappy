@@ -26,8 +26,6 @@ namespace gui {
         public:
             static Client &getInstance();
 
-            void connect();
-
             void sendCommand(const std::string& command) const;
 
             void setPlayers(std::vector<std::shared_ptr<Player>> players);
@@ -40,42 +38,39 @@ namespace gui {
             Client(const Client&) = delete;
             Client& operator=(const Client &) = delete;
 
+            void connectToServer();
+            void receiveLoop();
 
-            void catchCommand();
-
-            void interpretCommand(std::string string);
-
-            void bct(const std::string& string); // content of a tile
-            void tna(std::string string); // name of all the teams
-            void pnw(const std::string &string); // connection of a new player
-            void ppo(std::string string); // player’s position
-            void plv(std::string string); // player’s level
-            void pin(std::string string); // player’s inventory
-            void pex(std::string string); // expulsion
-            void pbc(const std::string& string); // broadcast
-            void pic(std::string string); // start of an incantation
-            void pie(std::string string); // end of an incantation
-            void pfk(std::string string); // egg laying by the player
-            void pdr(std::string string); // resource dropping
-            void pgt(std::string string); // resource collecting
-            void pdi(const std::string& string); // death of a player
-            void enw(std::string string); // an egg was laid by a player
-            void ebo(std::string string); // player connection for an egg
-            void edi(std::string string); // death of an egg
-            void sgt(std::string string); // time unit request
-            void sst(std::string string); // time unit modification
-            void seg(std::string string); // end of game
-            void smg(std::string string); // message from the server
-            void suc(std::string string); // unknown command
-            void sbp(std::string string); // command parameter
+            void bct(std::vector<std::string> stringArray); // content of a tile
+            void tna(std::vector<std::string> stringArray); // name of all the teams
+            void pnw(std::vector<std::string> stringArray); // connection of a new player
+            void ppo(std::vector<std::string> stringArray); // player’s position
+            void plv(std::vector<std::string> stringArray); // player’s level
+            void pin(std::vector<std::string> stringArray); // player’s inventory
+            void pex(std::vector<std::string> stringArray); // expulsion
+            void pbc(std::vector<std::string> stringArray); // broadcast
+            void pic(std::vector<std::string> stringArray); // start of an incantation
+            void pie(std::vector<std::string> stringArray); // end of an incantation
+            void pfk(std::vector<std::string> stringArray); // egg laying by the player
+            void pdr(std::vector<std::string> stringArray); // resource dropping
+            void pgt(std::vector<std::string> stringArray); // resource collecting
+            void pdi(std::vector<std::string> stringArray); // death of a player
+            void enw(std::vector<std::string> stringArray); // an egg was laid by a player
+            void ebo(std::vector<std::string> stringArray); // player connection for an egg
+            void edi(std::vector<std::string> stringArray); // death of an egg
+            void sgt(std::vector<std::string> stringArray); // time unit request
+            void sst(std::vector<std::string> stringArray); // time unit modification
+            void seg(std::vector<std::string> stringArray); // end of game
+            void smg(std::vector<std::string> stringArray); // message from the server
+            void suc(std::vector<std::string> stringArray); // unknown command
+            void sbp(std::vector<std::string> stringArray); // command parameter
 
             static std::vector<std::string> splitString(const std::string &string);
             static std::shared_ptr<Model> safeModelLoader(const std::string& string);
             int findPlayer(int id);
 
-
             int _socket;
-            sockaddr_in _serverAddr;
+            bool _isActive;
             std::vector<std::shared_ptr<gui::Player>> _Players;
             std::vector<std::shared_ptr<gui::Tile>> _Map;
             std::vector<std::shared_ptr<Model>> _models;

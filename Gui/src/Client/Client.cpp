@@ -13,13 +13,20 @@
 #include <utility>
 #include <vector>
 #include <algorithm>
-
+#include <netdb.h>
+#include <iostream>
+#include <thread>
+#include <unistd.h>
+#include <cstring>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
 
 /************************************************************
 **         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
 ************************************************************/
 
-gui::Client::Client() : _socket(), _serverAddr(), _Players(), _models(), _teams()
+gui::Client::Client() : _socket(), _isActive(true), _Players(), _models(), _teams()
 {
     this->_models.emplace_back(safeModelLoader("assets/food/scene.gltf"));
     this->_models.emplace_back(safeModelLoader("assets/linemate/scene.gltf"));
@@ -47,9 +54,36 @@ void gui::Client::sendCommand(const std::string& command) const
     send(this->_socket, command.c_str(), command.size(), 0);
 }
 
-void gui::Client::catchCommand()
+void gui::Client::receiveLoop()
 {
+    std::map<std::string, std::function<void(std::vector<std::string> stringArray)>> funcMap {
+        {"bct", [this](const std::vector<std::string>& s) { this->bct(s); }},
+        {"tna", [this](const std::vector<std::string>& s) { this->tna(s); }},
+        {"pnw", [this](const std::vector<std::string>& s) { this->pnw(s); }},
+        {"ppo", [this](const std::vector<std::string>& s) { this->ppo(s); }},
+        {"plv", [this](const std::vector<std::string>& s) { this->plv(s); }},
+        {"pin", [this](const std::vector<std::string>& s) { this->pin(s); }},
+        {"pex", [this](const std::vector<std::string>& s) { this->pex(s); }},
+        {"pbc", [this](const std::vector<std::string>& s) { this->pbc(s); }},
+        {"pic", [this](const std::vector<std::string>& s) { this->pic(s); }},
+        {"pie", [this](const std::vector<std::string>& s) { this->pie(s); }},
+        {"pfk", [this](const std::vector<std::string>& s) { this->pfk(s); }},
+        {"pdr", [this](const std::vector<std::string>& s) { this->pdr(s); }},
+        {"pgt", [this](const std::vector<std::string>& s) { this->pgt(s); }},
+        {"pdi", [this](const std::vector<std::string>& s) { this->pdi(s); }},
+        {"enw", [this](const std::vector<std::string>& s) { this->enw(s); }},
+        {"ebo", [this](const std::vector<std::string>& s) { this->ebo(s); }},
+        {"edi", [this](const std::vector<std::string>& s) { this->edi(s); }},
+        {"sgt", [this](const std::vector<std::string>& s) { this->sgt(s); }},
+        {"sst", [this](const std::vector<std::string>& s) { this->sst(s); }},
+        {"seg", [this](const std::vector<std::string>& s) { this->seg(s); }},
+        {"smg", [this](const std::vector<std::string>& s) { this->smg(s); }},
+        {"suc", [this](const std::vector<std::string>& s) { this->suc(s); }},
+        {"sbp", [this](const std::vector<std::string>& s) { this->sbp(s); }}
+    };
+
     char buffer[1024];
+    std::vector<std::string> stringArray;
     while (true) {
         ssize_t bytesReceived = recv(this->_socket, buffer, sizeof(buffer) - 1, 0);
         if (bytesReceived <= 0) {
@@ -57,8 +91,44 @@ void gui::Client::catchCommand()
             break;
         }
         buffer[bytesReceived] = '\0';
-        std::cout << "Received from server: " << buffer << "\n";
+        stringArray = splitString(buffer);
+
+        funcMap[stringArray[0]](stringArray);
     }
+}
+
+void gui::Client::connectToServer()
+{
+    const char* hostname = "zappy.antoiix.me";
+    const char* port = "12345";
+
+    addrinfo hints{}, *res;
+    hints.ai_family = AF_INET; // IPV4
+    hints.ai_socktype = SOCK_STREAM; // TCP socket
+
+    int status = getaddrinfo(hostname, port, &hints, &res);
+    if (status != 0)
+        throw Error(gai_strerror(status));
+
+    this->_socket = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+    if (this->_socket < 0) {
+        freeaddrinfo(res);
+        throw Error("Socket creation failed.\n");
+    }
+
+    if (connect(this->_socket, res->ai_addr, res->ai_addrlen) < 0) {
+        freeaddrinfo(res);
+        close(this->_socket);
+        throw  Error("Connection failed.\n");
+    }
+
+    freeaddrinfo(res);
+
+    std::thread recvThread(&gui::Client::receiveLoop, this);
+
+    while (this->_isActive){}
+
+    recvThread.detach();
 }
 
 /************************************************************
@@ -66,21 +136,18 @@ void gui::Client::catchCommand()
 ************************************************************/
 
 // Get map content
-void gui::Client::bct(const std::string& string)
+void gui::Client::bct(std::vector<std::string> stringArray)
 {
-    std::vector<std::string> list;
     std::pair<int, int> coord;
     std::vector<int> quantity;
 
-    list = gui::Client::splitString(string);
-
-    if (list.size() != 10)
+    if (stringArray.size() != 10)
         throw Error("Command with the wrong number of argument.");
 
-    coord.first = atoi(list[1].c_str());
-    coord.first = atoi(list[2].c_str());
-    for (int i = 3; i < 9 && i < list.size(); ++i)
-        quantity.push_back(atoi(list[i].c_str()));
+    coord.first = atoi(stringArray[1].c_str());
+    coord.first = atoi(stringArray[2].c_str());
+    for (int i = 3; i < 9 && i < stringArray.size(); ++i)
+        quantity.push_back(atoi(stringArray[i].c_str()));
 
     if (coord.first && coord.second && quantity.size() == 7)
         this->_Map.emplace_back(std::make_shared<Tile>(coord, quantity, this->_models));
@@ -119,14 +186,13 @@ std::pair<int, int> gui::Client::msz() const
 }
 
 // Name of team
-void gui::Client::tna(std::string string)
+void gui::Client::tna(std::vector<std::string> stringArray)
 {
     std::string team_name;
-    std::vector<std::string> list = this->splitString(string);
 
-    if (list.size() != 2)
+    if (stringArray.size() != 2)
         throw Error("Value for team name is invalid.");
-    team_name = list[1];
+    team_name = stringArray[1];
     if (team_name[team_name.length() - 1] == '\n')
         team_name[team_name.length() - 1] = '\0';
 
@@ -138,24 +204,23 @@ void gui::Client::tna(std::string string)
 }
 
 // New Player
-void gui::Client::pnw(const std::string& string)
+void gui::Client::pnw(std::vector<std::string> stringArray)
 {
-    std::vector<std::string> list = splitString(string);
 
-    if (list.size() != 7)
+    if (stringArray.size() != 7)
         throw Error("Wrong Number of parameter");
 
     std::pair<int, int> size = msz();
 
-    int id = atoi(list[1].c_str());
-    int x = atoi(list[2].c_str());
-    int y = atoi(list[3].c_str());
+    int id = atoi(stringArray[1].c_str());
+    int x = atoi(stringArray[2].c_str());
+    int y = atoi(stringArray[3].c_str());
     std::pair<int, int> position;
     position.first = x;
     position.second = y;
-    int orientation = atoi(list[4].c_str());
-    int level = atoi(list[5].c_str());
-    std::string team_name = list[6];
+    int orientation = atoi(stringArray[4].c_str());
+    int level = atoi(stringArray[5].c_str());
+    std::string team_name = stringArray[6];
 
     if (this->findPlayer(id) != -1)
         throw Error("This Id is already used by an other player.");
@@ -169,19 +234,19 @@ void gui::Client::pnw(const std::string& string)
 }
 
 // Player's position
-void gui::Client::ppo(std::string string)
+void gui::Client::ppo(std::vector<std::string> stringArray)
 {
-    std::vector<std::string> list = this->splitString(string);
+
 
     std::pair<int, int> mapSize = msz();
 
-    if (list.size() != 5)
+    if (stringArray.size() != 5)
         throw Error("Command with the wrong number of argument.");
 
-    int id = atoi(list[1].substr(1).c_str());
-    int posX = atoi(list[2].c_str());
-    int posY = atoi(list[3].c_str());
-    int orientation = atoi(list[4].c_str());
+    int id = atoi(stringArray[1].substr(1).c_str());
+    int posX = atoi(stringArray[2].c_str());
+    int posY = atoi(stringArray[3].c_str());
+    int orientation = atoi(stringArray[4].c_str());
 
     if (posX < 0 || posX >= mapSize.first || posY < 0 || posY >= mapSize.second)
         throw Error("Player's position out of map");
@@ -196,15 +261,15 @@ void gui::Client::ppo(std::string string)
 }
 
 // Player's level
-void gui::Client::plv(std::string string)
+void gui::Client::plv(std::vector<std::string> stringArray)
 {
-    std::vector<std::string> list = this->splitString(string);
 
-    if (list.size() != 3)
+
+    if (stringArray.size() != 3)
         throw Error("Command with the wrong number of argument.");
 
-    int id = atoi(list[1].substr(1).c_str());
-    int level = atoi(list[2].c_str());
+    int id = atoi(stringArray[1].substr(1).c_str());
+    int level = atoi(stringArray[2].c_str());
 
     if (findPlayer(id) == -1)
         throw Error("No player with this Id.");
@@ -216,25 +281,25 @@ void gui::Client::plv(std::string string)
 }
 
 // Payer's inventory
-void gui::Client::pin(std::string string)
+void gui::Client::pin(std::vector<std::string> stringArray)
 {
-    std::vector<std::string> list = this->splitString(string);
+
     std::map<std::string, int> inventory;
     std::pair<int, int> mapSize = msz();
 
-    if (list.size() != 11)
+    if (stringArray.size() != 11)
         throw Error("Command with the wrong number of argument.");
 
-    int id = atoi(list[1].substr(1).c_str());
-    int posX = atoi(list[2].c_str());
-    int posY = atoi(list[3].c_str());
-    inventory.emplace("food", atoi(list[4].c_str()));
-    inventory.emplace("linemate", atoi(list[5].c_str()));
-    inventory.emplace("deraumere", atoi(list[6].c_str()));
-    inventory.emplace("sibur", atoi(list[7].c_str()));
-    inventory.emplace("mendiane", atoi(list[8].c_str()));
-    inventory.emplace("phiras", atoi(list[9].c_str()));
-    inventory.emplace("thystame", atoi(list[10].c_str()));
+    int id = atoi(stringArray[1].substr(1).c_str());
+    int posX = atoi(stringArray[2].c_str());
+    int posY = atoi(stringArray[3].c_str());
+    inventory.emplace("food", atoi(stringArray[4].c_str()));
+    inventory.emplace("linemate", atoi(stringArray[5].c_str()));
+    inventory.emplace("deraumere", atoi(stringArray[6].c_str()));
+    inventory.emplace("sibur", atoi(stringArray[7].c_str()));
+    inventory.emplace("mendiane", atoi(stringArray[8].c_str()));
+    inventory.emplace("phiras", atoi(stringArray[9].c_str()));
+    inventory.emplace("thystame", atoi(stringArray[10].c_str()));
 
     if (posX < 0 || posX >= mapSize.first || posY < 0 || posY >= mapSize.second)
         throw Error("Player's position out of map");
@@ -251,29 +316,27 @@ void gui::Client::pin(std::string string)
 }
 
 // Expulsion
-void gui::Client::pex(std::string string)
+void gui::Client::pex(std::vector<std::string> stringArray)
 {
-    std::vector<std::string> list = this->splitString(string);
 
-    if (list.size() != 2)
+    if (stringArray.size() != 2)
         throw Error("Command with the wrong number of argument.");
 
-    int id = atoi(list[1].c_str());
+    int id = atoi(stringArray[1].c_str());
 
     if (id && findPlayer(id) == -1)
         throw Error("No player with this Id.");
 }
 
 // Broadcast
-void gui::Client::pbc(const std::string& string)
+void gui::Client::pbc(std::vector<std::string> stringArray)
 {
-    std::vector<std::string> list = splitString(string);
 
-    if (list.size() != 3)
+    if (stringArray.size() != 3)
         throw Error("Command with the wrong number of argument.");
 
-    int id = atoi(list[1].c_str());
-    std::string message = list[2];
+    int id = atoi(stringArray[1].c_str());
+    std::string message = stringArray[2];
 
     if (findPlayer(id) == -1)
         throw Error("No player with this Id.");
@@ -282,34 +345,33 @@ void gui::Client::pbc(const std::string& string)
 }
 
 // Start of an incantation
-void gui::Client::pic(std::string string)
+void gui::Client::pic(std::vector<std::string> stringArray)
 {
-    std::vector<std::string> list = this->splitString(string);
     std::pair<int, int> mapSize = msz();
     std::vector<int> playersId;
 
-    if (list.size() < 5)
+    if (stringArray.size() < 5)
         throw Error("Command with the wrong number of argument.");
 
-    int posX = atoi(list[1].c_str());
-    int posY = atoi(list[2].c_str());
-    int incantationLevel = atoi(list[3].c_str());
+    int posX = atoi(stringArray[1].c_str());
+    int posY = atoi(stringArray[2].c_str());
+    int incantationLevel = atoi(stringArray[3].c_str());
     int id;
 
     if (incantationLevel < 1 || incantationLevel > 7)
         throw Error("Incantation level is invalid");
 
-    if ((incantationLevel == 1 && list.size() != 5) ||
-        ((incantationLevel == 2 || incantationLevel == 3) && list.size() != 6) ||
-        ((incantationLevel == 4 || incantationLevel == 5) && list.size() != 8) ||
-        ((incantationLevel == 6 || incantationLevel == 7) && list.size() != 10))
+    if ((incantationLevel == 1 && stringArray.size() != 5) ||
+        ((incantationLevel == 2 || incantationLevel == 3) && stringArray.size() != 6) ||
+        ((incantationLevel == 4 || incantationLevel == 5) && stringArray.size() != 8) ||
+        ((incantationLevel == 6 || incantationLevel == 7) && stringArray.size() != 10))
         throw Error("Command with the wrong number of argument.");
 
     if (posX < 0 || posX >= mapSize.first || posY < 0 || posY >= mapSize.second)
         throw Error("Player's position out of map");
 
-    for (int i = 4; i < list.size(); i++){
-        id = atoi(list[i].substr(1).c_str());
+    for (int i = 4; i < stringArray.size(); i++){
+        id = atoi(stringArray[i].substr(1).c_str());
         if (id && findPlayer(id) == -1)
             throw Error("No player with this Id.");
 //        playersId.emplace(id);
@@ -317,50 +379,47 @@ void gui::Client::pic(std::string string)
 }
 
 // End of an incantation
-void gui::Client::pie(std::string string)
+void gui::Client::pie(std::vector<std::string> stringArray)
 {
-    std::vector<std::string> list = this->splitString(string);
     int posX = 0;
     int posY = 0;
     std::pair<int, int> mapSize = msz();
     int result;
 
-    if (list.size() != 4)
+    if (stringArray.size() != 4)
         throw Error("Command with the wrong number of argument.");
 
-    posX = atoi(list[1].c_str());
-    posY = atoi(list[2].c_str());
-    result = atoi(list[3].c_str());
+    posX = atoi(stringArray[1].c_str());
+    posY = atoi(stringArray[2].c_str());
+    result = atoi(stringArray[3].c_str());
 
     if (posX < 0 || posX >= mapSize.first || posY < 0 || posY >= mapSize.second)
         throw Error("Player's position out of map");
 }
 
 // egg laying by the player
-void gui::Client::pfk(std::string string)
+void gui::Client::pfk(std::vector<std::string> stringArray)
 {
-    std::vector<std::string> list = this->splitString(string);
     int id;
 
-    if (list.size() != 2)
+    if (stringArray.size() != 2)
         throw Error("Command with the wrong number of argument.");
 
-    id = atoi(list[1].substr(1).c_str());
+    id = atoi(stringArray[1].substr(1).c_str());
 
     if (id && findPlayer(id) == -1)
         throw Error("No player with this Id.");
 }
 
 // Resource dropping
-void gui::Client::pdr(std::string string)
+void gui::Client::pdr(std::vector<std::string> stringArray)
 {
-    std::vector<std::string> list = this->splitString(string);
 
-    if (list.size() != 3)
+    if (stringArray.size() != 3)
         throw Error("Command with the wrong number of argument.");
 
-    int id = atoi(list[1].substr(1).c_str());
-    int nbResources = atoi(list[1].c_str());
+    int id = atoi(stringArray[1].substr(1).c_str());
+    int nbResources = atoi(stringArray[1].c_str());
 
     if (id && findPlayer(id) == -1)
         throw Error("No player with this Id.");
@@ -373,17 +432,16 @@ void gui::Client::pdr(std::string string)
 }
 
 // Resource collecting
-void gui::Client::pgt(std::string string)
+void gui::Client::pgt(std::vector<std::string> stringArray)
 {
-    std::vector<std::string> list = this->splitString(string);
     int id;
     int nbResources = -1;
 
-    if (list.size() != 3)
+    if (stringArray.size() != 3)
         throw Error("Command with the wrong number of argument.");
 
-    id = atoi(list[1].substr(1).c_str());
-    nbResources = atoi(list[1].c_str());
+    id = atoi(stringArray[1].substr(1).c_str());
+    nbResources = atoi(stringArray[1].c_str());
 
     if (id && findPlayer(id) == -1)
         throw Error("No player with this Id.");
@@ -396,11 +454,9 @@ void gui::Client::pgt(std::string string)
 }
 
 // Player Death
-void gui::Client::pdi(const std::string& string)
+void gui::Client::pdi(std::vector<std::string> stringArray)
 {
-    std::vector<std::string> list = gui::Client::splitString(string);
-
-    int id = atoi(list[1].c_str());
+    int id = atoi(stringArray[1].c_str());
 
     int indice = findPlayer(id);
 
@@ -414,22 +470,21 @@ void gui::Client::pdi(const std::string& string)
 }
 
 // an egg was laid by a player
-void gui::Client::enw(std::string string)
+void gui::Client::enw(std::vector<std::string> stringArray)
 {
-    std::vector<std::string> list = this->splitString(string);
     int eggId;
     int playerId;
     int posX;
     int posY;
     std::pair<int, int> mapSize = msz();
 
-    if (list.size() != 5)
+    if (stringArray.size() != 5)
         throw Error("Command with the wrong number of argument.");
 
-    eggId = atoi(list[1].substr(1).c_str());
-    playerId = atoi(list[2].substr(1).c_str());
-    posX = atoi(list[3].c_str());
-    posY = atoi(list[4].c_str());
+    eggId = atoi(stringArray[1].substr(1).c_str());
+    playerId = atoi(stringArray[2].substr(1).c_str());
+    posX = atoi(stringArray[3].c_str());
+    posY = atoi(stringArray[4].c_str());
 
     if (posX < 0 || posX >= mapSize.first || posY < 0 || posY >= mapSize.second)
         throw Error("Player's position out of map");
@@ -439,88 +494,76 @@ void gui::Client::enw(std::string string)
 }
 
 // Player connection for an egg
-void gui::Client::ebo(std::string string)
+void gui::Client::ebo(std::vector<std::string> stringArray)
 {
-    std::vector<std::string> list = this->splitString(string);
     int id;
 
-    if (list.size() != 2)
+    if (stringArray.size() != 2)
         throw Error("Command with the wrong number of argument.");
 
-    id = atoi(list[1].substr(1).c_str());
+    id = atoi(stringArray[1].substr(1).c_str());
 }
 
 // death of an egg
-void gui::Client::edi(std::string string)
+void gui::Client::edi(std::vector<std::string> stringArray)
 {
-    std::vector<std::string> list = this->splitString(string);
     int id;
 
-    if (list.size() != 2)
+    if (stringArray.size() != 2)
         throw Error("Command with the wrong number of argument.");
 
-    id = atoi(list[1].substr(1).c_str());
+    id = atoi(stringArray[1].substr(1).c_str());
 }
 
 // time unit request
-void gui::Client::sgt(std::string string)
+void gui::Client::sgt(std::vector<std::string> stringArray)
 {
-    std::vector<std::string> list = this->splitString(string);
-
-    if (list.size() != 2)
+    if (stringArray.size() != 2)
         throw Error("Wrong number of parameter.");
 
-    int time_unit = atoi(list[1].c_str());
+    int time_unit = atoi(stringArray[1].c_str());
 }
 
 // time unit modification
-void gui::Client::sst(std::string string)
+void gui::Client::sst(std::vector<std::string> stringArray)
 {
-    std::vector<std::string> list = this->splitString(string);
-
-    if (list.size() != 2)
+    if (stringArray.size() != 2)
         throw Error("Wrong number of parameter.");
 
-    int time_unit = atoi(list[1].c_str());
+    int time_unit = atoi(stringArray[1].c_str());
 }
 
 // end of game
-void gui::Client::seg(std::string string)
+void gui::Client::seg(std::vector<std::string> stringArray)
 {
-    std::vector<std::string> list = this->splitString(string);
-
-    if (list.size() != 2)
+    if (stringArray.size() != 2)
         throw Error("Wrong number of parameter.");
 
-    std::string winner = list[1];
+    std::string winner = stringArray[1];
+
+    this->_isActive = false;
 }
 
 // message from the server
-void gui::Client::smg(std::string string)
+void gui::Client::smg(std::vector<std::string> stringArray)
 {
-    std::vector<std::string> list = this->splitString(string);
-
-    if (list.size() != 2)
+    if (stringArray.size() != 2)
         throw Error("Wrong number of parameter.");
 
-    std::string message = list[1];
+    std::string message = stringArray[1];
 }
 
 // unknown command
-void gui::Client::suc(std::string string)
+void gui::Client::suc(std::vector<std::string> stringArray)
 {
-    std::vector<std::string> list = this->splitString(string);
-
-    if (list.size() != 1)
+    if (stringArray.size() != 1)
         throw Error("Wrong number of parameter.");
 }
 
 // command parameter
-void gui::Client::sbp(std::string string)
+void gui::Client::sbp(std::vector<std::string> stringArray)
 {
-    std::vector<std::string> list = this->splitString(string);
-
-    if (list.size() != 1)
+    if (stringArray.size() != 1)
         throw Error("Wrong number of parameter.");
 }
 
