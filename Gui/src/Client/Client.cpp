@@ -199,20 +199,20 @@ void gui::Client::ppo(std::string string)
 void gui::Client::plv(std::string string)
 {
     std::vector<std::string> list = this->splitString(string);
-    int id;
-    int level = -1;
 
     if (list.size() != 3)
         throw Error("Command with the wrong number of argument.");
 
-    id = atoi(list[1].substr(1).c_str());
-    level = atoi(list[2].c_str());
+    int id = atoi(list[1].substr(1).c_str());
+    int level = atoi(list[2].c_str());
 
-    if (id && findPlayer(id) == -1)
+    if (findPlayer(id) == -1)
         throw Error("No player with this Id.");
 
     if (level < 0)
         throw Error("Player's level can't have negative value");
+
+    this->_Players[findPlayer(id)]->setLevel(level);
 }
 
 // Payer's inventory
