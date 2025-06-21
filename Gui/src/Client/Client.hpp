@@ -52,7 +52,7 @@ namespace gui {
             void plv(std::string string); // player’s level
             void pin(std::string string); // player’s inventory
             void pex(std::string string); // expulsion
-            void pbc(std::string string); // broadcast
+            void pbc(const std::string& string); // broadcast
             void pic(std::string string); // start of an incantation
             void pie(std::string string); // end of an incantation
             void pfk(std::string string); // egg laying by the player

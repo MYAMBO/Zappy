@@ -266,20 +266,20 @@ void gui::Client::pex(std::string string)
 }
 
 // Broadcast
-void gui::Client::pbc(std::string string)
+void gui::Client::pbc(const std::string& string)
 {
-    std::vector<std::string> list = this->splitString(string);
-    int id;
-    std::string message;
+    std::vector<std::string> list = splitString(string);
 
     if (list.size() != 3)
         throw Error("Command with the wrong number of argument.");
 
-    id = atoi(list[1].c_str());
-    message = list[2];
+    int id = atoi(list[1].c_str());
+    std::string message = list[2];
 
-    if (id && findPlayer(id) == -1)
+    if (findPlayer(id) == -1)
         throw Error("No player with this Id.");
+
+    this->_Players[findPlayer(id)]->broadcastAnimation();
 }
 
 // Start of an incantation
