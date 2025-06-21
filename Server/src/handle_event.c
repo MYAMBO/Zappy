@@ -19,19 +19,6 @@
 #include "logger.h"
 #include "split_string.h"
 
-static int send_message_disconnect(poll_handling_t *node)
-{
-    char *message = my_malloc(sizeof(char) * 1024);
-
-    if (message == NULL)
-        return FAILURE;
-    sprintf(message, "Client disconnected with id : %d, "
-        "local fd : %d", node->player->id, node->poll_fd.fd);
-    logger_info(message, FILE_OUTPUT, true);
-    my_free(message);
-    return SUCCESS;
-}
-
 int handle_client_error(ssize_t bytes_read, server_t *server,
     poll_handling_t *node)
 {
@@ -46,6 +33,9 @@ int handle_client_error(ssize_t bytes_read, server_t *server,
         if (send_message_disconnect(node) == FAILURE)
             return FAILURE;
         close(node->poll_fd.fd);
+        if (node->player->connected && disconnect_player
+            (server->team_names, node->player->id) == FAILURE)
+            return FAILURE;
         remove_node_poll_handling(&server->poll_list, node->poll_fd.fd);
         server->poll_count--;
         return SUCCESS;
@@ -68,7 +58,7 @@ int handle_command_concat(poll_handling_t *node, char *buffer)
             return FAILURE;
         strcpy(tmp_concat, node->player->tmp_command);
         strcat(tmp_concat, buffer);
-        free(node->player->tmp_command);
+        my_free(node->player->tmp_command);
         node->player->tmp_command = tmp_concat;
     }
     return SUCCESS;
@@ -88,28 +78,13 @@ int handle_merge_command(char **concat_command, char *buffer,
         if (command == NULL)
             return FAILURE;
         strcat(*concat_command, command);
-        free(node->player->tmp_command);
+        my_free(node->player->tmp_command);
         node->player->tmp_command = NULL;
     } else {
         *concat_command = my_malloc(sizeof(buffer) + 1);
         if (*concat_command == NULL)
             return FAILURE;
         strcpy(*concat_command, buffer);
-    }
-    return SUCCESS;
-}
-
-static int execute_command(char *concat_command, server_t *server,
-    poll_handling_t *node)
-{
-    char **args = split_string(concat_command, " \n");
-
-    if (args == NULL || args[0] == NULL)
-        return FAILURE;
-    for (int i = 0; commands_list[i].command != NULL; i++) {
-        if (strcmp(args[0], commands_list[i].command) == 0 &&
-            commands_list[i].function(server, node, args) == FAILURE)
-            return FAILURE;
     }
     return SUCCESS;
 }

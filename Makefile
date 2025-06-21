@@ -30,6 +30,8 @@ SERVER_SRC = 												\
 				Server/src/look_around_communication.c      \
                 Server/src/unique_connection_id_getter.c 	\
 				Server/src/player_informations_protocol.c 	\
+				Server/src/slot_handler.c	\
+				Server/src/command_execution.c	\
 
 GUI_SRC = 												\
 				Gui/src/main.cpp 						\
@@ -43,9 +45,13 @@ GUI_SRC = 												\
 				Gui/src/Items/Linemate/Linemate.cpp		\
 				Gui/src/Items/Deraumere/Deraumere.cpp	\
 														\
+				Gui/src/Tile/Tile.cpp					\
+				Gui/src/Menu/Menu.cpp					\
+				Gui/src/Scene/Scene.cpp					\
 				Gui/src/Button/Button.cpp 				\
 				Gui/src/Player/Player.cpp				\
 				Gui/src/AEntity/AEntity.cpp				\
+				Gui/src/Settings/Settings.cpp			\
 				Gui/src/Inventory/Inventory.cpp
 
 TEST_SRC =
@@ -53,17 +59,21 @@ TEST_SRC =
 SERVER_OBJ = $(SERVER_SRC:%.c=obj/%.o)
 GUI_OBJ = $(GUI_SRC:%.cpp=obj/%.o)
 
-IA_NAME = zappy_ai
+AI_NAME = zappy_ai
 GUI_NAME = zappy_gui
 SERVER_NAME = zappy_server
 
 SERVER_FLAGS = -I Server/include -I Debug
 GUI_FLAGS = -lraylib -lpthread -lGL -I Debug 		\
         											\
+			-I Gui/src/Tile			 				\
+			-I Gui/src/Menu 						\
 			-I Gui/src/Items 						\
+			-I Gui/src/Scene						\
 			-I Gui/src/Player 						\
 			-I Gui/src/Button 						\
 			-I Gui/src/AEntity 						\
+			-I Gui/src/Settings						\
 			-I Gui/src/Inventory 					\
 			-I Gui/src/Items/Food 					\
 			-I Gui/src/Items/Sibur 					\
@@ -73,7 +83,7 @@ GUI_FLAGS = -lraylib -lpthread -lGL -I Debug 		\
 			-I Gui/src/Items/Mendiane 				\
 			-I Gui/src/Items/Thystame 				\
 			-I Gui/include/interfaces				\
-			-I Gui/src/Items/Deraumere 				\
+			-I Gui/src/Items/Deraumere
 
 ALL_FLAGS = $(SERVER_FLAGS) $(GUI_FLAGS)
 CFLAGS = -Werror -Wall -Wextra -Iinclude
@@ -122,9 +132,9 @@ Debug/libLogger.so:
 Debug/libLogger.a:
 	@$(MAKE) libLogger.a -s -C Debug
 
-$(IA_NAME): Debug/libLogger.so
+$(AI_NAME): Debug/libLogger.so
 	@echo -e "$(GREEN)Linking $@ with shared Logger lib...$(NC)"
-	@cp Ai/src/startAi.py ./zappy_ai
+	@nuitka --standalone --onefile Ai/src/startAi.py --output-filename=zappy_ai
 
 $(SERVER_NAME): $(SERVER_OBJ) Debug/libLogger.a
 	@echo 1 > .server_counter
@@ -160,7 +170,7 @@ obj/test/%.o: %.c
 obj:
 	@mkdir -p obj obj/Server obj/Gui
 
-unit_test:
+unit_test: Debug/libLogger.so
 	@echo -e "$(GREEN)Compiling unit tests...$(NC)"
 	@gcc -o unit_tests $(SRC_NO_MAIN) $(TEST_SRC) $(TEST_FLAGS)
 
@@ -180,14 +190,15 @@ clean:
 	@rm -rf .coverage htmlcov .pytest_cache
 	@rm -rf obj .server_counter .gui_counter
 	@rm -f *.gcda *.gcno
+	@rm -rf startAi.*
 	@$(MAKE) -s -C Debug clean
 
 fclean: clean
 	@if [ -e "$(SERVER_NAME)" ]; then echo -e 	\
 	"$(RED)Cleaning server binary$(NC)"; fi
 	@if [ -e "$(GUI_NAME)" ]; then echo -e "$(RED)Cleaning gui binary$(NC)"; fi
-	@if [ -e "zappy_ai" ]; then echo -e "$(RED)Cleaning ai binary$(NC)"; fi
-	@rm -f $(SERVER_NAME) $(GUI_NAME) zappy_ai unit_tests
+	@if [ -e "$(AI_NAME)" ]; then echo -e "$(RED)Cleaning ai binary$(NC)"; fi
+	@rm -f $(SERVER_NAME) $(GUI_NAME) $(AI_NAME) unit_tests
 	@$(MAKE) -s -C Debug fclean
 
 re: fclean all

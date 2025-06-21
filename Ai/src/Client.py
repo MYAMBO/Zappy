@@ -6,7 +6,6 @@
 ##
 
 import socket
-import select
 
 class ClientError(Exception):
     def __init__(self, message):
@@ -34,16 +33,18 @@ class Client:
 
     def send_command(self, command):
         if self.__sock:
-            self.__sock.sendall(command.encode() + '\n'.encode())
+            try:
+                self.__sock.sendall((command + "\n").encode())
+            except socket.error as e:
+                raise ClientError("Socket error: " + e.strerror)
         else:
             raise ConnectionError("Not connected to server")
 
-    def try_get_reply(self):
-        ready_to_read, _, _ = select.select([self.__sock], [], [], 0.5)
-        if ready_to_read:
+    def wait_for_reply(self):
+        try:
             return self.__sock.recv(4096).decode()
-        return None
-        
+        except socket.error as e:
+            raise ClientError("Socket error: " + e.strerror)
 
     def close(self):
         if self.__sock:

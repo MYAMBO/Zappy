@@ -20,5 +20,6 @@
     #include "struct.h"
 
 int handle_connection(server_t *server, pollfd_t poll);
+int send_message_disconnect(poll_handling_t *node);
 
 #endif //HANDLE_CONNECTION_H

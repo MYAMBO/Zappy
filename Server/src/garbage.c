@@ -90,3 +90,10 @@ void my_free(void *ptr)
         current = &(*current)->next;
     }
 }
+
+void my_free_array(char **ptr)
+{
+    for (int i = 0; ptr[i] != NULL; i++)
+        my_free(ptr[i]);
+    my_free(ptr);
+}

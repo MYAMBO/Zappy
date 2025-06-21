@@ -77,6 +77,7 @@
 //    return ai;
 //}
 
+
 int parse_arguments(int ac, char **av, server_t *server)
 {
     if (ac < 2)
