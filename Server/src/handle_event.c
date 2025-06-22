@@ -45,15 +45,16 @@ int handle_client_error(ssize_t bytes_read, server_t *server,
 
 int handle_command_concat(poll_handling_t *node, char *buffer)
 {
-    char *tmp_concat = my_malloc(sizeof(node->player->tmp_command)
-            + sizeof(buffer) + 1);
+    char *tmp_concat;
 
     if (node->player->tmp_command == NULL) {
-        node->player->tmp_command = my_malloc(sizeof(buffer));
+        node->player->tmp_command = my_malloc(strlen(buffer) + 1);
         if (node->player->tmp_command == NULL)
             return FAILURE;
         strcpy(node->player->tmp_command, buffer);
     } else {
+        tmp_concat = my_malloc(strlen(node->player->tmp_command) +
+            strlen(buffer) + 1);
         if (tmp_concat == NULL)
             return FAILURE;
         strcpy(tmp_concat, node->player->tmp_command);
@@ -64,27 +65,38 @@ int handle_command_concat(poll_handling_t *node, char *buffer)
     return SUCCESS;
 }
 
+static int handle_command_split(char **concat_command,
+    char *buffer, poll_handling_t *node, char *command)
+{
+    *concat_command = my_malloc(strlen(node->player->tmp_command)
+            + strlen(buffer) + 1);
+    if (*concat_command == NULL)
+        return FAILURE;
+    strcpy(*concat_command, node->player->tmp_command);
+    if (command == NULL)
+        return FAILURE;
+    strcat(*concat_command, command);
+    my_free(node->player->tmp_command);
+    node->player->tmp_command = NULL;
+    return SUCCESS;
+}
+
 int handle_merge_command(char **concat_command, char *buffer,
     poll_handling_t *node)
 {
     char *command = strtok(buffer, "\n");
 
     if (node->player->tmp_command != NULL) {
-        *concat_command = my_malloc(sizeof(node->player->tmp_command)
-            + sizeof(buffer) + 1);
-        if (*concat_command == NULL)
+        if (handle_command_split(concat_command, buffer,
+            node, command) == FAILURE)
             return FAILURE;
-        strcpy(*concat_command, node->player->tmp_command);
+    } else {
         if (command == NULL)
             return FAILURE;
-        strcat(*concat_command, command);
-        my_free(node->player->tmp_command);
-        node->player->tmp_command = NULL;
-    } else {
-        *concat_command = my_malloc(sizeof(buffer) + 1);
+        *concat_command = my_malloc(strlen(command) + 1);
         if (*concat_command == NULL)
             return FAILURE;
-        strcpy(*concat_command, buffer);
+        strcpy(*concat_command, command);
     }
     return SUCCESS;
 }
