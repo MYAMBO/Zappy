@@ -46,6 +46,7 @@ GUI_SRC = 												\
 				Gui/src/Menu/Menu.cpp					\
 				Gui/src/Error/Error.cpp 				\
 				Gui/src/Scene/Scene.cpp					\
+				Gui/src/Client/Client.cpp 				\
 				Gui/src/Button/Button.cpp 				\
 				Gui/src/Player/Player.cpp				\
 				Gui/src/AEntity/AEntity.cpp				\
@@ -71,6 +72,7 @@ GUI_FLAGS = -lraylib -lpthread -lGL -I Debug 		\
 			-I Gui/src/Error 						\
 			-I Gui/src/Player 						\
 			-I Gui/src/Button 						\
+			-I Gui/src/Client 						\
 			-I Gui/src/AEntity 						\
 			-I Gui/src/Settings						\
 			-I Gui/src/Inventory 					\

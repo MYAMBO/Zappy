@@ -11,15 +11,15 @@
     #include <arpa/inet.h>
     #include <sys/socket.h>
     #include <iostream>
+    #include <vector>
+    #include <iostream>
+    #include <memory>
+    #include <map>
     #include "AEntity.hpp"
     #include "AItem.hpp"
     #include "Player.hpp"
     #include "Tile.hpp"
     #include "Error.hpp"
-    #include <vector>
-    #include <iostream>
-    #include <memory>
-    #include <map>
 
 namespace gui {
     class Client {
@@ -29,8 +29,8 @@ namespace gui {
             void sendCommand(const std::string& command) const;
 
             void setPlayers(std::vector<std::shared_ptr<Player>> players);
+            void setMap(std::vector<std::shared_ptr<gui::Tile>> map);
 
-            [[nodiscard]] std::pair<int, int> msz() const; // map size
 
         private:
             Client();
@@ -41,6 +41,7 @@ namespace gui {
             void connectToServer();
             void receiveLoop();
 
+            void msz(std::vector<std::string> stringArray); // map size
             void bct(std::vector<std::string> stringArray); // content of a tile
             void tna(std::vector<std::string> stringArray); // name of all the teams
             void pnw(std::vector<std::string> stringArray); // connection of a new player
@@ -69,6 +70,7 @@ namespace gui {
             static std::shared_ptr<Model> safeModelLoader(const std::string& string);
             int findPlayer(int id);
 
+            std::pair<int, int> _size;
             int _socket;
             bool _isActive;
             std::vector<std::shared_ptr<gui::Player>> _Players;
@@ -81,11 +83,6 @@ namespace gui {
 inline void SendCommand(const std::string& command)
 {
     gui::Client::getInstance().sendCommand(command);
-}
-
-inline std::pair<int, int> Msz()
-{
-    return gui::Client::getInstance().msz();
 }
 
 #endif //ZAPPY_CLIENT_HPP
