@@ -197,8 +197,7 @@ void gui::Client::tna(std::vector<std::string> stringArray)
         team_name[team_name.length() - 1] = '\0';
 
     if (std::find(this->_teams.begin(), this->_teams.end(), team_name) != this->_teams.end())
-        // throw error message
-        return;
+        throw Error("Team name already exist");
 
     this->_teams.push_back(team_name);
 }
