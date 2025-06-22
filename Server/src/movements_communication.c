@@ -10,7 +10,6 @@
 
 #include <stdio.h>
 
-
 static bool verif_out_map_player(server_t *serv, ai_stats_t *ai, int x, int y)
 {
     if (ai->x + x > serv->map_height) {
