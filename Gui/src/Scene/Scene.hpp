@@ -124,12 +124,18 @@ namespace gui {
             std::unique_ptr<ui::Settings> _settings;
 
             std::shared_ptr<Model> _playerModel;
-            static std::shared_ptr<Model> safeModelLoader(const std::string& string);
 
             std::vector<int> _itemDisplay;
-            std::vector<std::shared_ptr<Model>> _models;
             std::vector<std::shared_ptr<gui::Tile>> _map;
             std::vector<std::shared_ptr<gui::Player>> _players;
+
+            // remove later from here
+            static std::shared_ptr<Model> safeModelLoader(const std::string& string);
+
+            std::vector<std::shared_ptr<Model>> _models;
+
+            // to here
+
     };
 
     class FailedLoadModel : public std::exception {

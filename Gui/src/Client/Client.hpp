@@ -11,163 +11,75 @@
     #include <arpa/inet.h>
     #include <sys/socket.h>
     #include <iostream>
-    #include "AEntity.hpp"
-    #include "AItem.hpp"
-    #include "Player.hpp"
-    #include "Tile.hpp"
+    #include <utility>
     #include <vector>
     #include <iostream>
     #include <memory>
     #include <map>
+    #include <thread>
+    #include "AEntity.hpp"
+    #include "AItem.hpp"
+    #include "Player.hpp"
+    #include "Tile.hpp"
+    #include "Error.hpp"
 
 namespace gui {
     class Client {
         public:
             static Client &getInstance();
 
-            void connect();
-
-            void sendCommand(std::string command) const;
+            void sendCommand(const std::string& command) const;
 
             void setPlayers(std::vector<std::shared_ptr<Player>> players);
-            void setItems(std::vector<std::shared_ptr<AItem>> items);
+            void setMap(std::vector<std::shared_ptr<gui::Tile>> map);
 
-            [[nodiscard]] std::pair<int, int> msz() const; // map size
 
         private:
             Client();
             ~Client();
-            Client(const Client&) = delete;
+            Client(const Client&) = default;
             Client& operator=(const Client &) = delete;
 
+            void connectToServer();
+            void receiveLoop();
 
-            void catchCommand();
-
-            void interpretCommand(std::string string);
-
-            void bct(const std::string& string); // content of a tile
-            void tna(std::string string); // name of all the teams
-            void pnw(const std::string &string); // connection of a new player
-            void ppo(std::string string); // player’s position
-            void plv(std::string string); // player’s level
-            void pin(std::string string); // player’s inventory
-            void pex(std::string string); // expulsion
-            void pbc(std::string string); // broadcast
-            void pic(std::string string); // start of an incantation
-            void pie(std::string string); // end of an incantation
-            void pfk(std::string string); // egg laying by the player
-            void pdr(std::string string); // resource dropping
-            void pgt(std::string string); // resource collecting
-            void pdi(const std::string& string); // death of a player
-            void enw(std::string string); // an egg was laid by a player
-            void ebo(std::string string); // player connection for an egg
-            void edi(std::string string); // death of an egg
-            void sgt(std::string string); // time unit request
-            void sst(std::string string); // time unit modification
-            void seg(std::string string); // end of game
-            void smg(std::string string); // message from the server
-            void suc(std::string string); // unknown command
-            void sbp(std::string string); // command parameter
+            void msz(std::vector<std::string> stringArray); // map size
+            void bct(std::vector<std::string> stringArray); // content of a tile
+            void tna(std::vector<std::string> stringArray); // name of all the teams
+            void pnw(std::vector<std::string> stringArray); // connection of a new player
+            void ppo(std::vector<std::string> stringArray); // player’s position
+            void plv(std::vector<std::string> stringArray); // player’s level
+            void pin(std::vector<std::string> stringArray); // player’s inventory
+            void pex(std::vector<std::string> stringArray); // expulsion
+            void pbc(std::vector<std::string> stringArray); // broadcast
+            void pic(std::vector<std::string> stringArray); // start of an incantation
+            void pie(std::vector<std::string> stringArray) const; // end of an incantation
+            void pfk(std::vector<std::string> stringArray); // egg laying by the player
+            void pdr(std::vector<std::string> stringArray); // resource dropping
+            void pgt(std::vector<std::string> stringArray); // resource collecting
+            void pdi(std::vector<std::string> stringArray); // death of a player
+            void enw(std::vector<std::string> stringArray); // an egg was laid by a player
+            static void ebo(std::vector<std::string> stringArray); // player connection for an egg
+            static void edi(std::vector<std::string> stringArray); // death of an egg
+            static void sgt(std::vector<std::string> stringArray); // time unit request
+            static void sst(std::vector<std::string> stringArray); // time unit modification
+            void seg(std::vector<std::string> stringArray); // end of game
+            static void smg(std::vector<std::string> stringArray); // message from the server
+            static void suc(const std::vector<std::string>& stringArray); // unknown command
+            static void sbp(const std::vector<std::string>& stringArray); // command parameter
 
             static std::vector<std::string> splitString(const std::string &string);
+            static std::shared_ptr<Model> safeModelLoader(const std::string& string);
             int findPlayer(int id);
 
-
+            std::pair<int, int> _size;
             int _socket;
-            sockaddr_in _serverAddr;
+            bool _isActive;
+            std::thread _thread;
             std::vector<std::shared_ptr<gui::Player>> _Players;
             std::vector<std::shared_ptr<gui::Tile>> _Map;
-    };
-
-    class WrongPlayerValue : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Player's value are wrong.";
-        };
-    };
-
-    class WrongTileValue : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "There is a wrong value for creating Tile.";
-        };
-    };
-
-    class WrongMapSize : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Value for Map size is invalid.";
-        };
-    };
-
-    class WrongTeamName : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Value for team name is invalid.";
-        };
-    };
-
-    class WrongPlayerId : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "No player with this Id.";
-        };
-    };
-
-    class PlayerIdAlreadyUsed : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "This Id is already used by an other player.";
-        };
-    };
-
-    class InvalidNumberOfParameter : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Command with the wrong number of argument.";
-        };
-    };
-
-    class UnexpectedArgumentError : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Received an unexpected argument.";
-        };
-    };
-
-    class WrongPlayerLevel : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Player's level can't have negative value";
-        };
-    };
-
-    class WrongInventoryValue : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Player's inventory can't have negative value";
-        };
-    };
-
-    class InvalidPlayerPosition : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Player's position out of map";
-        };
-    };
-
-    class InvalidIncantationLevel : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Incantation level is invalid";
-        };
-    };
-
-    class WrongResourceNumber : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Resources can't have negative value";
-        };
+            std::vector<std::shared_ptr<Model>> _models;
+            std::vector<std::string> _teams;
     };
 }
 
@@ -176,9 +88,14 @@ inline void SendCommand(const std::string& command)
     gui::Client::getInstance().sendCommand(command);
 }
 
-inline std::pair<int, int> Msz()
+inline void SetPlayers(std::vector<std::shared_ptr<gui::Player>> players)
 {
-    return gui::Client::getInstance().msz();
+    gui::Client::getInstance().setPlayers(std::move(players));
+}
+
+inline void SetMap(std::vector<std::shared_ptr<gui::Tile>> map)
+{
+    gui::Client::getInstance().setMap(std::move(map));
 }
 
 #endif //ZAPPY_CLIENT_HPP
