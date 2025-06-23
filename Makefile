@@ -32,6 +32,10 @@ SERVER_SRC = 												\
 				Server/src/player_informations_protocol.c 	\
 				Server/src/slot_handler.c	\
 				Server/src/command_execution.c	\
+				Server/src/graphic_connect.c \
+				Server/src/commands/command_pin.c	\
+				Server/src/utils.c	\
+				Server/src/commands/command_forward.c	\
 
 GUI_SRC = 												\
 				Gui/src/main.cpp 						\

@@ -5,6 +5,7 @@
 ** main
 */
 
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,7 +14,6 @@
 #include "struct.h"
 #include "logger.h"
 #include "options_parser.h"
-
 #include "map_protocol.h"
 #include "technical_protocol.h"
 #include "player_informations_protocol.h"
@@ -95,10 +95,26 @@ int parse_arguments(int ac, char **av, server_t *server)
     return SUCCESS;
 }
 
+int *is_running(void)
+{
+    static int is_running = 1;
+
+    return &is_running;
+}
+
+void stop_server(int tmp)
+{
+    int *val = is_running();
+
+    (void)tmp;
+    *val = 0;
+}
+
 int main(int ac, char **av)
 {
     server_t server;
 
+    signal(SIGINT, stop_server);
     init_density(&server);
     logger_clear_log_file();
     logger_info("Server starting...", FILE_OUTPUT, true);
