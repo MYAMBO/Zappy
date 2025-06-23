@@ -66,6 +66,6 @@ char *eject_player(ai_stats_t *ai, poll_handling_t *players, map_t *map)
         }
     }
     if (ejected)
-        return "ok";
-    return "ko";
+        return "ok\n";
+    return "ko\n";
 }
