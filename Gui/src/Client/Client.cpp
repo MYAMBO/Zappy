@@ -87,10 +87,10 @@ void gui::Client::receiveLoop()
         {"sbp", [](const std::vector<std::string>& s) { gui::Client::sbp(s); }}
     };
 
-    char buffer[1024];
+    std::string buffer;
     std::vector<std::string> stringArray;
     while (true) {
-        ssize_t bytesReceived = recv(this->_socket, buffer, sizeof(buffer) - 1, 0);
+        ssize_t bytesReceived = recv(this->_socket, &buffer, buffer.size() - 1, 0);
         if (bytesReceived <= 0) {
             std::cout << "Server disconnected.\n";
             break;
