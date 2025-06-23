@@ -113,7 +113,10 @@ def handle_eject_command(eject_command, command_list):
     return command_list
 
 
-def handle_reply(reply, ai, command, name):
+def handle_reply(reply, ai, command, name, command_list):
+    if reply.startswith("eject: "):
+        handle_eject_command(reply, command_list)
+        return False
     if "follow me !;" in reply:
         handle_follow(ai, reply)
         return False
@@ -138,6 +141,8 @@ def handle_reply(reply, ai, command, name):
     elif reply == "ko\n":
         return True
     elif try_inventory(reply, ai) == True:
+        if len(ai.team_inventory) < 10 and ai.inventory['food'] > 6:
+            command_list.insert(0, "Fork")
         return True
     if try_view(reply, ai) == True:
         return True
