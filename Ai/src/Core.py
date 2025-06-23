@@ -46,6 +46,8 @@ def update_command_list(currentList, ai):
             else:
                 return ["Broadcast \"" + str(ai.get_id()) + ";en position !\""]
     if len(currentList) == 0:
+        if len(ai.team_inventory) < 10:
+            currentList.append("Inventory")
         view = ai.get_view()
         if view == None:
             return currentList
@@ -97,7 +99,7 @@ def core(name, port, machine):
         reply = handle_command(client)
         if reply == None:
             return 0
-        while handle_reply(reply, ai, commandToReply, name) == False:
+        while handle_reply(reply, ai, commandToReply, name, commands) == False:
             reply = handle_command(client)
             if reply == None:
                 return 0
