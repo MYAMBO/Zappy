@@ -8,12 +8,9 @@
 */
 
 #include "slot_handler.h"
-
 #include <time.h>
-
 #include "garbage.h"
 #include "server.h"
-
 
 static slot_t *init_slot(slot_table_t *table)
 {
@@ -41,6 +38,8 @@ int add_slot(slot_table_t *slot_table)
     }
     for (tmp = slot_table->slots; tmp->next; tmp = tmp->next);
     tmp->next = slot;
+    slot_table->nb_slots++;
+    slot_table->slots_remaining++;
     return SUCCESS;
 }
 
@@ -92,6 +91,7 @@ static int disconnect_player_helper(slot_table_t **slot_table,
             slot = slot->next) {
         if (slot->id_user == id_user) {
             remove_slot(&slot_table[i]->slots, slot->id_slot);
+            slot_table[i]->nb_slots--;
             return SUCCESS;
         }
     }

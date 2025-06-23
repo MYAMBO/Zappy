@@ -134,9 +134,9 @@ void gui::Client::connectToServer()
 
     this->_thread = std::thread(&gui::Client::receiveLoop, this);
 
-//    sendCommand("msz\n");
-//    sendCommand("mct\n");
-//    sendCommand("tna\n");
+    sendCommand("msz\n");
+    sendCommand("mct\n");
+    sendCommand("tna\n");
 }
 
 /************************************************************

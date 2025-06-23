@@ -14,6 +14,7 @@
 #include "logger.h"
 #include "server.h"
 #include "split_string.h"
+#include "graphic_connect.h"
 
 static int send_map_size_message(server_t *server,
     poll_handling_t *node)
@@ -62,6 +63,11 @@ static int send_slot_remaining(int *val, server_t *server,
         *val = connect_player(server->team_names[i], node->player->id);
         if (*val != 0)
             continue;
+        node->player->team_name = my_malloc(sizeof(char) *
+            (strlen(server->team_names[i]->name) + 1));
+        if (node->player->team_name == NULL)
+            return FAILURE;
+        strcpy(node->player->team_name, server->team_names[i]->name);
         return send_slot_remaining_massages(server, node, i);
     }
     return SUCCESS;
@@ -79,13 +85,31 @@ static int send_slot_remaining(int *val, server_t *server,
 //     }
 //     return SUCCESS;
 // }
+int execute_commands_graphic(server_t *server, poll_handling_t *node,
+    char **args)
+{
+    for (int i = 0; commands_gui_list[i].command != NULL; i++) {
+        if (strcmp(args[0], commands_gui_list[i].command) != 0)
+            continue;
+        if (commands_gui_list[i].function(server, node, args) == FAILURE) {
+            my_free_array(args);
+            return FAILURE;
+        }
+        return SUCCESS;
+    }
+    write(node->poll_fd.fd, "ko\n", 3);
+    return SUCCESS;
+}
+
 static int execute_command_loop(server_t *server,
     poll_handling_t *node, char **args)
 {
-    for (int i = 0; commands_list[i].command != NULL; i++) {
-        if (strcmp(args[0], commands_list[i].command) != 0)
+    if (is_graphic_user(server, node))
+        return execute_commands_graphic(server, node, args);
+    for (int i = 0; commands_ai_list[i].command != NULL; i++) {
+        if (strcmp(args[0], commands_ai_list[i].command) != 0)
             continue;
-        if (commands_list[i].function(server, node, args) == FAILURE) {
+        if (commands_ai_list[i].function(server, node, args) == FAILURE) {
             my_free_array(args);
             return FAILURE;
         }

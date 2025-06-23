@@ -43,7 +43,6 @@ gui::Scene::Scene()
     _menu->initMenuUI();
     _settings->initSettingsUI();
     _eggs.emplace_back(std::make_shared<gui::Egg>(0, std::make_pair(GetRandomValue(0, WIDTH - 1), GetRandomValue(0, HEIGHT - 1))));
-    initMap();
 
     SetPlayers(this->_players);
     SetMap(this->_map);
@@ -66,28 +65,6 @@ void gui::Scene::initWindow()
     SetTargetFPS(TARGET_FPS);
 
     this->_camera = { { -_width, 10.0f, -_height}, { _width / 2, 0.0f, _height / 2 }, { 0.0f, 1.0f, 0.0f }, 45.0f, 0 };
-}
-
-void gui::Scene::initMap()
-{
-    for (int y = 0; y < HEIGHT; ++y) {
-        for (int x = 0; x < WIDTH; ++x) {
-            std::pair<int, int> coord = {x, y};
-            std::vector<int> qty;
-            qty.emplace_back(1);
-            qty.emplace_back(1);
-            qty.emplace_back(1);
-            qty.emplace_back(1);
-            qty.emplace_back(1);
-            qty.emplace_back(1);
-            qty.emplace_back(1);
-            _map.emplace_back(std::make_shared<gui::Tile>(coord, qty, _models));
-        }
-    }
-    for (int x = 0; (float)x < 10; ++x) {
-        std::pair<int, int> coord = {GetRandomValue(0, (int)WIDTH - 1), GetRandomValue(0, (int)HEIGHT - 1)};
-        _players.emplace_back(std::make_shared<gui::Player>(x, coord, North, 1, "toto", 0.35f, SCREEN_WIDTH, SCREEN_HEIGHT, _camera, _camState, TIME_UNIT));
-    }
 }
 
 void gui::Scene::displayEntity()
@@ -194,9 +171,9 @@ void gui::Scene::update()
             handleInput();
             render();
             if (IsKeyPressed(KEY_J)) {
-                //_players[0]->startMoveTo({static_cast<float>(GetRandomValue(0, (int)WIDTH - 1)), 1.0f, static_cast<float>(GetRandomValue(0, (int)HEIGHT - 1))});
+                _players[0]->startMoveTo({static_cast<float>(GetRandomValue(0, (int)WIDTH - 1)), 1.0f, static_cast<float>(GetRandomValue(0, (int)HEIGHT - 1))});
                 //_players[0]->setBroadcasting(true);
-                _players[0]->setisDead(true);
+                //_players[0]->setisDead(true);
             }
             break;
         case SceneState::EXIT:

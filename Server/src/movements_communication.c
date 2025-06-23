@@ -10,7 +10,6 @@
 
 #include <stdio.h>
 
-
 static bool verif_out_map_player(server_t *serv, ai_stats_t *ai, int x, int y)
 {
     if (ai->x + x > serv->map_height) {
@@ -72,8 +71,3 @@ char *player_turns_left(ai_stats_t *ai)
     ai->direction -= 1;
     return "ok";
 }
-
-//char *player_looks_around(ai_stats_t *ai, server_t *server)
-//{
-//
-//}

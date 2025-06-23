@@ -9,6 +9,7 @@
 SERVER_SRC = 												\
 				Server/src/main.c 							\
 				Server/src/garbage.c 						\
+				Server/src/look_utils.c                     \
 				Server/src/init_server.c 					\
                 Server/src/init_player.c 					\
 				Server/src/handle_event.c					\
@@ -21,14 +22,20 @@ SERVER_SRC = 												\
 				Server/src/actions_protocol.c				\
                 Server/src/handle_connection.c				\
 				Server/src/technical_protocol.c 			\
-				Server/src/player_informations_protocol.c 	\
-                Server/src/unique_connection_id_getter.c \
-                Server/src/commands/command_quit.c	\
+				Server/src/eject_communication.c            \
+                Server/src/commands/command_quit.c			\
 				Server/src/actions_communication.c          \
 				Server/src/inventory_communication.c        \
-				Server/src/movements_communication.c		\
+				Server/src/movements_communication.c        \
+				Server/src/look_around_communication.c      \
+                Server/src/unique_connection_id_getter.c 	\
+				Server/src/player_informations_protocol.c 	\
 				Server/src/slot_handler.c	\
 				Server/src/command_execution.c	\
+				Server/src/graphic_connect.c \
+				Server/src/commands/command_pin.c	\
+				Server/src/utils.c	\
+				Server/src/commands/command_forward.c	\
 
 GUI_SRC = 												\
 				Gui/src/main.cpp 						\
