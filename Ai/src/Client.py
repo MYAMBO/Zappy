@@ -30,6 +30,7 @@ class Client:
             raise ClientError("Socket error: " + e.strerror)
         print("Connected to " + str(self.__host) + ' ' + str(self.__port))
         print(self.__sock.recv(4096).decode())
+        self.__sock.settimeout(None)
 
     def send_command(self, command):
         if self.__sock:

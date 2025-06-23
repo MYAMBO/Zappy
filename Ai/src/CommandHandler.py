@@ -55,15 +55,6 @@ def try_connect(reply, ai):
     return True
 
 
-def handle_follow(ai, reply):
-    _, id = reply.strip()[0:-1].rsplit(';')
-    if ai.get_ai_to_follow() == ai.get_id() and str(ai.get_id()) < id:
-        return
-    ai.set_ai_to_follow(id)
-    start, _ = reply.rsplit(',')
-    ai.set_tile_to_follow(int(start.split("message ")[1]))
-
-
 def manage_trantorian_turn(dir1, dir2, command_list, i):
     if dir1 in command_list:
         i -= 1
@@ -113,38 +104,3 @@ def handle_eject_command(eject_command, command_list):
         elif tile == 7:
             command_list = manage_trantorian_turn("Left", "Right", command_list, i)
     return command_list
-
-
-def handle_reply(reply, ai, command, name):
-    if reply.startswith("message ") and "follow me !;" in reply:
-        handle_follow(ai, reply)
-        return False
-    if reply.startswith("message ") and ";en position !" in reply and ai.get_id() == ai.get_ai_to_follow():
-        ai.decrease_mates_to_wait()
-    if reply.startswith("message ") and "hey_je_suis_:" in reply:
-        _, id = reply.rsplit(':', 1)
-        ai.add_in_team_inventory(id, {"sibur" : 0, "phiras" : 0, "thystame" : 0, "mendiane" : 0, "linemate" : 0, "deraumere" : 0})
-    if reply.startswith("message ") and "j'ai ça :" in reply:
-        _, info = reply.rsplit(":")
-        id, inventory = info.rsplit(";")
-        try:
-            ai.add_in_team_inventory(id, handle_inventory_string(inventory.strip()[0:-1]))
-        except:
-            return False
-    if command == name:
-        return True
-    elif reply == "ok\n":
-        if command.startswith("Take "):
-            ai.add_object_to_inventory(command.split(' ')[1])
-        elif command.startswith("Set "):
-            ai.set_down_object_from_inventory(command.split(' ')[1])
-        return True
-    elif reply == "ko\n":
-        return True
-    elif try_inventory(reply, ai) == True:
-        return True
-    if try_view(reply, ai) == True:
-        return True
-    if try_connect(reply, ai) == True:
-        return True
-    return False
