@@ -8,6 +8,7 @@
 #ifndef ZAPPY_SCENE_HPP
     #define ZAPPY_SCENE_HPP
 
+    #include "Egg.hpp"
     #include "Tile.hpp"
     #include "Food.hpp"
     #include "Sibur.hpp"
@@ -126,13 +127,13 @@ namespace gui {
             std::shared_ptr<Model> _playerModel;
 
             std::vector<int> _itemDisplay;
+            std::vector<std::shared_ptr<Model>> _models;
+            std::vector<std::shared_ptr<gui::Egg>> _eggs;
             std::vector<std::shared_ptr<gui::Tile>> _map;
             std::vector<std::shared_ptr<gui::Player>> _players;
 
             // remove later from here
             static std::shared_ptr<Model> safeModelLoader(const std::string& string);
-
-            std::vector<std::shared_ptr<Model>> _models;
 
             // to here
 

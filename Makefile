@@ -42,6 +42,7 @@ GUI_SRC = 												\
 				Gui/src/Items/Linemate/Linemate.cpp		\
 				Gui/src/Items/Deraumere/Deraumere.cpp	\
 														\
+				Gui/src/Egg/Egg.cpp						\
 				Gui/src/Tile/Tile.cpp					\
 				Gui/src/Menu/Menu.cpp					\
 				Gui/src/Error/Error.cpp 				\
@@ -65,6 +66,7 @@ SERVER_NAME = zappy_server
 SERVER_FLAGS = -I Server/include -I Debug
 GUI_FLAGS = -lraylib -lpthread -lGL -I Debug 		\
         											\
+			-I Gui/src/Egg 							\
 			-I Gui/src/Tile			 				\
 			-I Gui/src/Menu 						\
 			-I Gui/src/Items 						\

@@ -1,0 +1,11 @@
+Model Information:
+* title:	Low Poly Simple Egg
+* source:	https://sketchfab.com/3d-models/low-poly-simple-egg-86aa1f28452f4c979a6eb2eb07fddeb7
+* author:	Algui_ (https://sketchfab.com/Algui_)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Low Poly Simple Egg" (https://sketchfab.com/3d-models/low-poly-simple-egg-86aa1f28452f4c979a6eb2eb07fddeb7) by Algui_ (https://sketchfab.com/Algui_) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
