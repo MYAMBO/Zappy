@@ -11,7 +11,7 @@ from Logger import logger, Output
 from Message import follow_message
 from getWay import get_better_way_to_resources
 from SortTiles import get_visible_tiles_sorted_by_distance
-from CommandHandler import handle_inventory_string, try_inventory, try_view, try_connect
+from CommandHandler import handle_inventory_string, try_inventory, try_view, try_connect, handle_eject_command
 
 class Ai:
     def __init__(self, team_name, client):
@@ -128,6 +128,9 @@ class Ai:
 
     def handle_reply(self, reply):
         command = self.__command_to_reply
+        if reply.startswith("eject: "):
+            handle_eject_command(reply, self.__commands_queue)
+            return False
         if reply.startswith("message "):
             self.handle_message(reply)
             return False
@@ -139,7 +142,11 @@ class Ai:
             elif command.startswith("Set "):
                 self.set_down_object_from_inventory(command.split(' ')[1])
             return True
-        return reply == "ko\n" or try_inventory(reply, self) or try_view(reply, self) or try_connect(reply, self)
+        if try_inventory(reply, self):
+            if len(self.__team_inventory) < 10 and self.__inventory['food'] > 6:
+                self.__commands_queue.insert(0, "Fork")
+            return True
+        return reply == "ko\n" or try_view(reply, self) or try_connect(reply, self)
 
     def set_view(self, view):
         self.__view = view
