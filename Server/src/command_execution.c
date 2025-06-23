@@ -97,7 +97,7 @@ int execute_commands_graphic(server_t *server, poll_handling_t *node,
         }
         return SUCCESS;
     }
-    write(node->poll_fd.fd, "ko\n", 3);
+    write(node->poll_fd.fd, "suc\n", 4);
     return SUCCESS;
 }
 

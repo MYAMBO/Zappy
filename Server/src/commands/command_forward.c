@@ -16,7 +16,7 @@
 int forward_command(server_t *server, poll_handling_t *node, char **args)
 {
     if (array_len(args) != 1) {
-        write(node->poll_fd.fd, "sbp\n", 4);
+        write(node->poll_fd.fd, "ko\n", 3);
         return SUCCESS;
     }
     handle_forward_action(node->player, server);

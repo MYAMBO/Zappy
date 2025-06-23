@@ -36,6 +36,12 @@ SERVER_SRC = 												\
 				Server/src/commands/command_pin.c	\
 				Server/src/utils.c	\
 				Server/src/commands/command_forward.c	\
+				Server/src/commands/command_right.c	\
+				Server/src/commands/command_left.c	\
+				Server/src/commands/command_look.c	\
+				Server/src/commands/command_inventory.c	\
+				Server/src/commands/command_broadcast.c	\
+				Server/src/commands/command_eject.c	\
 
 GUI_SRC = 												\
 				Gui/src/main.cpp 						\
