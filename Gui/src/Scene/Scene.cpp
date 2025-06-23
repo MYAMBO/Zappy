@@ -10,6 +10,7 @@
 #include "Scene.hpp"
 #include "Player.hpp"
 #include "Settings.hpp"
+#include "Client.hpp"
 
 
 /************************************************************
@@ -42,6 +43,9 @@ gui::Scene::Scene()
     _menu->initMenuUI();
     _settings->initSettingsUI();
     initMap();
+
+    SetPlayers(this->_players);
+    SetMap(this->_map);
 }
 
 gui::Scene::~Scene()
