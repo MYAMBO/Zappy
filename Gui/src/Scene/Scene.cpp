@@ -10,6 +10,7 @@
 #include "Scene.hpp"
 #include "Player.hpp"
 #include "Settings.hpp"
+#include "Client.hpp"
 
 
 /************************************************************
@@ -18,19 +19,23 @@
 
 
 gui::Scene::Scene()
-    : _camState(CamState::WORLD), _isOpen(true), _width(WIDTH), _height(HEIGHT), _currentState(SceneState::MENU), _models()
+    : _camState(CamState::WORLD), _isOpen(true), _width(WIDTH), _height(HEIGHT), _currentState(SceneState::MENU), _models() //don't forget here
 {
     Debug::ClearLogFile();
     Debug::InfoLog("Zappy started");
     initWindow();
-    
-    _models.emplace_back(safeModelLoader("assets/food/scene.gltf"));
-    _models.emplace_back(safeModelLoader("assets/linemate/scene.gltf"));
-    _models.emplace_back(safeModelLoader("assets/deraumere/scene.gltf"));
-    _models.emplace_back(safeModelLoader("assets/sibur/scene.gltf"));
-    _models.emplace_back(safeModelLoader("assets/mendiane/scene.gltf"));
-    _models.emplace_back(safeModelLoader("assets/phiras/scene.gltf"));
-    _models.emplace_back(safeModelLoader("assets/thystame/scene.gltf"));
+
+    // remove later from here
+
+    this->_models.emplace_back(safeModelLoader("assets/food/scene.gltf"));
+    this->_models.emplace_back(safeModelLoader("assets/linemate/scene.gltf"));
+    this->_models.emplace_back(safeModelLoader("assets/deraumere/scene.gltf"));
+    this->_models.emplace_back(safeModelLoader("assets/sibur/scene.gltf"));
+    this->_models.emplace_back(safeModelLoader("assets/mendiane/scene.gltf"));
+    this->_models.emplace_back(safeModelLoader("assets/phiras/scene.gltf"));
+    this->_models.emplace_back(safeModelLoader("assets/thystame/scene.gltf"));
+
+    // to here
 
     _menu = std::make_unique<gui::ui::Menu>(_currentState, SCREEN_WIDTH, SCREEN_HEIGHT);
     _settings = std::make_unique<gui::ui::Settings>(_currentState, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -39,6 +44,9 @@ gui::Scene::Scene()
     _settings->initSettingsUI();
     _eggs.emplace_back(std::make_shared<gui::Egg>(0, std::make_pair(GetRandomValue(0, WIDTH - 1), GetRandomValue(0, HEIGHT - 1))));
     initMap();
+
+    SetPlayers(this->_players);
+    SetMap(this->_map);
 }
 
 gui::Scene::~Scene()
@@ -57,7 +65,7 @@ void gui::Scene::initWindow()
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Zappy");
     SetTargetFPS(TARGET_FPS);
 
-    _camera = { { -_width, 10.0f, -_height}, { _width / 2, 0.0f, _height / 2 }, { 0.0f, 1.0f, 0.0f }, 45.0f, 0 };
+    this->_camera = { { -_width, 10.0f, -_height}, { _width / 2, 0.0f, _height / 2 }, { 0.0f, 1.0f, 0.0f }, 45.0f, 0 };
 }
 
 void gui::Scene::initMap()
