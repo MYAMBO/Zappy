@@ -18,6 +18,8 @@
 #include <unistd.h>
 #include <sys/socket.h>
 
+#include <time.h>
+
 /************************************************************
 **         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
 ************************************************************/
@@ -53,6 +55,7 @@ gui::Client& gui::Client::getInstance()
 void gui::Client::sendCommand(const std::string& command) const
 {
     send(this->_socket, command.c_str(), command.size(), 0);
+    Debug::InfoLog("Sent command: " + command);
 }
 
 void gui::Client::receiveLoop()
@@ -94,20 +97,25 @@ void gui::Client::receiveLoop()
         }
         buffer[bytesReceived] = '\0';
         stringArray = splitString(buffer);
-
+        Debug::InfoLog("Received command: " + stringArray[0]);
         if (stringArray[0] == "WELCOME\n")
             continue;
-
+        if (stringArray[0] == "GRAPHIC\n")
+            continue;
+        if (stringArray[0] == "ko\n")
+            continue;
         if (funcMap[stringArray[0]])
             funcMap[stringArray[0]](stringArray);
-        else
+        else {
+            Debug::DebugLog("Unknown command received: " + stringArray[0]);
             throw Error("This protocol don't exist : " + stringArray[0]);
+        }
     }
 }
 
 void gui::Client::connectToServer()
 {
-    const char* hostname = "zappy.antoiix.me";
+    const char* hostname = "localhost";
     const char* port = "12345";
 
     addrinfo hints{}, *res;
@@ -134,6 +142,7 @@ void gui::Client::connectToServer()
 
     this->_thread = std::thread(&gui::Client::receiveLoop, this);
 
+    std::this_thread::sleep_for(std::chrono::seconds(1)); // Wait for the server to be ready
     sendCommand("msz\n");
     sendCommand("mct\n");
     sendCommand("tna\n");
