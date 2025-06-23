@@ -8,6 +8,7 @@
 #ifndef ZAPPY_SCENE_HPP
     #define ZAPPY_SCENE_HPP
 
+    #include "Egg.hpp"
     #include "Tile.hpp"
     #include "Food.hpp"
     #include "Sibur.hpp"
@@ -128,6 +129,7 @@ namespace gui {
 
             std::vector<int> _itemDisplay;
             std::vector<std::shared_ptr<Model>> _models;
+            std::vector<std::shared_ptr<gui::Egg>> _eggs;
             std::vector<std::shared_ptr<gui::Tile>> _map;
             std::vector<std::shared_ptr<gui::Player>> _players;
     };

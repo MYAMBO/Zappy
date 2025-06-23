@@ -37,6 +37,7 @@ gui::Scene::Scene()
     _itemDisplay = {1, 1, 1, 1, 1, 1, 1};
     _menu->initMenuUI();
     _settings->initSettingsUI();
+    _eggs.emplace_back(std::make_shared<gui::Egg>(0, std::make_pair(GetRandomValue(0, WIDTH - 1), GetRandomValue(0, HEIGHT - 1))));
     initMap();
 }
 
@@ -88,6 +89,9 @@ void gui::Scene::displayEntity()
     }
     for (auto& player : _players) {
         player->draw();
+    }
+    for (auto& egg : _eggs) {
+        egg->draw();
     }
 }
 
