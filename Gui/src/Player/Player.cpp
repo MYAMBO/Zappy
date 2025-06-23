@@ -19,15 +19,22 @@
 
 
 gui::Player::Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team,
-        float scale, int screenWidth, int screenHeight, Camera3D &camera, CamState &sceneState)
-    : AEntity({(float)position.first, 0.5, (float)position.second}, scale, WHITE), 
-    _id(id), _level(level), _currentAnim(0), _animFrameCounter(0), _isMoving(false), _isSelected(false), _team(std::move(team)), _moveSpeed(2.0f), _animationSpeed(1.0f),
+        float scale, int screenWidth, int screenHeight, Camera3D &camera, CamState &sceneState, int timeUnit)
+    : AEntity({(float)position.first, 1.0f, (float)position.second}, scale, WHITE), 
+    _id(id), _level(level), _currentAnim(2), _animFrameCounter(0), _isMoving(false), _isSelected(false),
+    _team(std::move(team)), _moveSpeed(1/timeUnit), _animationSpeed(1.0f),
     _camButton([this, &camera, &sceneState]() { HandleCamButton(camera, sceneState); }, Rectangle{0, static_cast<float>(screenHeight - 70), 150, 70}, "Camera"),
     _inventory(screenWidth, screenHeight), _direction(orientation), _currentAnimState(AnimState::IDLE)
 {
     _model = std::make_shared<Model>(LoadModel("assets/player/scene.gltf"));
+    _deadModel = LoadModel("assets/dead/scene.gltf");
     _animations = LoadModelAnimations("assets/player/scene.gltf", &_animCount);
 
+    if (_animCount > 0) {
+        _currentAnim = 0;
+        _animFrameCounter = 0;
+        setAnimationState(AnimState::IDLE);
+    }
     _model->transform = MatrixScale(scale, scale, scale);
 }
 
@@ -57,6 +64,13 @@ void gui::Player::stopMoving()
 
 void gui::Player::draw()
 {
+    if (_isDead) {
+        if (_countBeforeExpire > 0) {
+            DrawModelEx(_deadModel, {_position.x, _position.y - 0.5f, _position.z}, {0, 1, 0}, _rotationY, {0.01f, 0.01f, 0.01f}, _color);
+            _countBeforeExpire--;
+        }
+        return;
+    }
     if (_direction == Orientation::North)
         _rotationY = 0.0f;
     else if (_direction == Orientation::Est)
@@ -67,7 +81,7 @@ void gui::Player::draw()
         _rotationY = 270.0f;
     DrawModelEx(*_model, _position, {0, 1, 0}, _rotationY, {_scale, _scale, _scale}, _color);
     if (_isSelected) {
-        DrawCubeWires(_position, _scale, _scale, _scale, {255, 0, 0, 255});
+        DrawCubeWires(_position, 1, 1, 1, {255, 0, 0, 255});
     }
     broadcastAnimation();
 }
@@ -86,9 +100,9 @@ void gui::Player::updateUI()
         _camButton.update();
     }
 }
-int gui::Player::update(Camera3D camera)
+
+void gui::Player::updateMovementAndAnimation()
 {
-    Debug::DebugLog("Position: " + std::to_string(_position.x) + ", " + std::to_string(_position.y) + ", " + std::to_string(_position.z));
     if (_isMoving) {
         Vector3 direction = Vector3Subtract(_targetPosition, _position);
         float distance = Vector3Length(direction);
@@ -106,11 +120,15 @@ int gui::Player::update(Camera3D camera)
             _animFrameCounter = 0;
         UpdateModelAnimation(*_model, _animations[_currentAnim], _animFrameCounter);
     }
+}
+
+void gui::Player::handleUserInput(Camera3D camera)
+{
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         Ray ray = GetMouseRay(GetMousePosition(), camera);
         BoundingBox box = {
-            { _position.x - _scale/4, _position.y - _scale/4, _position.z - _scale/4 },
-            { _position.x + _scale/4, _position.y + _scale/4, _position.z + _scale/4 }
+            { _position.x - 1, _position.y - 1, _position.z - 1},
+            { _position.x + 1, _position.y + 1, _position.z + 1}
         };
         RayCollision collision = GetRayCollisionBox(ray, box);
         if (collision.hit) {
@@ -125,7 +143,12 @@ int gui::Player::update(Camera3D camera)
     }
     if (IsKeyPressed(KEY_ESCAPE))
         _isSelected = false;
-    
+}
+
+int gui::Player::update(Camera3D camera)
+{
+    updateMovementAndAnimation();
+    handleUserInput(camera);
     return 0;
 }
 
@@ -228,4 +251,9 @@ void gui::Player::setBroadcasting(bool broadcasting)
     if (broadcasting) {
         _broadcastTimer = 0.0f;
     }
+}
+
+void gui::Player::setisDead(bool isDead)
+{
+    _isDead = isDead;
 }

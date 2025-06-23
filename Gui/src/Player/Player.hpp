@@ -27,7 +27,7 @@ namespace gui {
         public:
             Player(int id, std::pair<int, int> position, Orientation orientation, int level,
                 std::string team, float scale, int screenWidth, int screenHeight, Camera3D &camera,
-                CamState &sceneState);
+                CamState &sceneState, int timeUnit);
             ~Player();
 
             /**
@@ -150,10 +150,34 @@ namespace gui {
              * @param broadcasting true if the Player is broadcasting, false otherwise.
              */
             void setBroadcasting(bool broadcasting);
+
+            /**
+             * @brief updateMovementAndAnimation
+             * This function updates the Player's movement and animation based on the current state.
+             */
+            void updateMovementAndAnimation();
+
+            /**
+             * @brief Handle user input for the Player.
+             * This function processes user input to control the Player's actions, such as movement and broadcasting.
+             * @param camera The Camera3D used for ray picking.
+             */
+            void handleUserInput(Camera3D camera);
+
+            /**
+             * @brief set the dead state of the Player.
+             * This function sets whether the Player is dead or not.
+             * @param isDead true if the Player is dead, false otherwise.
+             */
+            void setisDead(bool isDead);
         private:
             enum class AnimState {
                 IDLE = 0,
-                WALKING = 1
+                WALKING = 1,
+                PICKING = 2,
+                BROADCASTING = 3,
+                DYING = 4
+
             };
             /**
              * @brief Set the animation state of the Player.
@@ -167,8 +191,10 @@ namespace gui {
             int _animCount;
             int _currentAnim;
             int _animFrameCounter;
+            int _countBeforeExpire = 600;
             
             bool _isMoving;
+            bool _isDead = false;
             bool _isSelected = false;
             bool _isBroadcasting = false;
             
@@ -184,9 +210,10 @@ namespace gui {
             ui::Button _camButton;
             ui::Inventory _inventory;
 
+            Model _deadModel; 
             Orientation _direction;
             AnimState _currentAnimState;
-            ModelAnimation* _animations;        
+            ModelAnimation* _animations;       
     };
 }
 
