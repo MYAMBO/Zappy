@@ -96,19 +96,22 @@ void gui::Client::receiveLoop()
             break;
         }
         buffer[bytesReceived] = '\0';
-        stringArray = splitString(buffer);
-        Debug::InfoLog("Received command: " + stringArray[0]);
-        if (stringArray[0] == "WELCOME\n")
-            continue;
-        if (stringArray[0] == "GRAPHIC\n")
-            continue;
-        if (stringArray[0] == "ko\n")
-            continue;
-        if (funcMap[stringArray[0]])
-            funcMap[stringArray[0]](stringArray);
-        else {
-            Debug::DebugLog("Unknown command received: " + stringArray[0]);
-            throw Error("This protocol don't exist : " + stringArray[0]);
+        Debug::InfoLog("Received command: " + std::string(buffer));
+        auto array = splitString(buffer, '\n');
+        for (auto &str : array) {
+            stringArray = splitString(str, ' ');
+            if (stringArray[0] == "WELCOME")
+                continue;
+            if (stringArray[0] == "GRAPHIC")
+                continue;
+            if (stringArray[0] == "ko")
+                continue;
+            if (funcMap[stringArray[0]])
+                funcMap[stringArray[0]](stringArray);
+            else {
+                Debug::DebugLog("Unknown command received: " + stringArray[0]);
+                throw Error("This protocol don't exist : " + stringArray[0]);
+            }
         }
     }
 }
@@ -143,6 +146,7 @@ void gui::Client::connectToServer()
     this->_thread = std::thread(&gui::Client::receiveLoop, this);
 
     std::this_thread::sleep_for(std::chrono::seconds(1)); // Wait for the server to be ready
+    sendCommand("GRAPHIC\n");
     sendCommand("msz\n");
     sendCommand("mct\n");
     sendCommand("tna\n");
@@ -157,6 +161,7 @@ void gui::Client::msz(std::vector<std::string> stringArray)
 {
     std::pair<int, int> size;
 
+    Debug::InfoLog("Received msz command with arguments: " + std::to_string(stringArray.size()));
     if (stringArray.size() != 3)
         throw Error("Value for team name is invalid.");
 
@@ -175,15 +180,16 @@ void gui::Client::bct(std::vector<std::string> stringArray)
     std::pair<int, int> coord;
     std::vector<int> quantity;
 
+    for (const auto &str : stringArray)
+        Debug::InfoLog("Argument: " + str); 
     if (stringArray.size() != 10)
         throw Error("Command with the wrong number of argument.");
 
     coord.first = std::stoi(stringArray[1]);
     coord.second = std::stoi(stringArray[2]);
-    for (int i = 3; i < 9 && i < (int)stringArray.size(); ++i)
+    for (int i = 3; i <= 9 && i < (int)stringArray.size(); ++i)
         quantity.push_back(std::stoi(stringArray[i]));
-
-    if (coord.first && coord.second && quantity.size() == 7)
+    if (coord.first >= 0 && coord.first <= _size.first && coord.second >= 0 && coord.first <= _size.second && quantity.size() == 7)
         this->_Map.emplace_back(std::make_shared<Tile>(coord, quantity, this->_models));
     else
         throw Error("There is a wrong value for creating Tile.");
@@ -573,13 +579,13 @@ void gui::Client::sbp(const std::vector<std::string>& stringArray)
 **           >>>> STATIC  MEMBER FUNCTIONS   <<<<          **
 ************************************************************/
 
-std::vector<std::string> gui::Client::splitString(const std::string& string)
+std::vector<std::string> gui::Client::splitString(const std::string& string, char delimiter)
 {
     std::stringstream ss(string);
     std::string buffer;
     std::vector<std::string> list;
 
-    while (std::getline(ss, buffer, ' '))
+    while (std::getline(ss, buffer, delimiter))
         list.push_back(buffer);
 
     return list;

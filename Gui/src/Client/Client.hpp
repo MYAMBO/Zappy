@@ -68,7 +68,7 @@ namespace gui {
             static void suc(const std::vector<std::string>& stringArray); // unknown command
             static void sbp(const std::vector<std::string>& stringArray); // command parameter
 
-            static std::vector<std::string> splitString(const std::string &string);
+            static std::vector<std::string> splitString(const std::string &string, char delimiter);
             static std::shared_ptr<Model> safeModelLoader(const std::string& string);
             int findPlayer(int id);
 
