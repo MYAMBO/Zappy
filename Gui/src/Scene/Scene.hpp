@@ -31,6 +31,7 @@
 
     #define SCREEN_WIDTH 1920
     #define SCREEN_HEIGHT 1080
+    #define TIME_UNIT 1
     #define TARGET_FPS 60
 
     

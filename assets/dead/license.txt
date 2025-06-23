@@ -1,0 +1,11 @@
+Model Information:
+* title:	Low Poly Bone Pile (Downloadable)
+* source:	https://sketchfab.com/3d-models/low-poly-bone-pile-downloadable-5ec580b41a934cea86d4297980d1378f
+* author:	3dsauce (https://sketchfab.com/3dsauce)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Low Poly Bone Pile (Downloadable)" (https://sketchfab.com/3d-models/low-poly-bone-pile-downloadable-5ec580b41a934cea86d4297980d1378f) by 3dsauce (https://sketchfab.com/3dsauce) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
