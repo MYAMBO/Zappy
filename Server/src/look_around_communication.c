@@ -45,7 +45,8 @@ static void fill_tile_string(char *result, tile_context_t *ctx)
     }
     for (poll_handling_t *tmp = ctx->players; tmp; tmp = tmp->next) {
         if (tmp->player && tmp->player->x
-            == ctx->x && tmp->player->y == ctx->y)
+            == ctx->x && tmp->player->y == ctx->y &&
+            strcmp(tmp->player->team_name, "GRAPHIC") != 0)
             offset += snprintf(result + offset, 1000 - offset,
                 "player ");
     }
@@ -136,7 +137,7 @@ bool fill_tile_descriptions(look_context_t *ctx, char **tiles,
 char *player_looks_around(ai_stats_t *ai, poll_handling_t *players, map_t *map)
 {
     size_t tile_count = count_visible_tiles(ai->level);
-    char **tiles = malloc(sizeof(char *) * tile_count);
+    char **tiles = my_malloc(sizeof(char *) * tile_count);
     size_t total_len = 2;
     char *result = NULL;
     look_context_t ctx = {ai, players, map};

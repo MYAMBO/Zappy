@@ -32,6 +32,12 @@ typedef enum direction_s {
     WEST
 } direction_t;
 
+typedef struct map_s {
+    int width;
+    int height;
+    ressources_t **tiles;
+} map_t;
+
 typedef struct server_s {
     long port;
     int server_fd;
@@ -39,6 +45,7 @@ typedef struct server_s {
     int poll_count;
     int map_width;
     int map_height;
+    map_t *map;
     slot_table_t **team_names;
     int team_count;
     int client_per_slot;
@@ -64,11 +71,5 @@ typedef struct entry_s {
  *  amelioration
  *
 */
-
-typedef struct map_s {
-    int width;
-    int height;
-    ressources_t **tiles;
-} map_t;
 
 #endif //STRUCT_H

@@ -8,14 +8,15 @@
 
 #include "movements_communication.h"
 
+#include <stdio.h>
 
 static bool verif_out_map_player(server_t *serv, ai_stats_t *ai, int x, int y)
 {
-    if (ai->x + x > serv->map_height) {
+    if (ai->x + x >= serv->map_height) {
         ai->x = 0;
         return true;
     }
-    if (ai->y + y > serv->map_width) {
+    if (ai->y + y >= serv->map_width) {
         ai->y = 0;
         return true;
     }

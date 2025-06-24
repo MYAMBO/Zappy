@@ -34,6 +34,17 @@ SERVER_SRC = 												\
 				Server/src/incantation_communication.c      \
                 Server/src/unique_connection_id_getter.c 	\
 				Server/src/player_informations_protocol.c 	\
+				Server/src/graphic_connect.c \
+				Server/src/commands/command_pin.c	\
+				Server/src/utils.c	\
+				Server/src/commands/command_forward.c	\
+				Server/src/commands/command_right.c	\
+				Server/src/commands/command_left.c	\
+				Server/src/commands/command_look.c	\
+				Server/src/commands/command_inventory.c	\
+				Server/src/commands/command_broadcast.c	\
+				Server/src/commands/command_eject.c	\
+
 
 GUI_SRC = 												\
 				Gui/src/main.cpp 						\
