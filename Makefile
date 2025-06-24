@@ -25,6 +25,7 @@ SERVER_SRC = 												\
 				Server/src/command_execution.c				\
 				Server/src/technical_protocol.c 			\
 				Server/src/eject_communication.c            \
+				Server/src/incantation_protocol.c           \
                 Server/src/commands/command_quit.c			\
 				Server/src/actions_communication.c          \
 				Server/src/inventory_communication.c        \

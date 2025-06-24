@@ -44,11 +44,13 @@ static int required_player_count(int level)
             return 6;
         case 7:
             return 6;
-        default: return 0;
+        default:
+            return 0;
     }
 }
 
-static bool verif_players_stats(poll_handling_t *players, ai_stats_t *lead, map_t *map)
+static bool verif_players_stats(poll_handling_t *players,
+    ai_stats_t *lead, map_t *map)
 {
     int count = 0;
 
@@ -82,5 +84,4 @@ char *start_incantation(ai_stats_t *lead, poll_handling_t *players, map_t *map)
     snprintf(result, alloc + 1,
         "Elevation underway\nCurrent level: %d\n", lead->level);
     return result;
-
 }
