@@ -19,13 +19,13 @@ char *player_plays_broadcast(ai_stats_t *ai, char *text)
     int position_y = ai->y;
 
     printf("%d,%d %s\n", position_x, position_y, text);
-    return "ok";
+    return "ok\n";
 }
 
 char *death_of_player(ai_stats_t *ai)
 {
     ai->is_alive = false;
-    return "dead";
+    return "dead\n";
 }
 
 char *can_player_takes_items(ai_stats_t *ai, map_t *map)
@@ -40,8 +40,8 @@ char *can_player_takes_items(ai_stats_t *ai, map_t *map)
         }
     }
     if (empty)
-        return "ko";
+        return "ko\n";
     // possibility to add the item in the players inventory here ?
     // subject pretty blur about it
-    return "ok";
+    return "ok\n";
 }
