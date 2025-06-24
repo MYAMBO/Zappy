@@ -18,10 +18,22 @@ int execute_command(const char *concat_command, server_t *server,
 int quit_command(server_t *server, poll_handling_t *node, char **args);
 int pin_command(server_t *server, poll_handling_t *node, char **args);
 int forward_command(server_t *server, poll_handling_t *node, char **args);
+int right_command(server_t *server, poll_handling_t *node, char **args);
+int left_command(server_t *server, poll_handling_t *node, char **args);
+int look_command(server_t *server, poll_handling_t *node, char **args);
+int inventory_command(server_t *server, poll_handling_t *node, char **args);
+int broadcast_command(server_t *server, poll_handling_t *node, char **args);
+int eject_command(server_t *server, poll_handling_t *node, char **args);
 
 static entry_t const commands_ai_list[] = {
     {"quit", quit_command},
     {"Forward", forward_command},
+    {"Right", right_command},
+    {"Left", left_command},
+    {"Look", look_command},
+    {"Inventory", inventory_command},
+    {"Broadcast", broadcast_command},
+    {"Eject", eject_command},
     {NULL, NULL}
 };
 
