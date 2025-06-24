@@ -25,6 +25,7 @@
 #include "actions_communication.h"
 #include "look_around_communication.h"
 #include "eject_communication.h"
+#include "incantation_communication.h"
 
 map_t *init_map(int width, int height)
 {
@@ -100,6 +101,9 @@ int parse_arguments(int ac, char **av, server_t *server)
         return FAILURE;
     if (parse_freq(av, server) == FAILURE)
         return FAILURE;
+
+//    ai_stats_t ai =
+
     return SUCCESS;
 }
 

@@ -17,21 +17,23 @@ SERVER_SRC = 												\
 				Server/src/split_string.c 					\
 				Server/src/start_server.c 					\
 				Server/src/map_protocol.c   				\
+				Server/src/slot_handler.c					\
 				Server/src/poll_handling.c  				\
 				Server/src/options_parser.c 				\
 				Server/src/actions_protocol.c				\
                 Server/src/handle_connection.c				\
+				Server/src/command_execution.c				\
 				Server/src/technical_protocol.c 			\
 				Server/src/eject_communication.c            \
+				Server/src/incantation_protocol.c           \
                 Server/src/commands/command_quit.c			\
 				Server/src/actions_communication.c          \
 				Server/src/inventory_communication.c        \
 				Server/src/movements_communication.c        \
 				Server/src/look_around_communication.c      \
+				Server/src/incantation_communication.c      \
                 Server/src/unique_connection_id_getter.c 	\
 				Server/src/player_informations_protocol.c 	\
-				Server/src/slot_handler.c	\
-				Server/src/command_execution.c	\
 				Server/src/graphic_connect.c \
 				Server/src/commands/command_pin.c	\
 				Server/src/utils.c	\
@@ -42,6 +44,7 @@ SERVER_SRC = 												\
 				Server/src/commands/command_inventory.c	\
 				Server/src/commands/command_broadcast.c	\
 				Server/src/commands/command_eject.c	\
+
 
 GUI_SRC = 												\
 				Gui/src/main.cpp 						\
