@@ -34,6 +34,11 @@ SERVER_SRC = 												\
 				Server/src/command_execution.c	\
 				Server/src/graphic_connect.c \
 				Server/src/commands/command_pin.c	\
+				Server/src/commands/command_plv.c	\
+				Server/src/commands/command_ppo.c	\
+				Server/src/commands/command_msz.c	\
+				Server/src/commands/command_mct.c	\
+				Server/src/commands/command_bct.c	\
 				Server/src/utils.c	\
 				Server/src/commands/command_forward.c	\
 				Server/src/commands/command_right.c	\

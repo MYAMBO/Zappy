@@ -16,12 +16,13 @@ static int send_pin_command(server_t *server,
     poll_handling_t *node, char **args)
 {
     poll_handling_t *tmp;
-    int id = 0;
+    long int id = 0;
     char *str;
+    char *bad;
 
-    id = atoi(args[1] + 1);
-    tmp = search_player_node(id, server);
-    if (tmp == NULL) {
+    id = strtol(args[1] + 1, &bad, 10);
+    tmp = search_player_node((int)id, server);
+    if (tmp == NULL || bad == args[1] + 1) {
         write(node->poll_fd.fd, "sbp\n", 4);
         return SUCCESS;
     }
