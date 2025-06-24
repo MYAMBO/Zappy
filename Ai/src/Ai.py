@@ -44,10 +44,6 @@ class Ai:
                 continue
             for i in range(quantity):
                 commands.append("Set " + name)
-        commands.append("Incantation")
-        commands.append("Incantation")
-        commands.append("Incantation")
-        commands.append("Incantation")
         return commands
 
     def update_commands_queue(self):
@@ -62,6 +58,8 @@ class Ai:
                 if self.__mates_to_wait == 0:
                     self.__commands_queue = self.get_droping_items_commands()
                     self.__commands_queue.insert(0, "Broadcast \"etttt c'est partieee !!!\"")
+                    for i in range(8):
+                        self.__commands_queue.append("Incantation")
                     self.__mates_to_wait = len(self.__team_inventory)
                     return
                 self.__commands_queue = ["Broadcast \"follow me !;" + str(self.__id) + "\""]
@@ -87,12 +85,14 @@ class Ai:
             logger.warning(e.message, Output.BOTH)
             self.__client.close()
             return False
+        print("I wait for : " + commandToReply)
         logger.info(str(self.__id) + ": command: \"" + commandToReply + "\" has been send", Output.BOTH)
         logger.info(f"other commands to do after: {", ".join(self.__commands_queue)}", Output.BOTH)
         self.__command_to_reply = commandToReply
         return True
 
     def handle_follow(self, reply):
+        print(self.__commands_queue)
         _, id = reply.strip()[0:-1].rsplit(';')
         if self.__ai_to_follow == self.__id and str(self.__id) < id:
             self.__ai_to_follow = id
@@ -117,8 +117,8 @@ class Ai:
         elif ";en position !" in reply and self.__id == self.__ai_to_follow:
             self.__mates_to_wait -= 1
         elif "j'ai ça :" in reply:
-            _, info = reply.rsplit(":")
-            id, inventory = info.rsplit(";")
+            _, info = reply.rsplit(":", 1)
+            id, inventory = info.rsplit(";", 1)
             try:
                 self.__team_inventory[id] = handle_inventory_string(inventory.strip()[0:-1])
             except:
@@ -127,13 +127,17 @@ class Ai:
             self.__commands_queue = self.get_droping_items_commands()
 
     def handle_reply(self, reply):
-        command = self.__command_to_reply
         if reply.startswith("eject: "):
             handle_eject_command(reply, self.__commands_queue)
             return False
         if reply.startswith("message "):
             self.handle_message(reply)
             return False
+        command = self.__command_to_reply
+        if command == None:
+            print("handle reply return true")
+            return True
+        self.__command_to_reply = None
         if command == self.__team_name:
             return True
         if reply == "ok\n":
@@ -143,8 +147,8 @@ class Ai:
                 self.set_down_object_from_inventory(command.split(' ')[1])
             return True
         if try_inventory(reply, self):
-            if len(self.__team_inventory) < 10 and self.__inventory['food'] > 6:
-                self.__commands_queue.insert(0, "Fork")
+            #if len(self.__team_inventory) < 10 and self.__inventory['food'] > 6:
+                #self.__commands_queue.insert(0, "Fork")
             return True
         return reply == "ko\n" or try_view(reply, self) or try_connect(reply, self)
 
