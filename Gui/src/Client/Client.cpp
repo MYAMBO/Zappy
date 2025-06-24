@@ -17,6 +17,7 @@
 #include <thread>
 #include <unistd.h>
 #include <sys/socket.h>
+#include "Logger.hpp"
 
 #include <time.h>
 
@@ -118,14 +119,11 @@ void gui::Client::receiveLoop()
 
 void gui::Client::connectToServer()
 {
-    const char* hostname = "localhost";
-    const char* port = "12345";
-
     addrinfo hints{}, *res;
     hints.ai_family = AF_INET; // IPV4
     hints.ai_socktype = SOCK_STREAM; // TCP socket
 
-    int status = getaddrinfo(hostname, port, &hints, &res);
+    int status = getaddrinfo(this->_hostname.c_str(), this->_port.c_str(), &hints, &res);
     if (status != 0)
         throw Error(gai_strerror(status));
 
@@ -181,7 +179,7 @@ void gui::Client::bct(std::vector<std::string> stringArray)
     std::vector<int> quantity;
 
     for (const auto &str : stringArray)
-        Debug::InfoLog("Argument: " + str); 
+        Debug::InfoLog("Argument: " + str);
     if (stringArray.size() != 10)
         throw Error("Command with the wrong number of argument.");
 
@@ -388,7 +386,7 @@ void gui::Client::pie(std::vector<std::string> stringArray) const
     if (stringArray.size() != 4)
         throw Error("Command with the wrong number of argument.");
 
-    posX = std::stoi(stringArray[1]);
+    posX = std::stoi(stringArray[1]);²
     posY = std::stoi(stringArray[2]);
     result = std::stoi(stringArray[3]);
 
@@ -614,6 +612,16 @@ void gui::Client::setPlayers(std::vector<std::shared_ptr<Player>> players)
 void gui::Client::setMap(std::vector<std::shared_ptr<gui::Tile>> map)
 {
     this->_Map = std::move(map);
+}
+
+void gui::Client::setPort(std::string string)
+{
+    this->_port = std::move(string);
+}
+
+void gui::Client::setHostname(std::string string)
+{
+    this->_hostname = std::move(string);
 }
 
 /************************************************************

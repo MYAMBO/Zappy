@@ -33,6 +33,8 @@ namespace gui {
             void setPlayers(std::vector<std::shared_ptr<Player>> players);
             void setMap(std::vector<std::shared_ptr<gui::Tile>> map);
 
+            void setHostname(std::string string);
+            void setPort(std::string string);
 
         private:
             Client();
@@ -72,6 +74,8 @@ namespace gui {
             static std::shared_ptr<Model> safeModelLoader(const std::string& string);
             int findPlayer(int id);
 
+            std::string _hostname;
+            std::string _port;
             std::pair<int, int> _size;
             int _socket;
             bool _isActive;
