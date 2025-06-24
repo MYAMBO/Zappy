@@ -33,6 +33,10 @@ namespace gui {
             void setPlayers(std::vector<std::shared_ptr<Player>> players);
             void setMap(std::vector<std::shared_ptr<gui::Tile>> map);
 
+            std::map<std::pair<int, int>, int> getEggs();
+            std::vector<std::shared_ptr<gui::Player>> getPlayers();
+            std::vector<std::shared_ptr<gui::Tile>> getMap();
+
 
         private:
             Client();
@@ -76,6 +80,7 @@ namespace gui {
             int _socket;
             bool _isActive;
             std::thread _thread;
+            std::map<std::pair<int, int>, int> _eggs;
             std::vector<std::shared_ptr<gui::Player>> _Players;
             std::vector<std::shared_ptr<gui::Tile>> _Map;
             std::vector<std::shared_ptr<Model>> _models;
@@ -97,5 +102,21 @@ inline void SetMap(std::vector<std::shared_ptr<gui::Tile>> map)
 {
     gui::Client::getInstance().setMap(std::move(map));
 }
+
+inline std::map<std::pair<int, int>, int> GetEggs()
+{
+    return gui::Client::getInstance().getEggs();
+}
+
+inline std::vector<std::shared_ptr<gui::Player>> GetPlayers()
+{
+    return gui::Client::getInstance().getPlayers();
+}
+
+inline std::vector<std::shared_ptr<gui::Tile>> GetMap()
+{
+    return gui::Client::getInstance().getMap();
+}
+
 
 #endif //ZAPPY_CLIENT_HPP

@@ -42,10 +42,15 @@ gui::Scene::Scene()
     _itemDisplay = {1, 1, 1, 1, 1, 1, 1};
     _menu->initMenuUI();
     _settings->initSettingsUI();
-    _eggs.emplace_back(std::make_shared<gui::Egg>(0, std::make_pair(GetRandomValue(0, WIDTH - 1), GetRandomValue(0, HEIGHT - 1))));
+    auto eggs = GetEggs();
+    for (const auto& egg : eggs) {
+        _eggs.emplace_back(std::make_shared<gui::Egg>(egg.second, egg.first));
+    }
 
-    SetPlayers(this->_players);
-    SetMap(this->_map);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Wait for the window to be fully initialized
+    _players = GetPlayers();
+    _map = GetMap();
+    SendCommand("sgt");
 }
 
 gui::Scene::~Scene()

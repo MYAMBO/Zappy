@@ -80,35 +80,69 @@ void gui::Client::receiveLoop()
         {"ebo", [](const std::vector<std::string>& s) { gui::Client::ebo(s); }},
         {"edi", [](const std::vector<std::string>& s) { gui::Client::edi(s); }},
         {"sgt", [](const std::vector<std::string>& s) { gui::Client::sgt(s); }},
-        {"sst", [](const std::vector<std::string>& s) { gui::Client::sst(s); }},
+        {"sst", [](const std::vector<std::string>& s) { gui::Client::sgt(s); }},
         {"seg", [this](const std::vector<std::string>& s) { this->seg(s); }},
         {"smg", [](const std::vector<std::string>& s) { gui::Client::smg(s); }},
         {"suc", [](const std::vector<std::string>& s) { gui::Client::suc(s); }},
         {"sbp", [](const std::vector<std::string>& s) { gui::Client::sbp(s); }}
     };
 
-    std::string buffer;
+    size_t bufferSize = 4096; // Start with 4KB
+    const size_t maxBufferSize = 1024 * 1024; // Max 1MB
+    std::vector<char> buffer(bufferSize);
+    std::string incompleteCommand;
     std::vector<std::string> stringArray;
+    
     while (true) {
-        ssize_t bytesReceived = recv(this->_socket, &buffer, buffer.size() - 1, 0);
-        if (bytesReceived <= 0) {
+        ssize_t bytesReceived = recv(this->_socket, buffer.data(), buffer.size() - 1, MSG_DONTWAIT);
+        
+        if (bytesReceived < 0) {
+            if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                continue;
+            } else {
+                break;
+            }
+        }
+        if (bytesReceived == 0) {
             std::cout << "Server disconnected.\n";
             break;
         }
+        if (bytesReceived >= static_cast<ssize_t>(buffer.size() - 1) && bufferSize < maxBufferSize) {
+            bufferSize *= 2;
+            buffer.resize(bufferSize);
+            Debug::InfoLog("Increased buffer size to: " + std::to_string(bufferSize));
+        }
+        
         buffer[bytesReceived] = '\0';
-        Debug::InfoLog("Received command: " + std::string(buffer));
-        auto array = splitString(buffer, '\n');
-        for (auto &str : array) {
-            stringArray = splitString(str, ' ');
-            if (stringArray[0] == "WELCOME")
+        std::string receivedData(buffer.data(), bytesReceived);
+        std::string completeData = incompleteCommand + receivedData;
+        incompleteCommand.clear();
+        
+        auto commands = splitString(completeData, '\n');
+        if (!completeData.empty() && completeData.back() != '\n') {
+            if (!commands.empty()) {
+                incompleteCommand = commands.back();
+                commands.pop_back();
+            }
+        }
+        for (const auto &command : commands) {
+            Debug::InfoLog("Received command: " + command);
+            if (command.empty()) continue;
+            
+            stringArray = splitString(command, ' ');
+            if (stringArray.empty()) continue;
+            
+            if (stringArray[0] == "WELCOME" || 
+                stringArray[0] == "GRAPHIC" || 
+                stringArray[0] == "ko") {
                 continue;
-            if (stringArray[0] == "GRAPHIC")
-                continue;
-            if (stringArray[0] == "ko")
-                continue;
-            if (funcMap[stringArray[0]])
-                funcMap[stringArray[0]](stringArray);
-            else {
+            }
+                
+            auto it = funcMap.find(stringArray[0]);
+            if (it != funcMap.end()) {
+                it->second(stringArray);
+            } else {
                 Debug::DebugLog("Unknown command received: " + stringArray[0]);
                 throw Error("This protocol don't exist : " + stringArray[0]);
             }
@@ -145,7 +179,7 @@ void gui::Client::connectToServer()
 
     this->_thread = std::thread(&gui::Client::receiveLoop, this);
 
-    std::this_thread::sleep_for(std::chrono::seconds(1)); // Wait for the server to be ready
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     sendCommand("GRAPHIC\n");
     sendCommand("msz\n");
     sendCommand("mct\n");
@@ -180,8 +214,6 @@ void gui::Client::bct(std::vector<std::string> stringArray)
     std::pair<int, int> coord;
     std::vector<int> quantity;
 
-    for (const auto &str : stringArray)
-        Debug::InfoLog("Argument: " + str); 
     if (stringArray.size() != 10)
         throw Error("Command with the wrong number of argument.");
 
@@ -207,7 +239,7 @@ void gui::Client::tna(std::vector<std::string> stringArray)
         team_name[team_name.length() - 1] = '\0';
 
     if (std::find(this->_teams.begin(), this->_teams.end(), team_name) != this->_teams.end())
-        throw Error("Team name already exist");
+        return;
 
     this->_teams.push_back(team_name);
 }
@@ -215,7 +247,6 @@ void gui::Client::tna(std::vector<std::string> stringArray)
 // New Player
 void gui::Client::pnw(std::vector<std::string> stringArray)
 {
-
     if (stringArray.size() != 7)
         throw Error("Wrong Number of parameter");
 
@@ -234,10 +265,10 @@ void gui::Client::pnw(std::vector<std::string> stringArray)
 
     if ( id >= 0 && x >= 0 && x < this->_size.first && y >= 0 && y < this->_size.second &&
         orientation > 0 && orientation < 5 && level > 0 && level < 9) {
- //       this->_Players.push_back( std::make_shared<Player>(gui::Player(id, position, static_cast<Orientation>(orientation), level, team_name)));
-    } else {
+        //this->_Players.push_back(std::make_shared<gui::Player>(id, position, static_cast<Orientation>(orientation),
+        //level, team_name, 1, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, TIME_UNIT));
+    } else
         throw Error("Player's value are wrong.");
-    }
 }
 
 // Player's position
@@ -255,7 +286,7 @@ void gui::Client::ppo(std::vector<std::string> stringArray)
         throw Error("Player's position out of map");
 
     if (findPlayer(id) == -1)
-        throw Error("No player with this Id.");
+        return;
 
     if (orientation < 0 || orientation > 3)
         throw Error("Player's value are wrong.");
@@ -275,7 +306,7 @@ void gui::Client::plv(std::vector<std::string> stringArray)
     int level = std::stoi(stringArray[2]);
 
     if (findPlayer(id) == -1)
-        throw Error("No player with this Id.");
+        return;
 
     if (level < 0)
         throw Error("Player's level can't have negative value");
@@ -306,7 +337,7 @@ void gui::Client::pin(std::vector<std::string> stringArray)
         throw Error("Player's position out of map");
 
     if (findPlayer(id) == -1)
-        throw Error("No player with this Id.");
+        return;
 
     for (auto & elt : inventory)
         if (elt.second < 0)
@@ -326,7 +357,7 @@ void gui::Client::pex(std::vector<std::string> stringArray)
     int id = std::stoi(stringArray[1].substr(1));
 
     if (id && findPlayer(id) == -1)
-        throw Error("No player with this Id.");
+        return;
 }
 
 // Broadcast
@@ -340,7 +371,7 @@ void gui::Client::pbc(std::vector<std::string> stringArray)
     std::string message = stringArray[2];
 
     if (findPlayer(id) == -1)
-        throw Error("No player with this Id.");
+        return;
 
     this->_Players[findPlayer(id)]->broadcastAnimation();
 }
@@ -373,7 +404,7 @@ void gui::Client::pic(std::vector<std::string> stringArray)
     for (int i = 4; i < (int)stringArray.size(); i++){
         id = std::stoi(stringArray[i].substr(1));
         if (id && findPlayer(id) == -1)
-            throw Error("No player with this Id.");
+            return;
 //        playersId.emplace(id);
     }
 }
@@ -408,7 +439,7 @@ void gui::Client::pfk(std::vector<std::string> stringArray)
     id = std::stoi(stringArray[1].substr(1));
 
     if (id && findPlayer(id) == -1)
-        throw Error("No player with this Id.");
+        return;
 }
 
 // Resource dropping
@@ -422,7 +453,7 @@ void gui::Client::pdr(std::vector<std::string> stringArray)
     int nbResources = std::stoi(stringArray[2]);
 
     if (id && findPlayer(id) == -1)
-        throw Error("No player with this Id.");
+        return;
 
     if (nbResources < 0)
         throw Error("Resources can't have negative value");
@@ -444,7 +475,7 @@ void gui::Client::pgt(std::vector<std::string> stringArray)
     nbResources = std::stoi(stringArray[2]);
 
     if (id && findPlayer(id) == -1)
-        throw Error("No player with this Id.");
+        return;
 
     if (nbResources < 0)
         throw Error("Resources can't have negative value");
@@ -461,7 +492,7 @@ void gui::Client::pdi(std::vector<std::string> stringArray)
     int indice = findPlayer(id);
 
     if (indice == -1)
-        throw Error("No player with this Id.");
+        return;
 
     if (id > 0) {
         // replace by an other model
@@ -489,8 +520,9 @@ void gui::Client::enw(std::vector<std::string> stringArray)
         throw Error("Player's position out of map");
 
     if (eggId && findPlayer(eggId) == -1)
-        throw Error("No player with this Id.");
-    std::cout << "in enw " << playerId << std::endl;
+        return;
+    (void)playerId;
+    _eggs.emplace(std::make_pair(posX, posY), eggId);
 }
 
 // Player connection for an egg
@@ -629,4 +661,20 @@ std::shared_ptr<Model> gui::Client::safeModelLoader(const std::string& string)
         throw gui::FailedLoadModel();
 
     return model;
+}
+
+std::map<std::pair<int, int>, int> gui::Client::getEggs()
+{
+    return _eggs;
+}
+
+std::vector<std::shared_ptr<gui::Player>> gui::Client::getPlayers()
+{
+    return _Players;
+}
+
+std::vector<std::shared_ptr<gui::Tile>> gui::Client::getMap()
+{
+    Debug::InfoLog("Returning map with size: " + std::to_string(_Map.size()));
+    return _Map;
 }
