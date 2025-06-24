@@ -35,7 +35,7 @@ gui::Player::Player(int id, std::pair<int, int> position, Orientation orientatio
         _animFrameCounter = 0;
         setAnimationState(AnimState::IDLE);
     }
-    _model->transform = MatrixScale(scale, scale, scale);
+    //_model->transform = MatrixScale(scale, scale, scale);
 }
 
 gui::Player::~Player() = default;
@@ -79,10 +79,14 @@ void gui::Player::draw()
         _rotationY = 180.0f;
     else if (_direction == Orientation::West)
         _rotationY = 270.0f;
+    Debug::InfoLog("[GUI] Player " + std::to_string(_id) + " is at position: " +
+                   std::to_string(static_cast<int>(_position.x)) + ", " +
+                   std::to_string(static_cast<int>(_position.y)) + ", " +
+                   std::to_string(static_cast<int>(_position.z)) + " with rotation: " +
+                   std::to_string(_rotationY));
     DrawModelEx(*_model, _position, {0, 1, 0}, _rotationY, {_scale, _scale, _scale}, _color);
-    if (_isSelected) {
+    if (_isSelected)
         DrawCubeWires(_position, 1, 1, 1, {255, 0, 0, 255});
-    }
     broadcastAnimation();
 }
 

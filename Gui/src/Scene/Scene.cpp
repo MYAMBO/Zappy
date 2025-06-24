@@ -176,9 +176,9 @@ void gui::Scene::update()
             handleInput();
             render();
             if (IsKeyPressed(KEY_J)) {
-                (*_players)[0]->startMoveTo({static_cast<float>(GetRandomValue(0, (int)WIDTH - 1)), 1.0f, static_cast<float>(GetRandomValue(0, (int)HEIGHT - 1))});
+                //(*_players)[0]->startMoveTo({static_cast<float>(GetRandomValue(0, (int)WIDTH - 1)), 1.0f, static_cast<float>(GetRandomValue(0, (int)HEIGHT - 1))});
                 //_players[0]->setBroadcasting(true);
-                //_players[0]->setisDead(true);
+                (*_players)[0]->setisDead(true);
             }
             break;
         case SceneState::EXIT:

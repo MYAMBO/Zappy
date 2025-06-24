@@ -11,11 +11,11 @@
 #include <vector>
 #include <thread>
 #include <time.h>
-#include <utility>
-#include <sstream>
 #include <netdb.h>
-#include <iostream>
+#include <sstream>
+#include <utility>
 #include <unistd.h>
+#include <iostream>
 #include <algorithm>
 #include <sys/socket.h>
 
@@ -26,14 +26,10 @@
 
 gui::Client::Client(std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players, std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> map,
         std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs, std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState, std::shared_ptr<std::vector<std::shared_ptr<Model>>> models)
-    : _socket(), _isActive(true), _teams(),  _models(), _eggs(), _map(), _players()
+    : _socket(), _isActive(true), _teams(),  _models(models), _eggs(eggs), _map(map), _players(players)
 {
     _camera = camera;
     _camState = camState;
-    _players = players;
-    _map = map;
-    _eggs = eggs;
-    _models = models;
 
     connectToServer();
 }
@@ -283,10 +279,10 @@ void gui::Client::ppo(std::vector<std::string> stringArray)
     if (findPlayer(id) == -1)
         return;
 
-    if (orientation < 0 || orientation > 3)
+    if (orientation <= 0 || orientation >= 5)
         throw Error("Player's value are wrong.");
 
-    (*_players)[findPlayer(id)]->startMoveTo({(float)posX, 0.5, (float)posY});
+    (*_players)[findPlayer(id)]->startMoveTo({(float)posX, 1, (float)posY});
 }
 
 // Player's level
@@ -314,6 +310,7 @@ void gui::Client::pin(std::vector<std::string> stringArray)
 {
     std::map<std::string, int> inventory;
 
+    Debug::InfoLog("Received pin command with arguments: " + std::to_string(stringArray.size()));
     if (stringArray.size() != 11)
         throw Error("Command with the wrong number of argument.");
 
@@ -359,6 +356,7 @@ void gui::Client::pex(std::vector<std::string> stringArray)
 void gui::Client::pbc(std::vector<std::string> stringArray)
 {
 
+    Debug::InfoLog("Received pbc command with arguments: " + std::to_string(stringArray.size()));
     if (stringArray.size() != 3)
         throw Error("Command with the wrong number of argument.");
 
@@ -368,7 +366,7 @@ void gui::Client::pbc(std::vector<std::string> stringArray)
     if (findPlayer(id) == -1)
         return;
 
-    (*_players)[findPlayer(id)]->broadcastAnimation();
+    (*_players)[findPlayer(id)]->setBroadcasting(true);
 }
 
 // Start of an incantation
@@ -525,6 +523,7 @@ void gui::Client::ebo(std::vector<std::string> stringArray)
 {
     int id;
 
+    Debug::InfoLog("Received ebo command with arguments: " + std::to_string(stringArray.size()));
     if (stringArray.size() != 2)
         throw Error("Command with the wrong number of argument.");
 
@@ -608,16 +607,30 @@ void gui::Client::sbp(const std::vector<std::string>& stringArray)
 
 std::vector<std::string> gui::Client::splitString(const std::string& string, char delimiter)
 {
-    std::stringstream ss(string);
-    std::string buffer;
     std::vector<std::string> list;
-
-    while (std::getline(ss, buffer, delimiter))
+    std::string buffer;
+    bool inQuotes = false;
+    
+    for (size_t i = 0; i < string.length(); ++i) {
+        char c = string[i];
+        if (c == '"') {
+            inQuotes = !inQuotes;
+            buffer += c;
+        }
+        else if (c == delimiter && !inQuotes) {
+            list.push_back(buffer);
+            buffer.clear();
+        }
+        else {
+            buffer += c;
+        }
+    }
+    if (!buffer.empty() || string.back() == delimiter) {
         list.push_back(buffer);
-
+    }
+    
     return list;
 }
-
 int gui::Client::findPlayer(int id)
 {
     for (int i = 0; i < (int)_players->size(); ++i) {
