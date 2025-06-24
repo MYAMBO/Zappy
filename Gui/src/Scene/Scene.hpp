@@ -41,7 +41,7 @@ namespace gui {
         class Menu;
         class Settings;
     };
-
+    class Client;
     class Player;
 
     enum CamState {
@@ -59,44 +59,38 @@ namespace gui {
 
     class Scene {
         public:
-        Scene();
-        ~Scene();
-        
-        /**
-         * @brief Check if the scene is open and not closed by the user.
-         * @return true if the scene is open, false otherwise.
-         */
-        bool isOpen() const;
-        
-        /**
-         * @brief Update the scene based on the current state.
-         * This function handles input, updates entities, and renders the scene.
-         */
-        void update();
-        
-        /**
-         * @brief Render the scene.
-         * This function draws the 3D scene and the UI elements.
-         */
-        void render();
-        
-        /**
-         * @brief Handle input from the user.
-         * This function processes user input to control the camera and entities.
-         */
-        void initWindow();
-        
-        /**
-         * @brief Handle user input for controlling the camera and entities.
-         * This function processes keyboard and mouse input to change the camera state and control player actions.
-         */
-        void handleInput();
-
+            Scene();
+            ~Scene();
+            
             /**
-             * @brief Initialize entities in the scene.
-             * This function creates and initializes the entities (items and players) in the scene.
+             * @brief Check if the scene is open and not closed by the user.
+             * @return true if the scene is open, false otherwise.
              */
-            void initMap();
+            bool isOpen() const;
+            
+            /**
+             * @brief Update the scene based on the current state.
+             * This function handles input, updates entities, and renders the scene.
+             */
+            void update();
+            
+            /**
+             * @brief Render the scene.
+             * This function draws the 3D scene and the UI elements.
+             */
+            void render();
+            
+            /**
+             * @brief Handle input from the user.
+             * This function processes user input to control the camera and entities.
+             */
+            void initWindow();
+            
+            /**
+             * @brief Handle user input for controlling the camera and entities.
+             * This function processes keyboard and mouse input to change the camera state and control player actions.
+             */
+            void handleInput();
             
             /**
              * @brief Display entities in the scene.
@@ -111,18 +105,17 @@ namespace gui {
             void eventToggleDisplay();
             
             void initOrbitalCamera(const Vector3& target, float distance);
-            
-            Camera getCamera();
-            CamState getCamState();
-            private:
-            Camera _camera;
-            CamState _camState;
+
+        private:
+            std::shared_ptr<Camera> _camera;
+            std::shared_ptr<CamState> _camState;
             
             bool _isOpen;
             float _width;
             float _height;
             
             SceneState _currentState;
+            std::shared_ptr<Client> _client;
             
             std::unique_ptr<ui::Menu> _menu;
             std::unique_ptr<ui::Settings> _settings;
@@ -130,16 +123,12 @@ namespace gui {
             std::shared_ptr<Model> _playerModel;
             
             std::vector<int> _itemDisplay;
-            std::vector<std::shared_ptr<Model>> _models;
-            std::vector<std::shared_ptr<gui::Egg>> _eggs;
-            std::vector<std::shared_ptr<gui::Tile>> _map;
-            std::vector<std::shared_ptr<gui::Player>> _players;
-            
-            // remove later from here
+            std::shared_ptr<std::vector<std::shared_ptr<Model>>> _models;
+            std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> _eggs;
+            std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> _map;
+            std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> _players;
+
             static std::shared_ptr<Model> safeModelLoader(const std::string& string);
-            
-            // to here
-            
         };
 
     class FailedLoadModel : public std::exception {

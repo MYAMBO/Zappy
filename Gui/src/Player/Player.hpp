@@ -25,9 +25,7 @@ enum Orientation {
 namespace gui {
     class Player : public AEntity {
         public:
-            Player(int id, std::pair<int, int> position, Orientation orientation, int level,
-                std::string team, float scale, int screenWidth, int screenHeight, Camera3D &camera,
-                CamState &sceneState, int timeUnit);
+            Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team, float scale, int screenWidth, int screenHeight, Camera &camera, CamState &sceneState, int timeUnit);
             ~Player();
 
             /**
@@ -88,7 +86,7 @@ namespace gui {
              * @brief Handle the camera button action.
              * This function handles the action when the camera button is clicked.
              */
-            void HandleCamButton(Camera3D &camera, CamState &sceneState);
+            void HandleCamButton(Camera &camera, CamState &sceneState);
 
             /**
              * @brief Update the Player.
@@ -96,7 +94,7 @@ namespace gui {
              * @param camera The Camera3D used for ray picking.
              * @return An integer indicating the result of the update (e.g., success or failure).
              */
-            int update(Camera3D camera);
+            int update(Camera camera);
 
             /**
              * @brief Update the UI of the Player.
@@ -164,7 +162,7 @@ namespace gui {
              * This function processes user input to control the Player's actions, such as movement and broadcasting.
              * @param camera The Camera3D used for ray picking.
              */
-            void handleUserInput(Camera3D camera);
+            void handleUserInput(Camera camera);
 
             /**
              * @brief set the dead state of the Player.

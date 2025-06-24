@@ -8,9 +8,9 @@
 
 #include "Menu.hpp"
 #include "Scene.hpp"
+#include "Client.hpp"
 #include "Player.hpp"
 #include "Settings.hpp"
-#include "Client.hpp"
 
 
 /************************************************************
@@ -19,38 +19,34 @@
 
 
 gui::Scene::Scene()
-    : _camState(CamState::WORLD), _isOpen(true), _width(WIDTH), _height(HEIGHT), _currentState(SceneState::MENU), _models() //don't forget here
+    : _isOpen(true), _width(WIDTH), _height(HEIGHT), _currentState(SceneState::MENU), _models()
 {
     Debug::ClearLogFile();
     Debug::InfoLog("Zappy started");
+    _camera = std::make_shared<Camera>();
     initWindow();
 
-    // remove later from here
 
-    this->_models.emplace_back(safeModelLoader("assets/food/scene.gltf"));
-    this->_models.emplace_back(safeModelLoader("assets/linemate/scene.gltf"));
-    this->_models.emplace_back(safeModelLoader("assets/deraumere/scene.gltf"));
-    this->_models.emplace_back(safeModelLoader("assets/sibur/scene.gltf"));
-    this->_models.emplace_back(safeModelLoader("assets/mendiane/scene.gltf"));
-    this->_models.emplace_back(safeModelLoader("assets/phiras/scene.gltf"));
-    this->_models.emplace_back(safeModelLoader("assets/thystame/scene.gltf"));
-
-    // to here
-
+    _models = std::make_shared<std::vector<std::shared_ptr<Model>>>();
+    _models->emplace_back(safeModelLoader("assets/food/scene.gltf"));
+    _models->emplace_back(safeModelLoader("assets/linemate/scene.gltf"));
+    _models->emplace_back(safeModelLoader("assets/deraumere/scene.gltf"));
+    _models->emplace_back(safeModelLoader("assets/sibur/scene.gltf"));
+    _models->emplace_back(safeModelLoader("assets/mendiane/scene.gltf"));
+    _models->emplace_back(safeModelLoader("assets/phiras/scene.gltf"));
+    _models->emplace_back(safeModelLoader("assets/thystame/scene.gltf"));
+    _map = std::make_shared<std::vector<std::shared_ptr<gui::Tile>>>();
+    _eggs = std::make_shared<std::vector<std::shared_ptr<gui::Egg>>>();
+    _players = std::make_shared<std::vector<std::shared_ptr<gui::Player>>>();
+    _camState = std::make_shared<CamState>(CamState::WORLD);
+    _client = std::make_shared<gui::Client>(_players, _map, _eggs, _camera, _camState, _models);
     _menu = std::make_unique<gui::ui::Menu>(_currentState, SCREEN_WIDTH, SCREEN_HEIGHT);
     _settings = std::make_unique<gui::ui::Settings>(_currentState, SCREEN_WIDTH, SCREEN_HEIGHT);
     _itemDisplay = {1, 1, 1, 1, 1, 1, 1};
     _menu->initMenuUI();
     _settings->initSettingsUI();
-    auto eggs = GetEggs();
-    for (const auto& egg : eggs) {
-        _eggs.emplace_back(std::make_shared<gui::Egg>(egg.second, egg.first));
-    }
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Wait for the window to be fully initialized
-    _players = GetPlayers();
-    _map = GetMap();
-    SendCommand("sgt");
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    _client->sendCommand("sgt");
 }
 
 gui::Scene::~Scene()
@@ -69,18 +65,22 @@ void gui::Scene::initWindow()
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Zappy");
     SetTargetFPS(TARGET_FPS);
 
-    this->_camera = { { -_width, 10.0f, -_height}, { _width / 2, 0.0f, _height / 2 }, { 0.0f, 1.0f, 0.0f }, 45.0f, 0 };
+    _camera->position = { -_width, 10.0f, -_height };
+    _camera->target = { _width / 2, 0.0f, _height / 2 };
+    _camera->up = { 0.0f, 1.0f, 0.0f };
+    _camera->fovy = 45.0f;
+    _camera->projection = CAMERA_PERSPECTIVE;
 }
 
 void gui::Scene::displayEntity()
 {
-    for (auto& tile : _map) {
+    for (auto& tile : *_map) {
         tile->displayTile(_itemDisplay);
     }
-    for (auto& player : _players) {
+    for (auto& player : *_players) {
         player->draw();
     }
-    for (auto& egg : _eggs) {
+    for (auto& egg : *_eggs) {
         egg->draw();
     }
 }
@@ -90,49 +90,49 @@ void gui::Scene::initOrbitalCamera(const Vector3& target, float distance)
     float theta = 45.0f * DEG2RAD;
     float phi = 30.0f * DEG2RAD;
 
-    _camera.target = target;
-    _camera.position = {
+    _camera->target = target;
+    _camera->position = {
         target.x + distance * cosf(phi) * cosf(theta),
         target.y + distance * sinf(phi),
         target.z + distance * cosf(phi) * sinf(theta)
     };
-    _camera.up = {0.0f, 1.0f, 0.0f};
-    _camera.fovy = 45.0f;
-    _camera.projection = CAMERA_PERSPECTIVE;
+    _camera->up = {0.0f, 1.0f, 0.0f};
+    _camera->fovy = 45.0f;
+    _camera->projection = CAMERA_PERSPECTIVE;
 }
 
 
 void gui::Scene::handleInput()
 {
     if (IsKeyPressed(KEY_ESCAPE)) {
-        if (_camState == CamState::WORLD) {
+        if (*_camState == CamState::WORLD) {
             _currentState = SceneState::MENU;
         }
-        else if (_camState == CamState::PLAYER) {
-            _camera = { { -_width, 10.0f, -_height}, { _width / 2, 0.0f, _height / 2 }, { 0.0f, 1.0f, 0.0f }, 45.0f, 0 };
-            _camState = CamState::WORLD;
+        else if (*_camState == CamState::PLAYER) {
+            *_camera = { { -_width, 10.0f, -_height}, { _width / 2, 0.0f, _height / 2 }, { 0.0f, 1.0f, 0.0f }, 45.0f, 0 };
+            *_camState = CamState::WORLD;
         }
     }
-    for (auto& player : _players)
-        player->update(_camera);
+    for (auto& player : *_players)
+        player->update(*_camera);
     if (IsKeyDown(KEY_LEFT_CONTROL)) {
-        if (_camState == CamState::WORLD) {
-            UpdateCamera(&_camera, CAMERA_THIRD_PERSON);
+        if (*_camState == CamState::WORLD) {
+            UpdateCamera(_camera.get(), CAMERA_THIRD_PERSON);
         }
-        else if (_camState == CamState::PLAYER) {
-            for (auto& player : _players) {
+        else if (*_camState == CamState::PLAYER) {
+            for (auto& player : *_players) {
                 if (player->getSelected() && !player->getIsMoving()) {
-                    UpdateCamera(&_camera, CAMERA_ORBITAL);
+                    UpdateCamera(_camera.get(), CAMERA_ORBITAL);
                 }
             }
         }
     }
-    if (_camState == CamState::PLAYER) {
-        for (auto& player : _players) {
+    if (*_camState == CamState::PLAYER) {
+        for (auto& player : *_players) {
             if (player->getSelected()) {
                 if (player->getIsMoving()) {
-                    _camera.target = player->getPosition();
-                    _camera.position = {
+                    _camera->target = player->getPosition();
+                    _camera->position = {
                         player->getPosition().x - 2.0f,
                         player->getPosition().y + 2.0f,
                         player->getPosition().z - 2.0f
@@ -146,14 +146,14 @@ void gui::Scene::handleInput()
 void gui::Scene::render()
 {
     BeginDrawing();
-    if (_camera.position.y < 0.1f) {
-        _camera.position.y = 0.1f;
+    if (_camera->position.y < 0.1f) {
+        _camera->position.y = 0.1f;
     }
     ClearBackground(BLACK);
-    BeginMode3D(_camera);
+    BeginMode3D(*_camera);
     displayEntity();
     EndMode3D();
-    for (auto& player : _players) {
+    for (auto& player : *_players) {
         player->drawUI();
         player->updateUI();
     }
@@ -176,7 +176,7 @@ void gui::Scene::update()
             handleInput();
             render();
             if (IsKeyPressed(KEY_J)) {
-                _players[0]->startMoveTo({static_cast<float>(GetRandomValue(0, (int)WIDTH - 1)), 1.0f, static_cast<float>(GetRandomValue(0, (int)HEIGHT - 1))});
+                (*_players)[0]->startMoveTo({static_cast<float>(GetRandomValue(0, (int)WIDTH - 1)), 1.0f, static_cast<float>(GetRandomValue(0, (int)HEIGHT - 1))});
                 //_players[0]->setBroadcasting(true);
                 //_players[0]->setisDead(true);
             }

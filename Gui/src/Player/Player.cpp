@@ -19,7 +19,7 @@
 
 
 gui::Player::Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team,
-        float scale, int screenWidth, int screenHeight, Camera3D &camera, CamState &sceneState, int timeUnit)
+        float scale, int screenWidth, int screenHeight, Camera &camera, CamState &sceneState, int timeUnit)
     : AEntity({(float)position.first, 1.0f, (float)position.second}, scale, WHITE), 
     _id(id), _level(level), _currentAnim(2), _animFrameCounter(0), _isMoving(false), _isSelected(false),
     _team(std::move(team)), _moveSpeed(1/timeUnit), _animationSpeed(1.0f),
@@ -122,7 +122,7 @@ void gui::Player::updateMovementAndAnimation()
     }
 }
 
-void gui::Player::handleUserInput(Camera3D camera)
+void gui::Player::handleUserInput(Camera camera)
 {
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         Ray ray = GetMouseRay(GetMousePosition(), camera);
@@ -145,14 +145,14 @@ void gui::Player::handleUserInput(Camera3D camera)
         _isSelected = false;
 }
 
-int gui::Player::update(Camera3D camera)
+int gui::Player::update(Camera camera)
 {
     updateMovementAndAnimation();
     handleUserInput(camera);
     return 0;
 }
 
-void gui::Player::HandleCamButton(Camera3D &camera, CamState &sceneState)
+void gui::Player::HandleCamButton(Camera &camera, CamState &sceneState)
 {
     camera = { { _position.x - 2, _position.y + 2, _position.z - 2 },
         { _position.x, _position.y, _position.z },
