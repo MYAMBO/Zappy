@@ -16,7 +16,8 @@ int strcmp(const std::string& string1, const std::string& string2)
 
 int main(int argc, char **argv)
 {
-    Debug::DebugLog("Here ?");
+    Debug::ClearLogFile();
+
     std::string port;
     std::string hostname;
 
@@ -41,12 +42,7 @@ int main(int argc, char **argv)
         }
     }
 
-    std::cout << hostname << std::endl;
-
-    gui::Scene scene;
-
-    gui::Client::getInstance().setHostname(hostname);
-    gui::Client::getInstance().setPort(port);
+    gui::Scene scene(hostname, port);
 
     while (scene.isOpen()) {
         scene.update();

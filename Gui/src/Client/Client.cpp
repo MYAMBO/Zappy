@@ -20,15 +20,15 @@
 #include <sys/socket.h>
 #include "Logger.hpp"
 
-
 /************************************************************
 **         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
 ************************************************************/
 
 gui::Client::Client(std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players, std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> map,
         std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs, std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState,
-        std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, std::shared_ptr<Display> display)
-    : _socket(), _isActive(true), _teams(),  _models(models), _eggs(eggs), _map(map), _players(players)
+        std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, std::shared_ptr<Display> display,
+        std::string hostname = "localhost", std::string port = "12345")
+    : _hostname(std::move(hostname)), _port(std::move(port)), _socket(), _isActive(true), _teams(),  _models(models), _eggs(eggs), _map(map), _players(players)
 {
     _display = display;
     _camera = camera;

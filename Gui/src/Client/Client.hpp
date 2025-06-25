@@ -32,7 +32,7 @@ namespace gui {
         public:
             Client(std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players, std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> map,
                 std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs, std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState,
-                std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, std::shared_ptr<Display> display);
+                std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, std::shared_ptr<Display> display, std::string hostname, std::string port);
             ~Client();
 
             void sendCommand(const std::string& command) const;
@@ -84,7 +84,6 @@ namespace gui {
 
             std::string _hostname;
             std::string _port;
-            std::pair<int, int> _size;
             int _socket;
             bool _isActive;
 

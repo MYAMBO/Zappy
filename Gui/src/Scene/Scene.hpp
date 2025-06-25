@@ -22,7 +22,7 @@ namespace gui {
 
     class Scene {
         public:
-            Scene();
+            Scene(const std::string& hostname, const std::string& port);
             ~Scene();
 
             /**

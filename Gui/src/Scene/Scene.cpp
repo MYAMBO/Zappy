@@ -5,24 +5,21 @@
 ** Scene
 */
 
-#include <math.h>
 #include <thread>
 #include <chrono>
 
 #include "Menu.hpp"
 #include "Scene.hpp"
 #include "Client.hpp"
-#include "Player.hpp"
 #include "Settings.hpp"
 
 /************************************************************
 **         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
 ************************************************************/
 
-gui::Scene::Scene()
+gui::Scene::Scene(const std::string& hostname, const std::string& port)
     : _isOpen(true)
 {
-    Debug::ClearLogFile();
     Debug::InfoLog("Zappy started");
     _camera = std::make_shared<Camera>();
     _camState = std::make_shared<CamState>(CamState::WORLD);
@@ -30,7 +27,7 @@ gui::Scene::Scene()
     initWindow();
 
     _display = std::make_unique<Display>(_camera, _camState, _currentState);
-    _client = std::make_shared<gui::Client>(_display->getPlayers(), _display->getMap(), _display->getEggs(), _camera, _camState, _display->getModels(), _display);
+    _client = std::make_shared<gui::Client>(_display->getPlayers(), _display->getMap(), _display->getEggs(), _camera, _camState, _display->getModels(), _display, hostname, port);
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     _client->sendCommand("sgt");
 }
