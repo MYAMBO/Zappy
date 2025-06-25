@@ -38,7 +38,7 @@ namespace gui {
     class Client;
     class Display {
         public:
-            Display(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState, std::shared_ptr<SceneState> sceneState);
+            Display(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState, std::shared_ptr<SceneState> sceneState, std::shared_ptr<int> timeUnit);
             
             ~Display();
 
@@ -89,6 +89,7 @@ namespace gui {
              */
             void updateCamera();
 
+            std::shared_ptr<int> _timeUnit;
             std::shared_ptr<Camera> _camera;
             std::shared_ptr<Client> _client;
             std::shared_ptr<CamState> _camState;

@@ -50,10 +50,9 @@ namespace gui {
 
             bool _isOpen;
             
+            std::shared_ptr<int> _timeUnit;
             std::shared_ptr<Client> _client;
             std::shared_ptr<Display> _display;
-            
-
 
             std::shared_ptr<Camera> _camera;
             std::shared_ptr<CamState> _camState;

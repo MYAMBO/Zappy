@@ -12,11 +12,13 @@
 
 #include "Logger.hpp"
 
+
 /************************************************************
 **         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
 ************************************************************/
 
-gui::Display::Display(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState, std::shared_ptr<SceneState> sceneState)
+
+gui::Display::Display(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState, std::shared_ptr<SceneState> sceneState, std::shared_ptr<int> timeUnit)
     : _camera(camera), _camState(camState), _sceneState(sceneState), _width(WIDTH), _height(HEIGHT)
 {
 
@@ -25,7 +27,7 @@ gui::Display::Display(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> 
     _animations = LoadModelAnimations("assets/player/scene.gltf", &_animCount);
     _eggModel = std::make_shared<Model>(LoadModel("assets/egg/scene.gltf"));
 
-
+    _timeUnit = timeUnit;
     _models = std::make_shared<std::vector<std::shared_ptr<Model>>>();
     _models->emplace_back(std::make_shared<Model>(LoadModel("assets/food/scene.gltf")));
     _models->emplace_back(std::make_shared<Model>(LoadModel("assets/linemate/scene.gltf")));
@@ -130,7 +132,6 @@ void gui::Display::handleInput()
     updateCamera();
 
     for (auto& player : *_players) {
-        Debug::InfoLog("[GUI] Player " + std::to_string(player->getId()) + " is selected: " + std::to_string(player->getSelected()));
         player->update(*_camera);
     }
 }
@@ -201,5 +202,5 @@ std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> gui::Display::getPlay
 void gui::Display::addPlayer(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team)
 {
     _players->emplace_back(std::make_shared<gui::Player>(id, position, orientation, level, team, 0.35, SCREEN_WIDTH, SCREEN_HEIGHT,
-        *_camera, *_camState, TIME_UNIT, _model, _deadModel, _animations, _animCount));
+        *_camera, *_camState, _timeUnit, _model, _deadModel, _animations, _animCount));
 }

@@ -26,19 +26,19 @@
 
 gui::Client::Client(std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players, std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> map,
         std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs, std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState,
-        std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, std::shared_ptr<Display> display)
+        std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, std::shared_ptr<Display> display, std::shared_ptr<int> timeUnit)
     : _socket(), _isActive(true), _teams(),  _models(models), _eggs(eggs), _map(map), _players(players)
 {
     _display = display;
     _camera = camera;
     _camState = camState;
-
+    _timeUnit = timeUnit;
     connectToServer();
 }
 
 gui::Client::~Client()
 {
-    _thread.detach();
+    _thread.join();
 }
 
 /************************************************************
@@ -73,7 +73,7 @@ void gui::Client::receiveLoop()
         {"ebo", [this](const std::vector<std::string>& s) { ebo(s); }},
         {"edi", [this](const std::vector<std::string>& s) { edi(s); }},
         {"sgt", [this](const std::vector<std::string>& s) { sgt(s); }},
-        {"sst", [this](const std::vector<std::string>& s) { sgt(s); }},
+        {"sst", [this](const std::vector<std::string>& s) { sst(s); }},
         {"seg", [this](const std::vector<std::string>& s) { seg(s); }},
         {"smg", [this](const std::vector<std::string>& s) { smg(s); }},
         {"suc", [this](const std::vector<std::string>& s) { suc(s); }},
@@ -177,6 +177,7 @@ void gui::Client::connectToServer()
     sendCommand("msz\n");
     sendCommand("mct\n");
     sendCommand("tna\n");
+    sendCommand("sgt\n");
 }
 
 /************************************************************
@@ -284,6 +285,7 @@ void gui::Client::ppo(std::vector<std::string> stringArray)
     if (orientation <= 0 || orientation >= 5)
         throw Error("Player's value are wrong.");
 
+    (*_players)[findPlayer(id)]->setOrientation(static_cast<Orientation>(orientation));
     (*_players)[findPlayer(id)]->startMoveTo({(float)posX, 1, (float)posY});
 }
 
@@ -555,7 +557,8 @@ void gui::Client::sgt(std::vector<std::string> stringArray)
 
     int time_unit = std::stoi(stringArray[1]);
 
-    std::cout << "in sgt " << time_unit << std::endl;
+    _timeUnit = std::make_shared<int>(time_unit);
+    Debug::InfoLog("Time unit set to: " + std::to_string(time_unit));
 }
 
 // time unit modification

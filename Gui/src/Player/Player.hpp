@@ -22,7 +22,7 @@ namespace gui {
     class Player : public AEntity {
         public:
             Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team,
-                float scale, int screenWidth, int screenHeight, Camera &camera, CamState &sceneState, int timeUnit,
+                float scale, int screenWidth, int screenHeight, Camera &camera, CamState &sceneState, std::shared_ptr<int> timeUnit,
                 std::shared_ptr<Model> model, Model deadModel, ModelAnimation *animations, int animCount);
             ~Player();
 
@@ -187,6 +187,7 @@ namespace gui {
             void setAnimationState(AnimState newState);
 
             std::shared_ptr<Model> _model;
+            std::shared_ptr<int> _timeUnit;
 
             int _id;
             int _level;
@@ -202,8 +203,7 @@ namespace gui {
             bool _isBroadcasting = false;
             
             std::string _team;
-            
-            float _moveSpeed;
+
             float _broadcastTimer;
             float _animationSpeed;
             float _broadcastDuration = 0.5f;

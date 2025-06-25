@@ -29,10 +29,9 @@ gui::Scene::Scene()
     _currentState = std::make_shared<SceneState>(SceneState::MENU);
     initWindow();
 
-    _display = std::make_unique<Display>(_camera, _camState, _currentState);
-    _client = std::make_shared<gui::Client>(_display->getPlayers(), _display->getMap(), _display->getEggs(), _camera, _camState, _display->getModels(), _display);
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    _client->sendCommand("sgt");
+    _timeUnit = std::make_shared<int>(100);
+    _display = std::make_unique<Display>(_camera, _camState, _currentState, _timeUnit);
+    _client = std::make_shared<gui::Client>(_display->getPlayers(), _display->getMap(), _display->getEggs(), _camera, _camState, _display->getModels(), _display, _timeUnit);
 }
 
 gui::Scene::~Scene()

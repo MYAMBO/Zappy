@@ -19,17 +19,17 @@
 
 
 gui::Player::Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team,
-        float scale, int screenWidth, int screenHeight, Camera &camera, CamState &sceneState, int timeUnit, 
+        float scale, int screenWidth, int screenHeight, Camera &camera, CamState &sceneState, std::shared_ptr<int> timeUnit,
         std::shared_ptr<Model> model, Model deadModel, ModelAnimation *animations, int animCount)
     : AEntity({(float)position.first, 1.0f, (float)position.second}, scale, WHITE), 
-    _model(model), _id(id), _level(level), _animCount(animCount), _currentAnim(2), _animFrameCounter(0), _isMoving(false), _isSelected(false),
-    _team(std::move(team)), _moveSpeed(1/timeUnit), _animationSpeed(1.0f),
+    _model(model), _id(id), _level(level), _animCount(animCount), _currentAnim(2), _animFrameCounter(0), _isMoving(false), _isSelected(false), _team(std::move(team)), _animationSpeed(1.0f),
     _camButton([this, &camera, &sceneState]() { HandleCamButton(camera, sceneState); }, Rectangle{0, static_cast<float>(screenHeight - 70), 150, 70}, "Camera"),
     _inventory(screenWidth, screenHeight), _deadModel(deadModel), _direction(orientation), _currentAnimState(AnimState::IDLE),
     _animations(animations)
 {
     _mutex.lock();
 
+    _timeUnit = timeUnit;
     if (_animCount > 0) {
         _currentAnim = 0;
         _animFrameCounter = 0;
@@ -78,11 +78,11 @@ void gui::Player::draw()
         return;
     }
     if (_direction == Orientation::North)
-        _rotationY = 0.0f;
+        _rotationY = 180.0f;
     else if (_direction == Orientation::Est)
         _rotationY = 90.0f;
     else if (_direction == Orientation::South)
-        _rotationY = 180.0f;
+        _rotationY = 0.0f;
     else if (_direction == Orientation::West)
         _rotationY = 270.0f;
     UpdateModelAnimation(*_model, _animations[_currentAnim], _animFrameCounter);
@@ -114,7 +114,7 @@ void gui::Player::updateMovementAndAnimation()
         float distance = Vector3Length(direction);
         if (distance > 0.1f) {
             direction = Vector3Normalize(direction);
-            _position = Vector3Add(_position, Vector3Scale(direction, _moveSpeed * GetFrameTime()));
+            _position = Vector3Add(_position, Vector3Scale(direction, (1.0f/static_cast<float>(*_timeUnit) * 2)));
         } else {
             _position = _targetPosition;
             stopMoving();
@@ -122,11 +122,14 @@ void gui::Player::updateMovementAndAnimation()
     }
     Debug::DebugLog("animation count: " + std::to_string(_animCount) + ", current animation: " + std::to_string(_currentAnim));
     Debug::DebugLog("current animation state: " + std::to_string(static_cast<int>(_currentAnimState)));
-    if (_animCount > 0 && !_animations && _currentAnim < _animCount) {
+    if (_animCount > 0 && _currentAnim < _animCount) {
         Debug::InfoLog("Player animation count is less than the current animation index.");
         _animFrameCounter++;
-        if (_animFrameCounter >= _animations[_currentAnim].frameCount)
+
+        if (_animFrameCounter >= _animations[_currentAnim].frameCount) {
+            Debug::InfoLog("Resetting animation frame counter for Player.");
             _animFrameCounter = 0;
+        }
         UpdateModelAnimation(*_model, _animations[_currentAnim], _animFrameCounter);
     }
 }
@@ -252,7 +255,7 @@ void gui::Player::setAnimationSpeed(float speed)
 
 void gui::Player::setAnimationState(AnimState newState)
 {
-    if (_currentAnimState != newState && _animCount > static_cast<int>(newState)) {
+    if  (_animCount > static_cast<int>(newState)) {
         _currentAnimState = newState;
         _currentAnim = static_cast<int>(newState);
         _animFrameCounter = 0;
