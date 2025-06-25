@@ -59,6 +59,18 @@ namespace gui {
              */
             void delItem(int qty, int type);
 
+            /**
+             * @brief Get the quantity of a specific item type in the tile.
+             * @param type The ID of the item type to check.
+             * @return The quantity of the specified item type in the tile.
+             */
+            int getItem(int type) const;
+
+            /**
+             * @brief Get the coordinates of the tile.
+             * @return A pair representing the coordinates of the tile.
+             */
+            std::pair<int, int> getCoord();
         private:
             std::vector<int> _qty;
             std::pair<int, int> _coord;

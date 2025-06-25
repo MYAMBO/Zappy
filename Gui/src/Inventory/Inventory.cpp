@@ -18,7 +18,7 @@ gui::ui::Inventory::Inventory(int screenWidth, int screenHeight)
     : _fontSize(30), _bounds({0, static_cast<float>(screenHeight) * 0.8f, static_cast<float>(screenWidth), static_cast<float>(screenHeight) / 5.0f})
 {
     _items = {
-        {"Food", {0, BROWN}},
+        {"Food", {10, BROWN}},
         {"Linemate", {0, YELLOW}},
         {"Deraumere", {0, GREEN}},
         {"Sibur", {0, RED}},
@@ -46,6 +46,7 @@ void gui::ui::Inventory::draw()
     float itemWidth = _bounds.width / static_cast<float>(_items.size());
     int index = 0;
     for (const auto& item : _items) {
+        Debug::InfoLog("[GUI] Drawing inventory item: " + item.first + " with quantity: " + std::to_string(item.second.first));
         std::string text = item.first + ": " + std::to_string(item.second.first);
         Vector2 textSize = MeasureTextEx(GetFontDefault(), text.c_str(), _fontSize, 1);
         float textX = _bounds.x + index * itemWidth + (itemWidth - textSize.x) / 2;
@@ -54,7 +55,6 @@ void gui::ui::Inventory::draw()
         index++;
     }
 }
-
 
 /************************************************************
 **                   >>>>   SETTERS   <<<<                 **
@@ -69,6 +69,7 @@ void gui::ui::Inventory::setBounds(Rectangle bounds)
 void gui::ui::Inventory::setInventoryItem(const std::string& item, int quantity)
 {
     if (_items.find(item) != _items.end()) {
+        Debug::InfoLog("[GUI] Setting inventory item: " + item + " to quantity: " + std::to_string(quantity));
         _items[item].first = quantity;
     }
 }

@@ -77,6 +77,7 @@ namespace gui {
             std::vector<std::string> splitString(const std::string &string, char delimiter);
             std::shared_ptr<Model> safeModelLoader(const std::string& string);
             int findPlayer(int id);
+            int findTile(int x, int y);
 
             std::mutex _mutex;
             std::shared_ptr<Camera> _camera;
