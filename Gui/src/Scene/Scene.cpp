@@ -27,6 +27,10 @@ gui::Scene::Scene(const std::string& hostname, const std::string& port)
     initWindow();
 
     _display = std::make_unique<Display>(_camera, _camState, _currentState);
+
+    _display->_menu->setHostname(hostname);
+    _display->_menu->setPort(port);
+
     _client = std::make_shared<gui::Client>(_display->getPlayers(), _display->getMap(), _display->getEggs(), _camera, _camState, _display->getModels(), _display, hostname, port);
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     _client->sendCommand("sgt");

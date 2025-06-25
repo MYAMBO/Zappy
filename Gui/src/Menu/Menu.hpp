@@ -47,6 +47,30 @@ namespace gui {
                  */
                 void initMenuUI();
 
+                /**
+                 *
+                 * @brief Setter for Hostname
+                 */
+                void setHostname(std::string name);
+
+                /**
+                 *
+                 * @brief Setter for Port
+                 */
+                void setPort(std::string name);
+
+                /**
+                 *
+                 * @brief Getter for Hostname
+                 */
+                std::string getHostname();
+
+                /**
+                 *
+                 * @brief Getter for Port
+                 */
+                std::string getPort();
+
             private:
                 /**
                  * @brief Handle the action when the play button is clicked.
@@ -65,20 +89,24 @@ namespace gui {
 
                 std::shared_ptr<SceneState> _sceneState;
                 int _frameCounter;
-                bool _serverIdActive;
-                std::string _serverId;
+                bool _hostnameActive;
+                bool _portActive;
+                std::string _hostname;
+                std::string _port;
 
                 Button _playButton;
                 Button _exitButton;
                 Button _settingButton;
 
-                Rectangle _serverIdBox;
+                Rectangle _hostnameBox;
+                Rectangle _portBox;
 
                 Color _inputBoxColor;
                 Color _backgroundColor;
                 Color _inputBoxActiveColor;
 
-                int _errorInput;
+                int _hostnameError;
+                int _portError;
                 int _screenWidth;
                 int _screenHeight;
                 int _titleFontSize;

@@ -27,16 +27,20 @@ void gui::ui::Menu::initMenuUI()
 {
     Debug::InfoLog("[GUI] Initializing menu UI elements");
     _frameCounter = 0;
-    _serverIdActive = false;
-    _serverId.clear();
+    _hostnameActive = false;
+    _portActive = false;
+    _hostname.clear();
+    _port.clear();
 
-    _serverIdBox = Rectangle{static_cast<float>(_screenWidth) / 2 - 330, static_cast<float>(_screenHeight) / 1.2f - 200, 660.0f, 30.0f};
+    _hostnameBox = Rectangle{static_cast<float>(_screenWidth) / 2 - 330, static_cast<float>(_screenHeight) / 1.2f - 200, 660.0f, 30.0f};
+    _portBox = Rectangle{static_cast<float>(_screenWidth) / 2 - 330, static_cast<float>(_screenHeight) / 1.2f - 200, 660.0f, 30.0f};
 
     _inputBoxColor = LIGHTGRAY;
     _backgroundColor = DARKGRAY;
     _inputBoxActiveColor = SKYBLUE;
 
-    _errorInput = 0;
+    _hostnameError = 0;
+    _portError = 0;
     _titleFontSize = 40;
     _inputFontSize = 20;
     _buttonFontSize = 20;
@@ -44,14 +48,14 @@ void gui::ui::Menu::initMenuUI()
 
 void gui::ui::Menu::playClicked()
 {
-    if (_serverId.length() > 0) {
+    if (_hostname.length() > 0) {
         // call func for try connecting to server 
         // if (connection good)
         *_sceneState = SceneState::GAME;
-        _serverIdActive = false;
-        Debug::InfoLog("[GUI] Play button clicked, connecting to server with ID: " + _serverId);
+        _hostnameActive = false;
+        Debug::InfoLog("[GUI] Play button clicked, connecting to server with ID: " + _hostname);
     } else {
-        _errorInput = 60;
+        _hostnameError = 60;
     }
 }
 
@@ -85,25 +89,52 @@ void gui::ui::Menu::handleMenuInput()
 
 void gui::ui::Menu::handleTextInput()
 {
-    if (IsKeyPressed(KEY_BACKSPACE) && _serverIdActive && !_serverId.empty()) {
-        _serverId.pop_back();
-    }
+    if (_hostnameActive) {
+        if (IsKeyPressed(KEY_BACKSPACE) && !_hostname.empty())
+            _hostname.pop_back();
 
-    if (_serverIdActive) {
         int key = GetCharPressed();
         while (key > 0) {
             if (key >= 32 && key <= 126) {
-                if (_serverId.length() < MAX_SERVER_ID_LENGTH) {
-                    _serverId += (char)key;
+                if (_hostname.length() < MAX_SERVER_ID_LENGTH) {
+                    _hostname += (char)key;
                     Debug::InfoLog("[GUI] Char pressed: " + std::string(1, (char)key));
                 }
             }
             key = GetCharPressed();
         }
     }
-    if (IsKeyPressed(KEY_TAB) || (_serverIdBox.x <= GetMouseX() && GetMouseX() <= _serverIdBox.x + _serverIdBox.width &&
-        _serverIdBox.y <= GetMouseY() && GetMouseY() <= _serverIdBox.y + _serverIdBox.height && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))) {
-        _serverIdActive = !_serverIdActive;
+
+    if (_portActive) {
+        if (IsKeyPressed(KEY_BACKSPACE) && !_port.empty())
+            _port.pop_back();
+
+        int key = GetCharPressed();
+        while (key > 0) {
+            if (key >= 32 && key <= 126) {
+                if (_port.length() < MAX_SERVER_ID_LENGTH) {
+                    _port += (char)key;
+                    Debug::InfoLog("[GUI] Char pressed: " + std::string(1, (char)key));
+                }
+            }
+            key = GetCharPressed();
+        }
+    }
+
+    if ((IsKeyPressed(KEY_TAB) && _portActive)) {
+        _portActive = false;
+    }
+
+    if ((IsKeyPressed(KEY_TAB) && _hostnameActive) || (_portBox.x <= GetMouseX() && GetMouseX() <= _portBox.x + _portBox.width &&
+                                                       _portBox.y <= GetMouseY() && GetMouseY() <= _portBox.y + _portBox.height && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))) {
+        if (_hostnameActive)
+            _hostnameActive = false;
+        _portActive = true;
+    }
+
+    if ((IsKeyPressed(KEY_TAB) && !_hostnameActive) || (_hostnameBox.x <= GetMouseX() && GetMouseX() <= _hostnameBox.x + _hostnameBox.width &&
+                                                        _hostnameBox.y <= GetMouseY() && GetMouseY() <= _hostnameBox.y + _hostnameBox.height && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))) {
+        _hostnameActive = true;
     }
 }
 
@@ -117,27 +148,27 @@ void gui::ui::Menu::drawMainMenu()
     _exitButton.draw();
     _settingButton.draw();
 
-    if (_errorInput > 0)
+    if (_hostnameError > 0)
         DrawText("Server ID is required!", static_cast<float>(_screenWidth) / 2 - 330, static_cast<float>(_screenHeight) / 1.2f - 220, _inputFontSize, WHITE);
-    if (_serverIdActive) {
-        if (_errorInput > 0) {
-            _errorInput--;
-            DrawRectangleRec(_serverIdBox, RED);
+    if (_hostnameActive) {
+        if (_hostnameError > 0) {
+            _hostnameError--;
+            DrawRectangleRec(_hostnameBox, RED);
         } else {
-            DrawRectangleRec(_serverIdBox, _inputBoxActiveColor);
+            DrawRectangleRec(_hostnameBox, _inputBoxActiveColor);
             DrawText("Server ID:", static_cast<float>(_screenWidth) / 2 - 330, static_cast<float>(_screenHeight) / 1.2f - 220, _inputFontSize, WHITE);
         }
     } else {
-        if (_errorInput > 0) {
-            _errorInput--;
-            DrawRectangleRec(_serverIdBox, RED);
+        if (_hostnameError > 0) {
+            _hostnameError--;
+            DrawRectangleRec(_hostnameBox, RED);
         } else {
-            DrawRectangleRec(_serverIdBox, _inputBoxColor);
+            DrawRectangleRec(_hostnameBox, _inputBoxColor);
             DrawText("Server ID:", static_cast<float>(_screenWidth) / 2 - 330, static_cast<float>(_screenHeight) / 1.2f - 220, _inputFontSize, WHITE);
         }
     }
 
-    DrawText(_serverId.c_str(), _serverIdBox.x + 10, _serverIdBox.y + 10, _inputFontSize, BLACK);
+    DrawText(_hostname.c_str(), static_cast<int>(_hostnameBox.x) + 10, static_cast<int>(_hostnameBox.y) + 10, _inputFontSize, BLACK);
     EndDrawing();
 }
 
@@ -145,5 +176,29 @@ void gui::ui::Menu::drawConnectingScreen()
 {
     ClearBackground(_backgroundColor);
     DrawText("Connecting to server...", 100, 50, _titleFontSize, WHITE);
-    DrawText(_serverId.c_str(), 100, 150, _inputFontSize, BLACK);
+    DrawText(_hostname.c_str(), 100, 150, _inputFontSize, BLACK);
+}
+
+/************************************************************
+**         >>>>      SETTERS / GETTERS        <<<<         **
+************************************************************/
+
+void gui::ui::Menu::setHostname(std::string name)
+{
+    this->_hostname = std::move(name);
+}
+
+void gui::ui::Menu::setPort(std::string name)
+{
+    this->_port = std::move(name);
+}
+
+std::string gui::ui::Menu::getHostname()
+{
+    return this->_hostname;
+}
+
+std::string gui::ui::Menu::getPort()
+{
+    return this->_port;
 }
