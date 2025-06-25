@@ -9,25 +9,21 @@
     #define ZAPPY_PLAYER_HPP
 
     #include <tuple>
+    #include <mutex>
 
+    #include "Type.hpp"
     #include "Scene.hpp"
     #include "Button.hpp"
     #include "AEntity.hpp"
     #include "Inventory.hpp"
 
-enum Orientation {
-    North,
-    Est,
-    South,
-    West
-};
-
+    
 namespace gui {
     class Player : public AEntity {
         public:
-            Player(int id, std::pair<int, int> position, Orientation orientation, int level,
-                std::string team, float scale, int screenWidth, int screenHeight, Camera3D &camera,
-                CamState &sceneState, int timeUnit);
+            Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team,
+                float scale, int screenWidth, int screenHeight, Camera &camera, CamState &sceneState, int timeUnit,
+                std::shared_ptr<Model> model, Model deadModel, ModelAnimation *animations, int animCount);
             ~Player();
 
             /**
@@ -88,7 +84,7 @@ namespace gui {
              * @brief Handle the camera button action.
              * This function handles the action when the camera button is clicked.
              */
-            void HandleCamButton(Camera3D &camera, CamState &sceneState);
+            void HandleCamButton(Camera &camera, CamState &sceneState);
 
             /**
              * @brief Update the Player.
@@ -96,7 +92,7 @@ namespace gui {
              * @param camera The Camera3D used for ray picking.
              * @return An integer indicating the result of the update (e.g., success or failure).
              */
-            int update(Camera3D camera);
+            int update(Camera camera);
 
             /**
              * @brief Update the UI of the Player.
@@ -140,32 +136,27 @@ namespace gui {
              */
             bool getIsMoving() const;
 
-            /**
-             * @brief Animation of the broadcast.
-             * This function handles the animation broadcast for the Player.
-             */
-            void broadcastAnimation();
-
+            
             /**
              * @brief Set the broadcasting state of the Player.
              * This function sets whether the Player is currently broadcasting.
              * @param broadcasting true if the Player is broadcasting, false otherwise.
              */
             void setBroadcasting(bool broadcasting);
-
+            
             /**
              * @brief updateMovementAndAnimation
              * This function updates the Player's movement and animation based on the current state.
              */
             void updateMovementAndAnimation();
-
+            
             /**
              * @brief Handle user input for the Player.
              * This function processes user input to control the Player's actions, such as movement and broadcasting.
              * @param camera The Camera3D used for ray picking.
              */
-            void handleUserInput(Camera3D camera);
-
+            void handleUserInput(Camera camera);
+            
             /**
              * @brief set the dead state of the Player.
              * This function sets whether the Player is dead or not.
@@ -173,20 +164,29 @@ namespace gui {
              */
             void setisDead(bool isDead);
         private:
+            /**
+             * @brief Animation of the broadcast.
+             * This function handles the animation broadcast for the Player.
+             */
+            void broadcastAnimation();
+
             enum class AnimState {
                 IDLE = 0,
                 WALKING = 1,
                 PICKING = 2,
                 BROADCASTING = 3,
                 DYING = 4
-
+                
             };
+
             /**
              * @brief Set the animation state of the Player.
              * This function sets the current animation state of the Player.
              * @param newState The new animation state to set.
              */
             void setAnimationState(AnimState newState);
+
+            std::shared_ptr<Model> _model;
 
             int _id;
             int _level;
@@ -195,6 +195,7 @@ namespace gui {
             int _animFrameCounter;
             int _countBeforeExpire = 600;
             
+            std::mutex _mutex;
             bool _isMoving;
             bool _isDead = false;
             bool _isSelected = false;
@@ -215,7 +216,7 @@ namespace gui {
             Model _deadModel; 
             Orientation _direction;
             AnimState _currentAnimState;
-            ModelAnimation* _animations;       
+            ModelAnimation *_animations;
     };
 }
 

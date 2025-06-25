@@ -11,6 +11,7 @@
     #include <string>
     #include <raylib.h>
 
+    #include "Type.hpp"
     #include "Scene.hpp"
     #include "Button.hpp"
 
@@ -18,7 +19,7 @@ namespace gui {
     namespace ui {
         class Menu {
             public:
-                Menu(SceneState &sceneState, int screenWidth, int screenHeight);
+                Menu(std::shared_ptr<SceneState> sceneState);
                 ~Menu();
 
                 /**
@@ -62,7 +63,7 @@ namespace gui {
                  */
                 void settingClicked();
 
-                SceneState &_sceneState;
+                std::shared_ptr<SceneState> _sceneState;
                 int _frameCounter;
                 bool _serverIdActive;
                 std::string _serverId;

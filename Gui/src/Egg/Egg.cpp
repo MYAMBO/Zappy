@@ -9,10 +9,10 @@
 
 #include <raymath.h>
 
-gui::Egg::Egg(int id, std::pair<int, int> position)
+gui::Egg::Egg(int id, std::pair<int, int> position, std::shared_ptr<Model> model)
     : AEntity({(float)position.first, 0.5f, (float)position.second}, 0.7f, WHITE), _id(id)
 {
-    _model = std::make_shared<Model>(LoadModel("assets/egg/scene.gltf"));
+    _model = model;
     _model->transform = MatrixScale(_scale, _scale, _scale);
 }
 

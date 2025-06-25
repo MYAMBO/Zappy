@@ -8,40 +8,44 @@
 #ifndef ZAPPY_CLIENT_HPP
     #define ZAPPY_CLIENT_HPP
 
+    #include <map>
+    #include <vector>
+    #include <thread>
+    #include <memory>
+    #include <utility>
+    #include <iostream>
+    #include <iostream>
+    #include <functional>
     #include <arpa/inet.h>
     #include <sys/socket.h>
-    #include <iostream>
-    #include <utility>
-    #include <vector>
-    #include <iostream>
-    #include <memory>
-    #include <map>
-    #include <thread>
-    #include "AEntity.hpp"
-    #include "AItem.hpp"
-    #include "Player.hpp"
+
     #include "Tile.hpp"
+    #include "AItem.hpp"
+    #include "Scene.hpp"
     #include "Error.hpp"
+    #include "Player.hpp"
+    #include "Display.hpp"
+    #include "AEntity.hpp"
 
 namespace gui {
     class Client {
         public:
-            static Client &getInstance();
+            Client(std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players, std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> map,
+                std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs, std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState,
+                std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, std::shared_ptr<Display> display);
+            ~Client();
 
             void sendCommand(const std::string& command) const;
 
-            void setPlayers(std::vector<std::shared_ptr<Player>> players);
-            void setMap(std::vector<std::shared_ptr<gui::Tile>> map);
+            void setPlayers(std::shared_ptr<std::vector<std::shared_ptr<Player>>> players);
+            void setMap(std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> map);
 
-            void setHostname(std::string string);
-            void setPort(std::string string);
+            std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> getEggs();
+            std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> getPlayers();
+            std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> getMap();
 
+            void drawPlayers();
         private:
-            Client();
-            ~Client();
-            Client(const Client&) = default;
-            Client& operator=(const Client &) = delete;
-
             void connectToServer();
             void receiveLoop();
 
@@ -61,45 +65,39 @@ namespace gui {
             void pgt(std::vector<std::string> stringArray); // resource collecting
             void pdi(std::vector<std::string> stringArray); // death of a player
             void enw(std::vector<std::string> stringArray); // an egg was laid by a player
-            static void ebo(std::vector<std::string> stringArray); // player connection for an egg
-            static void edi(std::vector<std::string> stringArray); // death of an egg
-            static void sgt(std::vector<std::string> stringArray); // time unit request
-            static void sst(std::vector<std::string> stringArray); // time unit modification
+            void ebo(std::vector<std::string> stringArray); // player connection for an egg
+            void edi(std::vector<std::string> stringArray); // death of an egg
+            void sgt(std::vector<std::string> stringArray); // time unit request
+            void sst(std::vector<std::string> stringArray); // time unit modification
             void seg(std::vector<std::string> stringArray); // end of game
-            static void smg(std::vector<std::string> stringArray); // message from the server
-            static void suc(const std::vector<std::string>& stringArray); // unknown command
-            static void sbp(const std::vector<std::string>& stringArray); // command parameter
+            void smg(std::vector<std::string> stringArray); // message from the server
+            void suc(const std::vector<std::string>& stringArray); // unknown command
+            void sbp(const std::vector<std::string>& stringArray); // command parameter
 
-            static std::vector<std::string> splitString(const std::string &string, char delimiter);
-            static std::shared_ptr<Model> safeModelLoader(const std::string& string);
+            std::vector<std::string> splitString(const std::string &string, char delimiter);
+            std::shared_ptr<Model> safeModelLoader(const std::string& string);
             int findPlayer(int id);
+
+            std::mutex _mutex;
+            std::shared_ptr<Camera> _camera;
+            std::shared_ptr<CamState> _camState;
 
             std::string _hostname;
             std::string _port;
             std::pair<int, int> _size;
             int _socket;
             bool _isActive;
+
             std::thread _thread;
-            std::vector<std::shared_ptr<gui::Player>> _Players;
-            std::vector<std::shared_ptr<gui::Tile>> _Map;
-            std::vector<std::shared_ptr<Model>> _models;
+            std::pair<int, int> _size;
             std::vector<std::string> _teams;
+            std::shared_ptr<Display> _display;
+            std::shared_ptr<std::vector<std::shared_ptr<Model>>> _models;
+            std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> _eggs;
+            std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> _map;
+            std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> _players;
     };
 }
 
-inline void SendCommand(const std::string& command)
-{
-    gui::Client::getInstance().sendCommand(command);
-}
-
-inline void SetPlayers(std::vector<std::shared_ptr<gui::Player>> players)
-{
-    gui::Client::getInstance().setPlayers(std::move(players));
-}
-
-inline void SetMap(std::vector<std::shared_ptr<gui::Tile>> map)
-{
-    gui::Client::getInstance().setMap(std::move(map));
-}
 
 #endif //ZAPPY_CLIENT_HPP

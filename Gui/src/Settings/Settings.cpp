@@ -8,10 +8,10 @@
 #include "Logger.hpp"
 #include "Settings.hpp"
 
-gui::ui::Settings::Settings(SceneState &sceneState, int screenWidth, int screenHeight)
+gui::ui::Settings::Settings(std::shared_ptr<SceneState> sceneState)
     : _sceneState(sceneState), 
-      _backButton([this]() { backButtonClicked(); }, Rectangle{static_cast<float>(screenWidth) * 0.01f, static_cast<float>(screenHeight) * 0.01f, 200.0f, 100.0f}, "Back"),
-      _screenWidth(screenWidth), _screenHeight(screenHeight), _color(7), _box(7), _key(7), _name(7),
+      _backButton([this]() { backButtonClicked(); }, Rectangle{static_cast<float>(SCREEN_WIDTH) * 0.01f, static_cast<float>(SCREEN_HEIGHT) * 0.01f, 200.0f, 100.0f}, "Back"),
+      _screenWidth(SCREEN_WIDTH), _screenHeight(SCREEN_HEIGHT), _color(7), _box(7), _key(7), _name(7),
       _cameraKeys(6), _cameraActions(6)
 {
     initSettingsUI();
@@ -84,7 +84,7 @@ void gui::ui::Settings::handleSettingsInputs()
     _backButton.update();
     if (IsKeyPressed(KEY_ESCAPE)) {
         Debug::InfoLog("[GUI] Escape key pressed, returning to menu");
-        _sceneState = SceneState::MENU;
+        *_sceneState = SceneState::MENU;
     }
 }
 
@@ -132,6 +132,6 @@ void gui::ui::Settings::drawSettings()
 
 void gui::ui::Settings::backButtonClicked()
 {
-    _sceneState = SceneState::MENU;
+    *_sceneState = SceneState::MENU;
     Debug::InfoLog("[GUI] Back button clicked in settings");
 }
