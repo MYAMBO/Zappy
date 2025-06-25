@@ -27,9 +27,13 @@ typedef enum ressources_index_s {
 
 typedef enum direction_s {
     NORTH,
+    NORTH_EAST,
     EAST,
+    SOUTH_EAST,
     SOUTH,
-    WEST
+    SOUTH_WEST,
+    WEST,
+    NORTH_WEST,
 } direction_t;
 
 typedef struct map_s {

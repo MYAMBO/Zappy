@@ -49,7 +49,7 @@ SERVER_SRC = 												\
 				Server/src/commands/command_inventory.c	\
 				Server/src/commands/command_broadcast.c	\
 				Server/src/commands/command_eject.c	\
-
+				Server/src/get_signal_direction.c	\
 
 GUI_SRC = 												\
 				Gui/src/main.cpp 						\
@@ -81,7 +81,7 @@ AI_NAME = zappy_ai
 GUI_NAME = zappy_gui
 SERVER_NAME = zappy_server
 
-SERVER_FLAGS = -I Server/include -I Debug
+SERVER_FLAGS = -I Server/include -I Debug -lm
 GUI_FLAGS = -lraylib -lpthread -lGL -I Debug 		\
         											\
 			-I Gui/src/Tile			 				\

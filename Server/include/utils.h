@@ -17,5 +17,6 @@
 
 poll_handling_t *search_player_node(int id, server_t *server);
 int array_len(char **arr);
+int send_message_graphic(server_t *server, char *message);
 
 #endif //UTILS_H

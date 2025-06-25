@@ -54,20 +54,20 @@ char *handle_forward_action(ai_stats_t *ai, server_t *server)
 
 char *player_turns_right(ai_stats_t *ai)
 {
-    if (ai->direction == 3) {
-        ai->direction = 0;
+    if (ai->direction == WEST) {
+        ai->direction = NORTH;
         return "ok";
     }
-    ai->direction += 1;
+    ai->direction += 2;
     return "ok";
 }
 
 char *player_turns_left(ai_stats_t *ai)
 {
-    if (ai->direction == 0) {
-        ai->direction = 3;
+    if (ai->direction == NORTH) {
+        ai->direction = WEST;
         return "ok";
     }
-    ai->direction -= 1;
+    ai->direction -= 2;
     return "ok";
 }
