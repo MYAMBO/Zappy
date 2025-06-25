@@ -101,12 +101,6 @@ int parse_arguments(int ac, char **av, server_t *server)
         return FAILURE;
     if (parse_freq(av, server) == FAILURE)
         return FAILURE;
-
-    ai_stats_t *ai = create_test_ai(0, "noot", server);
-    map_t *map = init_map(server->map_width, server->map_height);
-
-    printf("%s", can_player_takes_items(ai, map, "food"));
-
     return SUCCESS;
 }
 

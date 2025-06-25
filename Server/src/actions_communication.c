@@ -28,17 +28,6 @@ char *death_of_player(ai_stats_t *ai)
     return "dead\n";
 }
 
-static bool parse_valid_ressources(char *item)
-{
-    if (strcmp("food", item) == 0 || strcmp("linemate", item) == 0
-        || strcmp("deraumere", item) == 0 || strcmp("sibur", item) == 0
-        || strcmp("mendiane", item) == 0 || strcmp("phiras", item) == 0
-        || strcmp("thystame", item) == 0)
-        return true;
-    else
-        return false;
-}
-
 static bool increment_ai_inventory(ai_stats_t *ai, map_t *map, int i)
 {
     if (map->tiles[ai->y][ai->x].resources[i] <= 0)
@@ -61,7 +50,26 @@ static bool increment_ai_inventory(ai_stats_t *ai, map_t *map, int i)
     return true;
 }
 
-static int can_take_one_ressources(char *item)
+static bool increment_map_tile(ai_stats_t *ai, map_t *map, int i)
+{
+    int *inventory[7] = {
+            &ai->nb_food,
+            &ai->nb_linemate,
+            &ai->nb_deraumere,
+            &ai->nb_sibur,
+            &ai->nb_mendiane,
+            &ai->nb_phiras,
+            &ai->nb_thystame
+    };
+
+    if (*inventory[i] <= 0)
+        return false;
+    (*inventory[i])--;
+    map->tiles[ai->y][ai->x].resources[i]++;
+    return true;
+}
+
+static int get_ressources_index(char *item)
 {
     int i = -1;
 
@@ -86,15 +94,22 @@ char *can_player_takes_items(ai_stats_t *ai, map_t *map, char *item)
 {
     int i = 0;
 
-    printf("%d\n", map->tiles[ai->y][ai->x].resources[0]);
-    printf("%d\n", ai->nb_food);
-
-    if (!parse_valid_ressources(item))
-        return "ko\n";
-    i = can_take_one_ressources(item);
+    i = get_ressources_index(item);
     if (i == -1)
         return "ko\n";
     if (!increment_ai_inventory(ai, map, i))
+        return "ko\n";
+    return "ok\n";
+}
+
+char *can_player_drops_items(ai_stats_t *ai, map_t *map, char *item)
+{
+    int i = 0;
+
+    i = get_ressources_index(item);
+    if (i == -1)
+        return "ko\n";
+    if (!increment_map_tile(ai, map, i))
         return "ko\n";
     return "ok\n";
 }
