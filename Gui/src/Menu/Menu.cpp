@@ -33,7 +33,7 @@ void gui::ui::Menu::initMenuUI()
     _port.clear();
 
     _hostnameBox = Rectangle{static_cast<float>(_screenWidth) / 2 - 330, static_cast<float>(_screenHeight) / 1.2f - 200, 660.0f, 30.0f};
-    _portBox = Rectangle{static_cast<float>(_screenWidth) / 2 - 330, static_cast<float>(_screenHeight) / 1.2f - 200, 660.0f, 30.0f};
+    _portBox = Rectangle{static_cast<float>(_screenWidth) / 2 - 330, static_cast<float>(_screenHeight) / 1.2f - 100, 660.0f, 30.0f};
 
     _inputBoxColor = LIGHTGRAY;
     _backgroundColor = DARKGRAY;
@@ -90,8 +90,12 @@ void gui::ui::Menu::handleMenuInput()
 void gui::ui::Menu::handleTextInput()
 {
     if (_hostnameActive) {
-        if (IsKeyPressed(KEY_BACKSPACE) && !_hostname.empty())
-            _hostname.pop_back();
+        if (IsKeyPressed(KEY_BACKSPACE) && !_hostname.empty()) {
+            if (IsKeyDown(KEY_LEFT_CONTROL))
+                _hostname.clear();
+            else
+                _hostname.pop_back();
+        }
 
         int key = GetCharPressed();
         while (key > 0) {
@@ -106,8 +110,12 @@ void gui::ui::Menu::handleTextInput()
     }
 
     if (_portActive) {
-        if (IsKeyPressed(KEY_BACKSPACE) && !_port.empty())
-            _port.pop_back();
+        if (IsKeyPressed(KEY_BACKSPACE) && !_port.empty()) {
+            if (IsKeyDown(KEY_LEFT_CONTROL))
+                _port.clear();
+            else
+                _port.pop_back();
+        }
 
         int key = GetCharPressed();
         while (key > 0) {
@@ -121,20 +129,22 @@ void gui::ui::Menu::handleTextInput()
         }
     }
 
-    if ((IsKeyPressed(KEY_TAB) && _portActive)) {
-        _portActive = false;
-    }
-
-    if ((IsKeyPressed(KEY_TAB) && _hostnameActive) || (_portBox.x <= GetMouseX() && GetMouseX() <= _portBox.x + _portBox.width &&
-                                                       _portBox.y <= GetMouseY() && GetMouseY() <= _portBox.y + _portBox.height && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))) {
+    if ((IsKeyPressed(KEY_TAB) && _hostnameActive) ||
+        (_portBox.x <= GetMouseX() && GetMouseX() <= _portBox.x + _portBox.width &&
+         _portBox.y <= GetMouseY() && GetMouseY() <= _portBox.y + _portBox.height && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))) {
         if (_hostnameActive)
             _hostnameActive = false;
         _portActive = true;
+        return;
     }
 
-    if ((IsKeyPressed(KEY_TAB) && !_hostnameActive) || (_hostnameBox.x <= GetMouseX() && GetMouseX() <= _hostnameBox.x + _hostnameBox.width &&
-                                                        _hostnameBox.y <= GetMouseY() && GetMouseY() <= _hostnameBox.y + _hostnameBox.height && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))) {
+    if ((IsKeyPressed(KEY_TAB) && !_hostnameActive) ||
+        (_hostnameBox.x <= GetMouseX() && GetMouseX() <= _hostnameBox.x + _hostnameBox.width &&
+         _hostnameBox.y <= GetMouseY() && GetMouseY() <= _hostnameBox.y + _hostnameBox.height && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))) {
+        if (_portActive)
+            _portActive = false;
         _hostnameActive = true;
+        return;
     }
 }
 
@@ -148,28 +158,35 @@ void gui::ui::Menu::drawMainMenu()
     _exitButton.draw();
     _settingButton.draw();
 
-    if (_hostnameError > 0)
-        DrawText("Server ID is required!", static_cast<float>(_screenWidth) / 2 - 330, static_cast<float>(_screenHeight) / 1.2f - 220, _inputFontSize, WHITE);
-    if (_hostnameActive) {
-        if (_hostnameError > 0) {
-            _hostnameError--;
-            DrawRectangleRec(_hostnameBox, RED);
-        } else {
-            DrawRectangleRec(_hostnameBox, _inputBoxActiveColor);
-            DrawText("Server ID:", static_cast<float>(_screenWidth) / 2 - 330, static_cast<float>(_screenHeight) / 1.2f - 220, _inputFontSize, WHITE);
-        }
-    } else {
-        if (_hostnameError > 0) {
-            _hostnameError--;
-            DrawRectangleRec(_hostnameBox, RED);
-        } else {
-            DrawRectangleRec(_hostnameBox, _inputBoxColor);
-            DrawText("Server ID:", static_cast<float>(_screenWidth) / 2 - 330, static_cast<float>(_screenHeight) / 1.2f - 220, _inputFontSize, WHITE);
-        }
-    }
+    drawTextBox(_hostnameError, _hostnameActive, _hostnameBox, 220, "Hostname :", "Hostname is required!");
+    drawTextBox(_portError, _portActive, _portBox, 120, "Port :", "Port is required!");
 
     DrawText(_hostname.c_str(), static_cast<int>(_hostnameBox.x) + 10, static_cast<int>(_hostnameBox.y) + 10, _inputFontSize, BLACK);
+    DrawText(_port.c_str(), static_cast<int>(_portBox.x) + 10, static_cast<int>(_portBox.y) + 10, _inputFontSize, BLACK);
     EndDrawing();
+}
+
+void gui::ui::Menu::drawTextBox(int errorNb, bool active, Rectangle box, int height, const std::string& name, const std::string& errorStr)
+{
+    if (errorNb > 0)
+        DrawText(errorStr.c_str(), static_cast<float>(_screenWidth) / 2 - 330, static_cast<float>(_screenHeight) / 1.2f - static_cast<float>(height), _inputFontSize, WHITE);
+    if (active) {
+        if (errorNb > 0) {
+            errorNb--;
+            DrawRectangleRec(box, RED);
+        } else {
+            DrawRectangleRec(box, _inputBoxActiveColor);
+            DrawText(name.c_str(), static_cast<float>(_screenWidth) / 2 - 330, static_cast<float>(_screenHeight) / 1.2f - static_cast<float>(height), _inputFontSize, WHITE);
+        }
+    } else {
+        if (errorNb > 0) {
+            errorNb--;
+            DrawRectangleRec(box, RED);
+        } else {
+            DrawRectangleRec(box, _inputBoxColor);
+            DrawText(name.c_str(), static_cast<float>(_screenWidth) / 2 - 330, static_cast<float>(_screenHeight) / 1.2f - static_cast<float>(height), _inputFontSize, WHITE);
+        }
+    }
 }
 
 void gui::ui::Menu::drawConnectingScreen()

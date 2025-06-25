@@ -38,6 +38,11 @@ namespace gui {
                 void drawMainMenu();
 
                 /**
+                * @brief Draw the text area.
+                */
+                void drawTextBox(int errorNb, bool active, Rectangle box, int height, const std::string& name, const std::string& errorStr);
+
+                /**
                  * @brief Draw the connecting screen.
                  */
                 void drawConnectingScreen();
