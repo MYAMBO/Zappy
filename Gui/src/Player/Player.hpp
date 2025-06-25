@@ -9,23 +9,21 @@
     #define ZAPPY_PLAYER_HPP
 
     #include <tuple>
+    #include <mutex>
 
+    #include "Type.hpp"
     #include "Scene.hpp"
     #include "Button.hpp"
     #include "AEntity.hpp"
     #include "Inventory.hpp"
 
-enum Orientation {
-    North = 1,
-    Est = 2,
-    South = 3,
-    West = 4
-};
-
+    
 namespace gui {
     class Player : public AEntity {
         public:
-            Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team, float scale, int screenWidth, int screenHeight, Camera &camera, CamState &sceneState, int timeUnit);
+            Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team,
+                float scale, int screenWidth, int screenHeight, Camera &camera, CamState &sceneState, int timeUnit,
+                std::shared_ptr<Model> model, Model deadModel, ModelAnimation *animations, int animCount);
             ~Player();
 
             /**
@@ -180,12 +178,15 @@ namespace gui {
                 DYING = 4
                 
             };
+
             /**
              * @brief Set the animation state of the Player.
              * This function sets the current animation state of the Player.
              * @param newState The new animation state to set.
              */
             void setAnimationState(AnimState newState);
+
+            std::shared_ptr<Model> _model;
 
             int _id;
             int _level;
@@ -194,6 +195,7 @@ namespace gui {
             int _animFrameCounter;
             int _countBeforeExpire = 600;
             
+            std::mutex _mutex;
             bool _isMoving;
             bool _isDead = false;
             bool _isSelected = false;
@@ -214,7 +216,7 @@ namespace gui {
             Model _deadModel; 
             Orientation _direction;
             AnimState _currentAnimState;
-            ModelAnimation* _animations;       
+            ModelAnimation *_animations;
     };
 }
 

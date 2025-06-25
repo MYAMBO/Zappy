@@ -19,23 +19,24 @@
 
 
 gui::Player::Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team,
-        float scale, int screenWidth, int screenHeight, Camera &camera, CamState &sceneState, int timeUnit)
+        float scale, int screenWidth, int screenHeight, Camera &camera, CamState &sceneState, int timeUnit, 
+        std::shared_ptr<Model> model, Model deadModel, ModelAnimation *animations, int animCount)
     : AEntity({(float)position.first, 1.0f, (float)position.second}, scale, WHITE), 
-    _id(id), _level(level), _currentAnim(2), _animFrameCounter(0), _isMoving(false), _isSelected(false),
+    _model(model), _id(id), _level(level), _animCount(animCount), _currentAnim(2), _animFrameCounter(0), _isMoving(false), _isSelected(false),
     _team(std::move(team)), _moveSpeed(1/timeUnit), _animationSpeed(1.0f),
     _camButton([this, &camera, &sceneState]() { HandleCamButton(camera, sceneState); }, Rectangle{0, static_cast<float>(screenHeight - 70), 150, 70}, "Camera"),
-    _inventory(screenWidth, screenHeight), _direction(orientation), _currentAnimState(AnimState::IDLE)
+    _inventory(screenWidth, screenHeight), _deadModel(deadModel), _direction(orientation), _currentAnimState(AnimState::IDLE),
+    _animations(animations)
 {
-    _model = std::make_shared<Model>(LoadModel("assets/player/scene.gltf"));
-    _deadModel = LoadModel("assets/dead/scene.gltf");
-    _animations = LoadModelAnimations("assets/player/scene.gltf", &_animCount);
+    _mutex.lock();
 
     if (_animCount > 0) {
         _currentAnim = 0;
         _animFrameCounter = 0;
         setAnimationState(AnimState::IDLE);
     }
-    //_model->transform = MatrixScale(scale, scale, scale);
+    _model->transform = MatrixScale(scale, scale, scale);
+    _mutex.unlock();
 }
 
 gui::Player::~Player() = default;
@@ -48,6 +49,11 @@ gui::Player::~Player() = default;
 void gui::Player::startMoveTo(Vector3 newPosition)
 {
     _targetPosition = newPosition;
+    if (_targetPosition.x - _position.x > 1 || _targetPosition.x - _position.x < -1 ||
+        _targetPosition.z - _position.z > 1 || _targetPosition.z - _position.z < -1) {
+        _position = _targetPosition;
+        return;
+    }
     _isMoving = true;
     if (_animCount >= 2) {
         setAnimationState(AnimState::WALKING);
@@ -79,11 +85,7 @@ void gui::Player::draw()
         _rotationY = 180.0f;
     else if (_direction == Orientation::West)
         _rotationY = 270.0f;
-    Debug::InfoLog("[GUI] Player " + std::to_string(_id) + " is at position: " +
-                   std::to_string(static_cast<int>(_position.x)) + ", " +
-                   std::to_string(static_cast<int>(_position.y)) + ", " +
-                   std::to_string(static_cast<int>(_position.z)) + " with rotation: " +
-                   std::to_string(_rotationY));
+    UpdateModelAnimation(*_model, _animations[_currentAnim], _animFrameCounter);
     DrawModelEx(*_model, _position, {0, 1, 0}, _rotationY, {_scale, _scale, _scale}, _color);
     if (_isSelected)
         DrawCubeWires(_position, 1, 1, 1, {255, 0, 0, 255});
@@ -118,7 +120,10 @@ void gui::Player::updateMovementAndAnimation()
             stopMoving();
         }
     }
-    if (_animCount > 0 && _animations && _currentAnim < _animCount) {
+    Debug::DebugLog("animation count: " + std::to_string(_animCount) + ", current animation: " + std::to_string(_currentAnim));
+    Debug::DebugLog("current animation state: " + std::to_string(static_cast<int>(_currentAnimState)));
+    if (_animCount > 0 && !_animations && _currentAnim < _animCount) {
+        Debug::InfoLog("Player animation count is less than the current animation index.");
         _animFrameCounter++;
         if (_animFrameCounter >= _animations[_currentAnim].frameCount)
             _animFrameCounter = 0;
@@ -209,7 +214,7 @@ gui::ui::Inventory gui::Player::getInventory()
     return _inventory;
 }
 
-Orientation gui::Player::getOrientation() const
+gui::Orientation gui::Player::getOrientation() const
 {
     return _direction;
 }

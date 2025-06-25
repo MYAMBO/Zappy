@@ -15,6 +15,7 @@
     #include <utility>
     #include <iostream>
     #include <iostream>
+    #include <functional>
     #include <arpa/inet.h>
     #include <sys/socket.h>
 
@@ -23,13 +24,15 @@
     #include "Scene.hpp"
     #include "Error.hpp"
     #include "Player.hpp"
+    #include "Display.hpp"
     #include "AEntity.hpp"
 
 namespace gui {
     class Client {
         public:
             Client(std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players, std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> map,
-                std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs, std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState, std::shared_ptr<std::vector<std::shared_ptr<Model>>> models);
+                std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs, std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState, 
+                std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, std::shared_ptr<Display> display);
             ~Client();
 
             void sendCommand(const std::string& command) const;
@@ -41,7 +44,7 @@ namespace gui {
             std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> getPlayers();
             std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> getMap();
 
-
+            void drawPlayers();
         private:
             void connectToServer();
             void receiveLoop();
@@ -75,6 +78,7 @@ namespace gui {
             std::shared_ptr<Model> safeModelLoader(const std::string& string);
             int findPlayer(int id);
 
+            std::mutex _mutex;
             std::shared_ptr<Camera> _camera;
             std::shared_ptr<CamState> _camState;
 
@@ -84,6 +88,7 @@ namespace gui {
             std::thread _thread;
             std::pair<int, int> _size;
             std::vector<std::string> _teams;
+            std::shared_ptr<Display> _display;
             std::shared_ptr<std::vector<std::shared_ptr<Model>>> _models;
             std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> _eggs;
             std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> _map;

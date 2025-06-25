@@ -57,6 +57,7 @@ GUI_SRC = 												\
 				Gui/src/Client/Client.cpp 				\
 				Gui/src/Button/Button.cpp 				\
 				Gui/src/Player/Player.cpp				\
+				Gui/src/Display/Display.cpp				\
 				Gui/src/AEntity/AEntity.cpp				\
 				Gui/src/Settings/Settings.cpp			\
 				Gui/src/Inventory/Inventory.cpp
@@ -74,6 +75,7 @@ SERVER_FLAGS = -I Server/include -I Debug
 GUI_FLAGS = -lraylib -lpthread -lGL -I Debug 		\
         											\
 			-I Gui/src/Egg 							\
+			-I Gui/include 							\
 			-I Gui/src/Tile			 				\
 			-I Gui/src/Menu 						\
 			-I Gui/src/Items 						\
@@ -82,6 +84,7 @@ GUI_FLAGS = -lraylib -lpthread -lGL -I Debug 		\
 			-I Gui/src/Player 						\
 			-I Gui/src/Button 						\
 			-I Gui/src/Client 						\
+			-I Gui/src/Display 						\
 			-I Gui/src/AEntity 						\
 			-I Gui/src/Settings						\
 			-I Gui/src/Inventory 					\

@@ -8,12 +8,12 @@
 #include "Menu.hpp"
 #include "Logger.hpp"
 
-gui::ui::Menu::Menu(SceneState &SceneState, int screenWidth, int screenHeight)
+gui::ui::Menu::Menu(std::shared_ptr<SceneState> SceneState)
     :   _sceneState(SceneState),
-        _playButton([this]() { playClicked(); }, Rectangle{static_cast<float>(screenWidth) / 2 - 100, static_cast<float>(screenHeight) / 2.6f - 200, 200.0f, 100.0f}, "Play"),
-        _exitButton([this]() { closeWindow(); }, Rectangle{static_cast<float>(screenWidth) / 2 - 100, static_cast<float>(screenHeight) / 1.5f - 200, 200.0f, 100.0f}, "Exit"),
-        _settingButton([this]() { settingClicked(); }, Rectangle{static_cast<float>(screenWidth) / 2 - 100, static_cast<float>(screenHeight) / 1.9f - 200, 200.0f, 100.0f}, "Settings"),
-        _screenWidth(screenWidth), _screenHeight(screenHeight)
+        _playButton([this]() { playClicked(); }, Rectangle{static_cast<float>(SCREEN_WIDTH) / 2 - 100, static_cast<float>(SCREEN_HEIGHT) / 2.6f - 200, 200.0f, 100.0f}, "Play"),
+        _exitButton([this]() { closeWindow(); }, Rectangle{static_cast<float>(SCREEN_WIDTH) / 2 - 100, static_cast<float>(SCREEN_HEIGHT) / 1.5f - 200, 200.0f, 100.0f}, "Exit"),
+        _settingButton([this]() { settingClicked(); }, Rectangle{static_cast<float>(SCREEN_WIDTH) / 2 - 100, static_cast<float>(SCREEN_HEIGHT) / 1.9f - 200, 200.0f, 100.0f}, "Settings"),
+        _screenWidth(SCREEN_WIDTH), _screenHeight(SCREEN_HEIGHT)
 {
     Debug::InfoLog("[GUI] Menu initialized");
 }
@@ -47,7 +47,7 @@ void gui::ui::Menu::playClicked()
     if (_serverId.length() > 0) {
         // call func for try connecting to server 
         // if (connection good)
-        _sceneState = SceneState::GAME;
+        *_sceneState = SceneState::GAME;
         _serverIdActive = false;
         Debug::InfoLog("[GUI] Play button clicked, connecting to server with ID: " + _serverId);
     } else {
@@ -57,13 +57,13 @@ void gui::ui::Menu::playClicked()
 
 void gui::ui::Menu::closeWindow()
 {
-    _sceneState = SceneState::EXIT;
+    *_sceneState = SceneState::EXIT;
     Debug::InfoLog("[GUI] Exit button clicked, closing window");
 }
 
 void gui::ui::Menu::settingClicked()
 {
-    _sceneState = SceneState::SETTINGS;
+    *_sceneState = SceneState::SETTINGS;
     Debug::InfoLog("[GUI] Settings button clicked");
 }
 

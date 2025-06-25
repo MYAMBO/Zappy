@@ -13,7 +13,7 @@
 namespace gui {
     class Egg : public AEntity {
         public:
-            Egg(int id, std::pair<int, int> position);
+            Egg(int id, std::pair<int, int> position, std::shared_ptr<Model> model);
             ~Egg();
 
             /**

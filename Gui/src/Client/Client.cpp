@@ -25,9 +25,11 @@
 ************************************************************/
 
 gui::Client::Client(std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players, std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> map,
-        std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs, std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState, std::shared_ptr<std::vector<std::shared_ptr<Model>>> models)
+        std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs, std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState,
+        std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, std::shared_ptr<Display> display)
     : _socket(), _isActive(true), _teams(),  _models(models), _eggs(eggs), _map(map), _players(players)
 {
+    _display = display;
     _camera = camera;
     _camState = camState;
 
@@ -238,15 +240,15 @@ void gui::Client::tna(std::vector<std::string> stringArray)
 // New Player
 void gui::Client::pnw(std::vector<std::string> stringArray)
 {
+    std::lock_guard<std::mutex> lock(_mutex);
+
     if (stringArray.size() != 7)
         throw Error("Wrong Number of parameter");
 
     int id = std::stoi(stringArray[1].substr(1));
     int x = std::stoi(stringArray[2]);
     int y = std::stoi(stringArray[3]);
-    std::pair<int, int> position;
-    position.first = x;
-    position.second = y;
+    std::pair<int, int> position(x, y);
     int orientation = std::stoi(stringArray[4]);
     int level = std::stoi(stringArray[5]);
     std::string team_name = stringArray[6];
@@ -254,13 +256,13 @@ void gui::Client::pnw(std::vector<std::string> stringArray)
     if (findPlayer(id) != -1)
         throw Error("This Id is already used by an other player.");
 
-    if ( id >= 0 && x >= 0 && x < _size.first && y >= 0 && y < _size.second &&
+    if (id >= 0 && x >= 0 && x < _size.first && y >= 0 && y < _size.second &&
         orientation > 0 && orientation < 5 && level > 0 && level < 9) {
-        _players->push_back(std::make_shared<gui::Player>(id, position, static_cast<Orientation>(orientation),
-        level, team_name, 1, SCREEN_WIDTH, SCREEN_HEIGHT, *_camera, *_camState, TIME_UNIT));
+        _display->addPlayer(id, position, static_cast<Orientation>(orientation), level, team_name);
     } else
         throw Error("Player's value are wrong.");
 }
+
 
 // Player's position
 void gui::Client::ppo(std::vector<std::string> stringArray)
@@ -515,7 +517,7 @@ void gui::Client::enw(std::vector<std::string> stringArray)
     if (eggId && findPlayer(eggId) == -1)
         return;
     (void)playerId;
-    _eggs->emplace_back(std::make_shared<gui::Egg>(eggId, std::make_pair(posX, posY)));
+    _eggs->emplace_back(std::make_shared<gui::Egg>(eggId, std::make_pair(posX, posY), _display->_eggModel));
 }
 
 // Player connection for an egg
@@ -599,6 +601,13 @@ void gui::Client::sbp(const std::vector<std::string>& stringArray)
 {
     if (stringArray.size() != 1)
         throw Error("Wrong number of parameter.");
+}
+
+void gui::Client::drawPlayers()
+{
+    for (const auto& player : *_players) {
+        player->draw();
+    }
 }
 
 /************************************************************
