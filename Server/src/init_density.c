@@ -44,5 +44,7 @@ void init_density(server_t *server)
     server->mendiane_value = x * y * server->mendiane_density;
     server->phiras_value = x * y * server->phiras_density;
     server->thystame_value = x * y * server->thystame_density;
+    for (int i = 0; i < 7; i++)
+        server->current_res[i] = 0;
     around_up_value(server);
 }

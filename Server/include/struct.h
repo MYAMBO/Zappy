@@ -64,6 +64,7 @@ typedef struct server_s {
     int mendiane_value;
     int phiras_value;
     int thystame_value;
+    int current_res[7];
 } server_t;
 
 typedef struct entry_s {

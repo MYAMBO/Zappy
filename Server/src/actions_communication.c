@@ -28,11 +28,13 @@ char *death_of_player(ai_stats_t *ai)
     return "dead\n";
 }
 
-static bool increment_ai_inventory(ai_stats_t *ai, map_t *map, int i)
+static bool increment_ai_inventory(ai_stats_t *ai, map_t *map,
+    int i, server_t *server)
 {
     if (map->tiles[ai->y][ai->x].resources[i] <= 0)
         return false;
     map->tiles[ai->y][ai->x].resources[i]--;
+    server->current_res[i]--;
     if (i == 0)
         ai->nb_food++;
     if (i == 1)
@@ -50,7 +52,8 @@ static bool increment_ai_inventory(ai_stats_t *ai, map_t *map, int i)
     return true;
 }
 
-static bool increment_map_tile(ai_stats_t *ai, map_t *map, int i)
+static bool increment_map_tile(ai_stats_t *ai, map_t *map,
+    int i, server_t *server)
 {
     int *inventory[7] = {
             &ai->nb_food,
@@ -66,6 +69,7 @@ static bool increment_map_tile(ai_stats_t *ai, map_t *map, int i)
         return false;
     (*inventory[i])--;
     map->tiles[ai->y][ai->x].resources[i]++;
+    server->current_res[i]++;
     return true;
 }
 
@@ -90,26 +94,28 @@ static int get_ressources_index(char *item)
     return i;
 }
 
-char *can_player_takes_items(ai_stats_t *ai, map_t *map, char *item)
+char *can_player_takes_items(ai_stats_t *ai, map_t *map,
+    char *item, server_t *server)
 {
     int i = 0;
 
     i = get_ressources_index(item);
     if (i == -1)
         return "ko\n";
-    if (!increment_ai_inventory(ai, map, i))
+    if (!increment_ai_inventory(ai, map, i, server))
         return "ko\n";
     return "ok\n";
 }
 
-char *can_player_drops_items(ai_stats_t *ai, map_t *map, char *item)
+char *can_player_drops_items(ai_stats_t *ai, map_t *map,
+    char *item, server_t *server)
 {
     int i = 0;
 
     i = get_ressources_index(item);
     if (i == -1)
         return "ko\n";
-    if (!increment_map_tile(ai, map, i))
+    if (!increment_map_tile(ai, map, i, server))
         return "ko\n";
     return "ok\n";
 }

@@ -104,7 +104,6 @@ int parse_arguments(int ac, char **av, server_t *server)
         return FAILURE;
     init_density(server);
     generate_all_ressources(server);
-
     return SUCCESS;
 }
 
