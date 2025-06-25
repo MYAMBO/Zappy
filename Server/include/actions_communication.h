@@ -18,6 +18,7 @@
 
 char *death_of_player(ai_stats_t *ai);
 char *player_plays_broadcast(ai_stats_t *ai, char *text);
+char *get_slot_remaining(ai_stats_t *ai, server_t *server);
 char *can_player_takes_items(ai_stats_t *ai, map_t *map, char *item);
 char *can_player_drops_items(ai_stats_t *ai, map_t *map, char *item);
 

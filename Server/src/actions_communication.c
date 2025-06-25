@@ -113,3 +113,25 @@ char *can_player_drops_items(ai_stats_t *ai, map_t *map, char *item)
         return "ko\n";
     return "ok\n";
 }
+
+char *get_slot_remaining(ai_stats_t *ai, server_t *server)
+{
+    int found = -1;
+    int alloc = 0;
+    char *result = NULL;
+
+    for (int i = 0; server->team_names[i] != NULL; i++){
+        if (strcmp(server->team_names[i]->name, ai->team_name) == 0) {
+            found = i;
+            break;
+        }
+    }
+    alloc = snprintf(NULL, 0,
+        "%d\n", server->team_names[found]->slots_remaining);
+    result = my_malloc(alloc + 1);
+    if (!result)
+        return NULL;
+    snprintf(result, alloc + 1,
+        "%d\n", server->team_names[found]->slots_remaining);
+    return result;
+}
