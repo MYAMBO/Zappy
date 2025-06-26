@@ -14,7 +14,7 @@ int take_command(server_t *server, poll_handling_t *node, char **args)
 {
     char *str = NULL;
 
-    if (array_len(args) != 3) {
+    if (array_len(args) != 2) {
         write(node->poll_fd.fd, "ko\n", 3);
         return SUCCESS;
     }
