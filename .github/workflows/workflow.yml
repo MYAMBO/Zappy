@@ -47,18 +47,27 @@ jobs:
           make
           make install
           ldconfig
-      - name: checkout
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: make
-        timeout-minutes: 2
-        run: make
-      - name: clean
-        run: make clean
-      - name: checking
+      - name: Build, Check and Test with Python venv
         shell: bash
         run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -U pip
+          apt-get install -y patchelf
+          pip install pytest nuitka pytest-cov
+
+          echo "Running make..."
+          make
+
           echo "Checking executables: $EXECUTABLES"
           IFS=',' read -ra filenames <<< "$EXECUTABLES"
           for filename in "${filenames[@]}"; do
@@ -68,33 +77,7 @@ jobs:
             fi
           done
           echo "All executables are present."
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Set up venv and install pytest
-        shell: bash
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install -U pip
-          pip install pytest
-          pip install nuitka
-
-      - name: Run pytest
-        shell: bash
-        run: |
-          source venv/bin/activate
-          pytest
-
-      - name: tests
-        run: make tests_run
+          make tests_run
 
   push_to_mirror:
     needs:
