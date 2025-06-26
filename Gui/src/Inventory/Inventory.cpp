@@ -46,7 +46,6 @@ void gui::ui::Inventory::draw()
     float itemWidth = _bounds.width / static_cast<float>(_items.size());
     int index = 0;
     for (const auto& item : _items) {
-        Debug::InfoLog("[GUI] Drawing inventory item: " + item.first + " with quantity: " + std::to_string(item.second.first));
         std::string text = item.first + ": " + std::to_string(item.second.first);
         Vector2 textSize = MeasureTextEx(GetFontDefault(), text.c_str(), _fontSize, 1);
         float textX = _bounds.x + index * itemWidth + (itemWidth - textSize.x) / 2;

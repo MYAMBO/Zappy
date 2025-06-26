@@ -349,13 +349,13 @@ void gui::Client::pin(std::vector<std::string> stringArray)
     int id = std::stoi(stringArray[1].substr(1));
     int posX = std::stoi(stringArray[2]);
     int posY = std::stoi(stringArray[3]);
-    inventory.emplace("food", std::stoi(stringArray[4]));
-    inventory.emplace("linemate", std::stoi(stringArray[5]));
-    inventory.emplace("deraumere", std::stoi(stringArray[6]));
-    inventory.emplace("sibur", std::stoi(stringArray[7]));
-    inventory.emplace("mendiane", std::stoi(stringArray[8]));
-    inventory.emplace("phiras", std::stoi(stringArray[9]));
-    inventory.emplace("thystame", std::stoi(stringArray[10]));
+    inventory.emplace("Food", std::stoi(stringArray[4]));
+    inventory.emplace("Linemate", std::stoi(stringArray[5]));
+    inventory.emplace("Deraumere", std::stoi(stringArray[6]));
+    inventory.emplace("Sibur", std::stoi(stringArray[7]));
+    inventory.emplace("Mendiane", std::stoi(stringArray[8]));
+    inventory.emplace("Phiras", std::stoi(stringArray[9]));
+    inventory.emplace("Thystame", std::stoi(stringArray[10]));
 
     if (posX < 0 || posX >= _size.first || posY < 0 || posY >= _size.second)
         throw Error("Player's position out of map");
@@ -368,7 +368,8 @@ void gui::Client::pin(std::vector<std::string> stringArray)
             throw Error("Player's inventory can't have negative value");
 
     for (auto & item : inventory) {
-        _players->at(findPlayer(id))->getInventory()->setInventoryItem(item.first, item.second);
+        Debug::InfoLog("Setting inventory item: " + item.first + " with quantity: " + std::to_string(item.second));
+        _players->at(findPlayer(id))->setInventory(item.first, item.second);
     }
 }
 

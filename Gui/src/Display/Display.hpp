@@ -20,7 +20,6 @@
     #include "Linemate.hpp"
     #include "Mendiane.hpp"
     #include "Thystame.hpp"
-    #include "Inventory.hpp"
     #include "Deraumere.hpp"
 
     #include <vector>

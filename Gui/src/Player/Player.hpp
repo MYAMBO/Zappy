@@ -163,6 +163,8 @@ namespace gui {
              * @param isDead true if the Player is dead, false otherwise.
              */
             void setisDead(bool isDead);
+
+            void setInventory(const std::string item, int quantity);
         private:
             /**
              * @brief Animation of the broadcast.
@@ -176,7 +178,6 @@ namespace gui {
                 PICKING = 2,
                 BROADCASTING = 3,
                 DYING = 4
-                
             };
 
             /**
@@ -188,6 +189,7 @@ namespace gui {
 
             std::shared_ptr<Model> _model;
             std::shared_ptr<int> _timeUnit;
+
 
             int _id;
             int _level;
@@ -217,6 +219,11 @@ namespace gui {
             Orientation _direction;
             AnimState _currentAnimState;
             ModelAnimation *_animations;
+
+            int _fontSize;
+            std::map<std::string, std::pair<int, Color>> _items;
+
+            Rectangle _bounds;
     };
 }
 

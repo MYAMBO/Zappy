@@ -54,6 +54,7 @@ namespace gui {
                  * @return The quantity of the item, or 0 if the item does not exist.
                  */
                 int getInventoryItem(const std::string& item) const;
+
             private:
                 int _fontSize;
                 std::map<std::string, std::pair<int, Color>> _items;
