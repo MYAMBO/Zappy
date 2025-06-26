@@ -8,6 +8,7 @@
 
 SERVER_SRC = 												\
 				Server/src/main.c 							\
+				Server/src/utils.c							\
 				Server/src/garbage.c 						\
 				Server/src/look_utils.c                     \
 				Server/src/init_server.c 					\
@@ -35,22 +36,24 @@ SERVER_SRC = 												\
 				Server/src/incantation_communication.c      \
                 Server/src/unique_connection_id_getter.c 	\
 				Server/src/player_informations_protocol.c 	\
-				Server/src/graphic_connect.c \
-				Server/src/commands/command_pin.c	\
-				Server/src/commands/command_plv.c	\
-				Server/src/commands/command_ppo.c	\
-				Server/src/commands/command_msz.c	\
-				Server/src/commands/command_mct.c	\
-				Server/src/commands/command_bct.c	\
-				Server/src/utils.c	\
-				Server/src/commands/command_forward.c	\
-				Server/src/commands/command_right.c	\
-				Server/src/commands/command_left.c	\
-				Server/src/commands/command_look.c	\
-				Server/src/commands/command_inventory.c	\
-				Server/src/commands/command_broadcast.c	\
-				Server/src/commands/command_eject.c	\
-				Server/src/get_signal_direction.c	\
+				Server/src/graphic_connect.c 				\
+				Server/src/commands/command_pin.c			\
+				Server/src/commands/command_plv.c			\
+				Server/src/commands/command_ppo.c			\
+				Server/src/commands/command_msz.c			\
+				Server/src/commands/command_mct.c			\
+				Server/src/commands/command_bct.c			\
+				Server/src/commands/command_forward.c		\
+				Server/src/commands/command_right.c			\
+				Server/src/commands/command_left.c			\
+				Server/src/commands/command_look.c			\
+				Server/src/commands/command_inventory.c		\
+				Server/src/commands/command_broadcast.c		\
+				Server/src/commands/command_eject.c			\
+				Server/src/get_signal_direction.c			\
+				Server/src/player_connection_protocol.c 	\
+				Server/src/command/command_take.c       	\
+				Server/src/command/command_drop.c       	\
 
 GUI_SRC = 												\
 				Gui/src/main.cpp 						\

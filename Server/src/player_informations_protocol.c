@@ -7,14 +7,32 @@
 
 #include "player_informations_protocol.h"
 
+static int choose_direction(ai_stats_t *ai)
+{
+    if (ai->direction == NORTH)
+        return 1;
+    if (ai->direction == EAST)
+        return 2;
+    if (ai->direction == SOUTH)
+        return 3;
+    if (ai->direction == WEST)
+        return 4;
+    return 0;
+}
+
 char *get_player_position(ai_stats_t *ai)
 {
-    int alloc = snprintf(NULL, 0, "ppo #%d %d %d\n", ai->id, ai->x, ai->y);
-    char *result = my_malloc(alloc + 1);
+    int direction = choose_direction(ai);
+    int alloc = 0;
+    char *result = NULL;
 
+    alloc = snprintf(NULL, 0, "ppo #%d %d %d %d\n",
+        ai->id, ai->x, ai->y, direction);
+    result = my_malloc(alloc + 1);
     if (!result)
         return NULL;
-    snprintf(result, alloc + 1, "ppo #%d %d %d\n", ai->id, ai->x, ai->y);
+    snprintf(result, alloc + 1, "ppo #%d %d %d %d\n",
+        ai->id, ai->x, ai->y, direction);
     return result;
 }
 

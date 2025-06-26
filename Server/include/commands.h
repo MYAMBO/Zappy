@@ -29,6 +29,7 @@ int ppo_command(server_t *server, poll_handling_t *node, char **args);
 int msz_command(server_t *server, poll_handling_t *node, char **args);
 int mct_command(server_t *server, poll_handling_t *node, char **args);
 int bct_command(server_t *server, poll_handling_t *node, char **args);
+int take_command(server_t *server, poll_handling_t *node, char **args);
 
 static entry_t const commands_ai_list[] = {
     {"quit", quit_command},
