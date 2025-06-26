@@ -52,8 +52,8 @@ SERVER_SRC = 												\
 				Server/src/commands/command_eject.c			\
 				Server/src/get_signal_direction.c			\
 				Server/src/player_connection_protocol.c 	\
-				Server/src/command/command_take.c       	\
-				Server/src/command/command_drop.c       	\
+				Server/src/commands/command_take.c       	\
+				Server/src/commands/command_drop.c       	\
 
 GUI_SRC = 												\
 				Gui/src/main.cpp 						\
