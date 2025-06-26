@@ -302,7 +302,6 @@ void gui::Player::setisDead(bool isDead)
 
 void gui::Player::setInventory(const std::string item, int quantity)
 {
-    Debug::InfoLog("[GUI] Setting inventory item: " + item + " with quantity: " + std::to_string(quantity));
     _inventory->setInventoryItem(item, quantity);
 }
 

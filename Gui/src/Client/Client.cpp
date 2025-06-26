@@ -367,8 +367,8 @@ void gui::Client::pin(std::vector<std::string> stringArray)
         if (elt.second < 0)
             throw Error("Player's inventory can't have negative value");
 
+    Debug::InfoLog("[GUI] Set inventory for player ID: " + std::to_string(id) + "\n");
     for (auto & item : inventory) {
-        Debug::InfoLog("Setting inventory item: " + item.first + " with quantity: " + std::to_string(item.second));
         _players->at(findPlayer(id))->setInventory(item.first, item.second);
     }
 }
