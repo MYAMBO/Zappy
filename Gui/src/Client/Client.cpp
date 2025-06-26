@@ -491,14 +491,22 @@ void gui::Client::pdr(std::vector<std::string> stringArray)
     int id = std::stoi(stringArray[1].substr(1));
     int nbResources = std::stoi(stringArray[2]);
 
+    Debug::InfoLog("Player ID: " + std::to_string(id) + ", Resource ID: " + std::to_string(nbResources));
     if (id && findPlayer(id) == -1)
         return;
 
     if (nbResources < 0)
         throw Error("Resources can't have negative value");
 
-    // get Player and remove item
-    // addItem on Tile
+    auto &player = _players->at(findPlayer(id));
+    auto position = player->getPosition();
+    size_t index = position.x * _size.first + position.y;
+    auto &tile = _map->at(index);
+
+    if (tile->getItem(nbResources) > 0) {
+        tile->addItem(1, nbResources);
+        sendCommand("pin #" + std::to_string(id) +"\n");
+    }
 }
 
 
