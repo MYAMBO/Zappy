@@ -57,19 +57,19 @@ typedef struct server_s {
     double mendiane_density;
     double phiras_density;
     double thystame_density;
-
+    int food_value;
+    int linemate_value;
+    int deraumere_value;
+    int sibur_value;
+    int mendiane_value;
+    int phiras_value;
+    int thystame_value;
+    int current_res[7];
 } server_t;
 
 typedef struct entry_s {
     char *command;
     int (*function)(server_t *server, poll_handling_t *node, char **args);
 } entry_t;
-
-/*
- *
- *  include the following map_t in the server struct after some
- *  amelioration
- *
-*/
 
 #endif //STRUCT_H
