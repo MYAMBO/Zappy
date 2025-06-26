@@ -94,6 +94,7 @@ void gui::Player::draw()
     if (_isSelected)
         DrawCubeWires(_position, 1, 1, 1, {255, 0, 0, 255});
     broadcastAnimation();
+    IncantationAnimation();
 }
 
 void gui::Player::drawUI()
@@ -190,6 +191,37 @@ void gui::Player::broadcastAnimation()
     DrawSphere(pos, scale, color);
 }
 
+void gui::Player::IncantationAnimation()
+{
+    if (!_isIncantation && !_isIncantationEnded)
+        return;
+    if (_isIncantationEnded) {
+        _IncantationTimer += GetFrameTime();
+        float t = _IncantationTimer / _IncantationDuration;
+        if (t > 1.0f) {
+            _isIncantationEnded = false;
+            return;
+        }
+        float scale = Lerp(0.5f, 9.0f, t);
+        float alpha = Lerp(0.8f, 0.0f, t);
+        Color color = { 255, 255, 0, static_cast<unsigned char>(alpha * 255) };
+        Vector3 pos = getPosition();
+        DrawCube(pos, scale, scale, scale, color);
+        return;
+    }
+    _IncantationTimer += GetFrameTime();
+    float t = _IncantationTimer / _IncantationDuration;
+    if (t > 1.0f) {
+        _isIncantation = false;
+        return;
+    }
+    float scale = Lerp(0.5f, 9.0f, t);
+    float alpha = Lerp(0.8f, 0.0f, t);
+    Color color = { 75, 0, 130, static_cast<unsigned char>(alpha * 255) };
+    Vector3 pos = getPosition();
+    DrawCube(pos, scale, scale, scale, color);
+}
+
 
 /************************************************************
 **              >>>>   GETTERS FUNCTIONS   <<<<            **
@@ -209,11 +241,6 @@ int gui::Player::getId() const
 int gui::Player::getLevel() const
 {
     return _level;
-}
-
-std::shared_ptr<gui::ui::Inventory> gui::Player::getInventory()
-{
-    return _inventory;
 }
 
 gui::Orientation gui::Player::getOrientation() const
@@ -264,9 +291,8 @@ void gui::Player::setAnimationState(AnimState newState)
 void gui::Player::setBroadcasting(bool broadcasting)
 {
     _isBroadcasting = broadcasting;
-    if (broadcasting) {
+    if (broadcasting)
         _broadcastTimer = 0.0f;
-    }
 }
 
 void gui::Player::setisDead(bool isDead)
@@ -276,6 +302,19 @@ void gui::Player::setisDead(bool isDead)
 
 void gui::Player::setInventory(const std::string item, int quantity)
 {
-    Debug::InfoLog("[GUI] Setting inventory item: " + item + " with quantity: " + std::to_string(quantity));
     _inventory->setInventoryItem(item, quantity);
+}
+
+void gui::Player::setIncantation(bool isIncantation)
+{
+    _isIncantation = isIncantation;
+    if (_isIncantation)
+        _IncantationTimer = 0.0f;
+}
+
+void gui::Player::setIncantationEnded(bool isIncantationEnded)
+{
+    _isIncantationEnded = isIncantationEnded;
+    if (_isIncantationEnded)
+        _IncantationTimer = 0.0f;
 }

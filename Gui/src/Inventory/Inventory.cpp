@@ -43,8 +43,10 @@ void gui::ui::Inventory::draw()
     DrawRectangleRec(_bounds, {255, 255, 255, 50});
     DrawRectangleLinesEx(_bounds, 2, BLACK);
     DrawText("Inventory", _bounds.x + 10, _bounds.y + 10, _fontSize, BLACK);
+
     float itemWidth = _bounds.width / static_cast<float>(_items.size());
     int index = 0;
+    
     for (const auto& item : _items) {
         std::string text = item.first + ": " + std::to_string(item.second.first);
         Vector2 textSize = MeasureTextEx(GetFontDefault(), text.c_str(), _fontSize, 1);
@@ -68,7 +70,6 @@ void gui::ui::Inventory::setBounds(Rectangle bounds)
 void gui::ui::Inventory::setInventoryItem(const std::string& item, int quantity)
 {
     if (_items.find(item) != _items.end()) {
-        Debug::InfoLog("[GUI] Setting inventory item: " + item + " to quantity: " + std::to_string(quantity));
         _items[item].first = quantity;
     }
 }
