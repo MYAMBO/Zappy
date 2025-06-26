@@ -1,19 +1,22 @@
 /*
 ** EPITECH PROJECT, 2025
-** command_pin.c
+** command_ppo.c
 ** File description:
-** command_pin.c
+** command_ppo.c
 ** created and edited by antoiix.
 ** All rights reserved
 */
 
+#include <string.h>
 #include <unistd.h>
 #include "commands.h"
+#include "garbage.h"
 #include "player_informations_protocol.h"
+#include "server.h"
 #include "utils.h"
 
-static int send_pin_command(server_t *server,
-    poll_handling_t *node, char **args)
+static int send_ppo_command(server_t *server,
+                            poll_handling_t *node, char **args)
 {
     poll_handling_t *tmp;
     long int id = 0;
@@ -26,7 +29,7 @@ static int send_pin_command(server_t *server,
         write(node->poll_fd.fd, "sbp\n", 4);
         return SUCCESS;
     }
-    str = get_player_inventory(tmp->player, tmp->player->x, tmp->player->y);
+    str = get_player_position(tmp->player);
     if (str == NULL)
         return FAILURE;
     write(node->poll_fd.fd, str, strlen(str));
@@ -34,7 +37,7 @@ static int send_pin_command(server_t *server,
     return SUCCESS;
 }
 
-int pin_command(server_t *server, poll_handling_t *node, char **args)
+int ppo_command(server_t *server, poll_handling_t *node, char **args)
 {
     if (args == NULL)
         return FAILURE;
@@ -42,6 +45,6 @@ int pin_command(server_t *server, poll_handling_t *node, char **args)
         args[1][0] != '#') {
         write(node->poll_fd.fd, "sbp\n", 4);
         return SUCCESS;
-    }
-    return send_pin_command(server, node, args);
+        }
+    return send_ppo_command(server, node, args);
 }
