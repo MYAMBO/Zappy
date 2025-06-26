@@ -59,4 +59,4 @@ def get_better_way_to_resources(tiles, resourcesList, needed):
 
     if keep['tile'] != -1:
         return get_better_way(1, keep['tile'], keep['resources'], 0, [], "nord", needed)
-    return ['Right']
+    return ['Right', "Forward"]
