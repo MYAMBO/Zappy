@@ -18,6 +18,7 @@ class Client:
         self.__host = host
         self.__port = port
         self.__sock = None
+        self.__reply_buffer = []
 
     def connect(self):
         self.__sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -42,10 +43,18 @@ class Client:
             raise ConnectionError("Not connected to server")
 
     def wait_for_reply(self):
+        if len(self.__reply_buffer) > 0:
+            return self.__reply_buffer.pop(0)
         try:
-            return self.__sock.recv(4096).decode()
+            reply = self.__sock.recv(4096).decode()
         except socket.error as e:
             raise ClientError("Socket error: " + e.strerror)
+        all_replies = reply.split('\n')
+        for i in range(len(all_replies) - 1):
+            self.__reply_buffer.append(all_replies[i] + "\n")
+        if self.__reply_buffer:
+            return self.__reply_buffer.pop(0)
+        return None
 
     def close(self):
         if self.__sock:

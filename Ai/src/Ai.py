@@ -6,113 +6,126 @@
 ##
 
 import uuid
-from Client import *
+from Client import ClientError
 from Logger import logger, Output
 from Message import follow_message
 from getWay import get_better_way_to_resources
 from SortTiles import get_visible_tiles_sorted_by_distance
-from CommandHandler import handle_inventory_string, try_inventory, try_view, try_connect, handle_eject_command
+from CommandHandler import handle_inventory_string, try_inventory, try_view, try_connect, handle_eject_command, get_droping_items_commands, get_inventory_string
 
 class Ai:
     def __init__(self, team_name, client):
         self.__id = uuid.uuid4()
         self.__view = None
+        self.__map_size = None
         self.__client = client
         self.__unused_slots = 0
         self.__is_ready = False
         self.__mates_to_wait = 0
         self.__ai_to_follow = None
         self.__team_inventory = {}
+        self.__time_for_food = 126
         self.__team_name = team_name
         self.__command_to_reply = None
         self.__commands_queue = [team_name, "Look", "Inventory"]
         self.__needed_list = ["food", "sibur", "phiras", "thystame", "mendiane", "linemate", "deraumere"]
         self.__inventory = {"sibur" : 0, "phiras" : 0, "thystame" : 0, "mendiane" : 0, "linemate" : 0, "deraumere" : 0}
+        self.__time_by_command = {
+            "Forward" : 7,
+            "Right" : 7,
+            "Left" : 7,
+            "Look" : 7,
+            "Inventory" : 1,
+            "Broadcast" : 7,
+            "Connect_nbr" : 0,
+            "Fork" : 42,
+            "Eject" : 7,
+            "Take" : 7,
+            "Set" : 7,
+            "Incantation" : 300,
+            self.__team_name : 0
+        }
 
-    def get_inventory_string(self):
-        to_send = "["
-        for key, value in self.__inventory.items():
-            to_send += key + " " + str(value) + ", "
-        to_send = to_send.removesuffix(", ")
-        to_send += "]"
-        return to_send
+    def __assign_leader(self):
+        self.__mates_to_wait = len(self.__team_inventory)
+        self.__ai_to_follow = self.__id
 
-    def get_droping_items_commands(self):
-        commands = []
-        for name, quantity in self.__inventory.items():
-            if name == "food":
-                continue
-            for i in range(quantity):
-                commands.append("Set " + name)
-        return commands
+    def __handle_ai_follow_logic(self):
+        if self.__ai_to_follow == self.__id and self.__is_ready == False:
+            if self.__mates_to_wait == 0:
+                self.__is_ready = True
+                self.__start_incantation()
+            else:
+                self.__commands_queue = [f"Broadcast \"follow me !;{self.__id}\""]
+
+    def __start_incantation(self):
+        self.__commands_queue = get_droping_items_commands(self.__inventory)
+        self.__commands_queue.insert(0, "Broadcast \"etttt c'est partieee !!!\"")
+        self.__commands_queue.append("Incantation")
+        self.__mates_to_wait = len(self.__team_inventory)
+
+    def __set_commands_queue_to_search_resources(self):
+        if self.__view is None:
+            return
+        tiles = get_visible_tiles_sorted_by_distance(list(range(len(self.__view))))
+        self.__commands_queue = get_better_way_to_resources(tiles, self.__view, self.__needed_list)
+        self.__commands_queue.append("Look")
+        
+        if self.__commands_queue[0] == "Look":
+            self.__commands_queue.insert(0, "Forward")
+        else:
+            self.__commands_queue.insert(0, f"Broadcast \"j'ai ça :{self.__id};{get_inventory_string(self.__inventory)}\"")
 
     def update_commands_queue(self):
-        if self.__is_ready and self.__commands_queue == None:
-            self.__commands_queue = ["Broadcast j'attend"]
+        if self.team_inventory_is_ready() and self.__ai_to_follow is None and len(self.__team_inventory) > 8:
+            self.__assign_leader()
+
+        if self.__ai_to_follow is not None and not self.__commands_queue:
+            self.__handle_ai_follow_logic()
             return
-        if self.team_inventory_is_ready() and self.__ai_to_follow == None:
-            self.__mates_to_wait = len(self.__team_inventory)
-            self.__ai_to_follow = self.__id
-        if self.__ai_to_follow != None and len(self.__commands_queue) == 0:
-            if self.__ai_to_follow == self.__id:
-                if self.__mates_to_wait == 0:
-                    self.__commands_queue = self.get_droping_items_commands()
-                    self.__commands_queue.insert(0, "Broadcast \"etttt c'est partieee !!!\"")
-                    for i in range(8):
-                        self.__commands_queue.append("Incantation")
-                    self.__mates_to_wait = len(self.__team_inventory)
-                    return
-                self.__commands_queue = ["Broadcast \"follow me !;" + str(self.__id) + "\""]
-            return
-        if len(self.__commands_queue) == 0:
-            view = self.__view
-            if view == None:
-                return
-            self.__commands_queue = get_better_way_to_resources(get_visible_tiles_sorted_by_distance(list(range(len(view)))), view, self.__needed_list)
-            self.__commands_queue.append("Look")
-            if self.__commands_queue[0] == "Look":
-                self.__commands_queue.insert(0, "Forward")
-            else:
-                self.__commands_queue.insert(0, "Broadcast \"j'ai ça :" + str(self.__id) + ";" + self.get_inventory_string() + "\"")
+
+        if not self.__commands_queue and self.__is_ready == False:
+            self.__set_commands_queue_to_search_resources()
 
     def send_command(self):
-        if len(self.__commands_queue) == 0:
+        if not self.__commands_queue:
             return True
-        commandToReply = self.__commands_queue.pop(0)
+        command = self.__commands_queue.pop(0)
+        start = command.split(' ', 1)[0]
+        self.__time_for_food -= self.__time_by_command[start]
+        if self.__time_for_food < 0:
+            self.__time_for_food += 126
+            self.__inventory["food"] -= 1
         try:
-            self.__client.send_command(commandToReply)
+            self.__client.send_command(command)
         except ClientError as e:
             logger.warning(e.message, Output.BOTH)
             self.__client.close()
             return False
-        print("I wait for : " + commandToReply)
-        logger.info(str(self.__id) + ": command: \"" + commandToReply + "\" has been send", Output.BOTH)
+        logger.info(str(self.__id) + ": command: \"" + command + "\" has been send", Output.BOTH)
         logger.info(f"other commands to do after: {", ".join(self.__commands_queue)}", Output.BOTH)
-        self.__command_to_reply = commandToReply
+        self.__command_to_reply = command
         return True
 
     def handle_follow(self, reply):
-        print(self.__commands_queue)
-        _, id = reply.strip()[0:-1].rsplit(';')
+        _, id = reply.strip()[:-1].rsplit(';', 1)
         if self.__ai_to_follow == self.__id and str(self.__id) < id:
             self.__ai_to_follow = id
             return
-        elif self.__ai_to_follow == None:
+        elif self.__ai_to_follow is None:
             self.__ai_to_follow = id
-        if self.__ai_to_follow != id:
+        if self.__commands_queue is None or self.__commands_queue:
             return
-        if self.__commands_queue == None or len(self.__commands_queue) > 0:
-            return
-        start, _ = reply.rsplit(',')
+        start, _ = reply.rsplit(',', 1)
         self.__commands_queue = follow_message(int(start.split("message ")[1]))
-        if self.__commands_queue != None:
+        if self.__commands_queue:
             self.__commands_queue.append("Look")
-        elif self.__is_ready == False:
+        else:
             self.__is_ready = True
             self.__commands_queue = ["Broadcast \"" + str(self.__id) + ";en position !\""]
 
     def handle_message(self, reply):
-        if "follow me !;" in reply:
+        if "follow me !;" in reply and self.__is_ready == False:
             self.handle_follow(reply)
         elif ";en position !" in reply and self.__id == self.__ai_to_follow:
             self.__mates_to_wait -= 1
@@ -120,13 +133,33 @@ class Ai:
             _, info = reply.rsplit(":", 1)
             id, inventory = info.rsplit(";", 1)
             try:
-                self.__team_inventory[id] = handle_inventory_string(inventory.strip()[0:-1])
+                self.__team_inventory[id] = handle_inventory_string(inventory.strip()[:-1])
             except:
                 return
         if "\"etttt c'est partieee !!!\"" in reply:
-            self.__commands_queue = self.get_droping_items_commands()
+            self.__commands_queue = get_droping_items_commands(self.__inventory)
+
+    def handle_command(self):
+        try:
+            reply = self.__client.wait_for_reply()
+        except ClientError as e:
+            logger.warning(e.message)
+            return None
+        if not reply:
+            return None
+        if reply == "":
+            return None
+        logger.info("reply is: " + reply[:-1], Output.BOTH, True)
+        if reply == "dead":
+            self.__client.close()
+            return None
+        if self.__command_to_reply == self.__team_name and reply == "ko\n":
+            return None
+        return reply
 
     def handle_reply(self, reply):
+        if reply.startswith("Current level:"):
+            return True
         if reply.startswith("eject: "):
             handle_eject_command(reply, self.__commands_queue)
             return False
@@ -134,23 +167,35 @@ class Ai:
             self.handle_message(reply)
             return False
         command = self.__command_to_reply
-        if command == None:
-            print("handle reply return true")
-            return True
-        self.__command_to_reply = None
         if command == self.__team_name:
+            try:
+                x, y = reply[:-1].split(' ', 1)
+                self.__map_size = [int(x), int(y)]
+                logger.info("map size is : " + str(self.__map_size), Output.BOTH)
+            except:
+                self.__unused_slots = int(reply[:-1])
+                logger.info("unused slots number is : " + str(self.__unused_slots), Output.BOTH)
+                return False
             return True
         if reply == "ok\n":
             if command.startswith("Take "):
-                self.add_object_to_inventory(command.split(' ')[1])
+                self.add_object_to_inventory(command.split(' ', 1)[1])
+                if len(self.__team_inventory) < 9 and self.__unused_slots == 0 and self.__inventory['food'] > 10:
+                    self.__commands_queue.append("Fork")
             elif command.startswith("Set "):
-                self.set_down_object_from_inventory(command.split(' ')[1])
+                self.set_down_object_from_inventory(command.split(' ', 1)[1])
             return True
         if try_inventory(reply, self):
-            #if len(self.__team_inventory) < 10 and self.__inventory['food'] > 6:
-                #self.__commands_queue.insert(0, "Fork")
             return True
-        return reply == "ko\n" or try_view(reply, self) or try_connect(reply, self)
+        if reply == "Elevation underway\n" and self.__id == self.__ai_to_follow:
+            self.__commands_queue = ["Incantation"]
+        if reply == "ko\n":
+            if command == "Incantation":
+                self.__commands_queue = ["Incantation"]
+            else:
+                self.__commands_queue = ["Left", "Forward"]
+            return True
+        return try_view(reply, self) or try_connect(reply, self)
 
     def set_view(self, view):
         self.__view = view
@@ -162,48 +207,34 @@ class Ai:
         self.__unused_slots = unused_slots
 
     def team_inventory_is_ready(self):
-        sibur = 0
-        phiras = 0
-        thystame = 0
-        mendiane = 0
-        linemate = 0
-        deraumere = 0
-        for _, value in self.__team_inventory.items():
-            sibur += value["sibur"]
-            phiras += value["phiras"]
-            thystame += value["thystame"]
-            mendiane += value["mendiane"]
-            linemate += value["linemate"]
-            deraumere += value["deraumere"]
-        sibur += self.__inventory["sibur"]
-        phiras += self.__inventory["phiras"]
-        thystame += self.__inventory["thystame"]
-        mendiane += self.__inventory["mendiane"]
-        linemate += self.__inventory["linemate"]
-        deraumere += self.__inventory["deraumere"]
-        logger.info("global inventory : sibur : " +
-                    str(sibur) + "/10, phiras : " +
-                    str(phiras) + "/6, thystame : " +
-                    str(thystame) + "/1, mendiane : " +
-                    str(mendiane) + "/5, linemate : " +
-                    str(linemate) + "/9, deraumere : " +
-                    str(deraumere) + "/8", Output.BOTH)
-        if "sibur" in self.__needed_list and sibur >= 10:
-            self.__needed_list.remove("sibur")
-        if "phiras" in self.__needed_list and phiras >= 6:
-            self.__needed_list.remove("phiras")
-        if "thystame" in self.__needed_list and thystame >= 1:
-            self.__needed_list.remove("thystame")
-        if "mendiane" in self.__needed_list and mendiane >= 5:
-            self.__needed_list.remove("mendiane")
-        if "linemate" in self.__needed_list and linemate >= 9:
-            self.__needed_list.remove("linemate")
-        if "deraumere" in self.__needed_list and deraumere >= 8:
-            self.__needed_list.remove("deraumere")
-        return len(self.__needed_list) == 1
+        required = {
+            "sibur": 10,
+            "phiras": 6,
+            "thystame": 1,
+            "mendiane": 5,
+            "linemate": 9,
+            "deraumere": 8
+        }
+        total_inventory = {key: 0 for key in required}
+        for value in self.__team_inventory.values():
+            for resource in required:
+                total_inventory[resource] += value.get(resource, 0)
+        for resource in required:
+            total_inventory[resource] += self.__inventory.get(resource, 0)
 
-    def get_id(self):
-        return self.__id
+        inventory_status = ", ".join(
+            f"{res} : {total_inventory[res]}/{required[res]}"
+            for res in required
+        )
+        logger.info(f"global inventory : {inventory_status}", Output.BOTH)
+
+        for res, required in required.items():
+            if res in self.__needed_list and total_inventory[res] >= required:
+                self.__needed_list.remove(res)
+        for value in self.__team_inventory.values():
+            if value["food"] < 25:
+                return False
+        return len(self.__needed_list) == 1
 
     def get_view(self):
         return self.__view

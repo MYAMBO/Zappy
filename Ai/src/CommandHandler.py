@@ -104,3 +104,21 @@ def handle_eject_command(eject_command, command_list):
         elif tile == 7:
             command_list = manage_trantorian_turn("Left", "Right", command_list, i)
     return command_list
+
+
+def get_droping_items_commands(inventory):
+        commands = []
+        for name, quantity in inventory.items():
+            if name == "food":
+                continue
+            commands += ["Set " + name] * quantity
+        return commands
+
+
+def get_inventory_string(inventory):
+        to_send = "["
+        for key, value in inventory.items():
+            to_send += key + " " + str(value) + ", "
+        to_send = to_send.removesuffix(", ")
+        to_send += "]"
+        return to_send
