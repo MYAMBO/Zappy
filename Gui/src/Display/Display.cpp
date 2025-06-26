@@ -40,7 +40,7 @@ gui::Display::Display(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> 
     _players = std::make_shared<std::vector<std::shared_ptr<gui::Player>>>();
     _itemDisplay = {1, 1, 1, 1, 1, 1, 1};
 
-    _menu = std::make_unique<gui::ui::Menu>(_sceneState);
+    _menu = std::make_unique<gui::ui::Menu>(_sceneState, gui::Client::);
     _settings = std::make_unique<gui::ui::Settings>(_sceneState);
     _menu->initMenuUI();
     _settings->initSettingsUI();

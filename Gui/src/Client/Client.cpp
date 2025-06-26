@@ -27,7 +27,7 @@
 gui::Client::Client(std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players, std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> map,
         std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs, std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState,
         std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, std::shared_ptr<Display> display,
-        std::string hostname = "localhost", std::string port = "12345")
+        std::shared_ptr<std::string> hostname = std::make_shared<std::string>("localhost"), std::shared_ptr<std::string> port = std::make_shared<std::string>("12345"))
     : _hostname(std::move(hostname)), _port(std::move(port)), _socket(), _isActive(true), _teams(),  _models(models), _eggs(eggs), _map(map), _players(players)
 {
     _display = display;
@@ -150,7 +150,7 @@ void gui::Client::connectToServer()
     hints.ai_family = AF_INET; // IPV4
     hints.ai_socktype = SOCK_STREAM; // TCP socket
 
-    int status = getaddrinfo(this->_hostname.c_str(), this->_port.c_str(), &hints, &res);
+    int status = getaddrinfo(this->_hostname->c_str(), this->_port->c_str(), &hints, &res);
     if (status != 0)
         throw Error(gai_strerror(status));
 

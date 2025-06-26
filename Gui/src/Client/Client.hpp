@@ -32,7 +32,8 @@ namespace gui {
         public:
             Client(std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players, std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> map,
                 std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs, std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState,
-                std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, std::shared_ptr<Display> display, std::string hostname, std::string port);
+                std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, std::shared_ptr<Display> display,
+                std::shared_ptr<std::string> hostname, std::shared_ptr<std::string> port);
             ~Client();
 
             void sendCommand(const std::string& command) const;
@@ -45,8 +46,8 @@ namespace gui {
             std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> getMap();
 
             void drawPlayers();
-        private:
             void connectToServer();
+    private:
             void receiveLoop();
 
             void msz(std::vector<std::string> stringArray); // map size
@@ -82,8 +83,8 @@ namespace gui {
             std::shared_ptr<Camera> _camera;
             std::shared_ptr<CamState> _camState;
 
-            std::string _hostname;
-            std::string _port;
+            std::shared_ptr<std::string> _hostname;
+            std::shared_ptr<std::string> _port;
             int _socket;
             bool _isActive;
 

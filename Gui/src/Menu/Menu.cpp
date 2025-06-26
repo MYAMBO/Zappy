@@ -6,10 +6,12 @@
 */
 
 #include "Menu.hpp"
+
+#include <utility>
 #include "Logger.hpp"
 
-gui::ui::Menu::Menu(std::shared_ptr<SceneState> SceneState)
-    :   _sceneState(SceneState),
+gui::ui::Menu::Menu(std::shared_ptr<SceneState> SceneState, std::function<void()> function)
+    :   _connectionFunction(std::move(function)), _sceneState(std::move(SceneState)),
         _playButton([this]() { playClicked(); }, Rectangle{static_cast<float>(SCREEN_WIDTH) / 2 - 100, static_cast<float>(SCREEN_HEIGHT) / 2.6f - 200, 200.0f, 100.0f}, "Play"),
         _exitButton([this]() { closeWindow(); }, Rectangle{static_cast<float>(SCREEN_WIDTH) / 2 - 100, static_cast<float>(SCREEN_HEIGHT) / 1.5f - 200, 200.0f, 100.0f}, "Exit"),
         _settingButton([this]() { settingClicked(); }, Rectangle{static_cast<float>(SCREEN_WIDTH) / 2 - 100, static_cast<float>(SCREEN_HEIGHT) / 1.9f - 200, 200.0f, 100.0f}, "Settings"),
@@ -29,8 +31,6 @@ void gui::ui::Menu::initMenuUI()
     _frameCounter = 0;
     _hostnameActive = false;
     _portActive = false;
-    _hostname.clear();
-    _port.clear();
 
     _hostnameBox = Rectangle{static_cast<float>(_screenWidth) / 2 - 330, static_cast<float>(_screenHeight) / 1.2f - 200, 660.0f, 30.0f};
     _portBox = Rectangle{static_cast<float>(_screenWidth) / 2 - 330, static_cast<float>(_screenHeight) / 1.2f - 100, 660.0f, 30.0f};
@@ -48,14 +48,24 @@ void gui::ui::Menu::initMenuUI()
 
 void gui::ui::Menu::playClicked()
 {
-    if (_hostname.length() > 0) {
+    if (!_hostname->empty()) {
         // call func for try connecting to server 
         // if (connection good)
         *_sceneState = SceneState::GAME;
         _hostnameActive = false;
-        Debug::InfoLog("[GUI] Play button clicked, connecting to server with ID: " + _hostname);
+        Debug::InfoLog("[GUI] Play button clicked, connecting to server with Hostname: " + *_hostname);
     } else {
         _hostnameError = 60;
+    }
+
+    if (!_port->empty()) {
+        // call func for try connecting to server
+        // if (connection good)
+        *_sceneState = SceneState::GAME;
+        _portActive = false;
+        Debug::InfoLog("[GUI] Play button clicked, connecting to server with Port: " + *_port);
+    } else {
+        _portError = 60;
     }
 }
 
@@ -90,18 +100,18 @@ void gui::ui::Menu::handleMenuInput()
 void gui::ui::Menu::handleTextInput()
 {
     if (_hostnameActive) {
-        if (IsKeyPressed(KEY_BACKSPACE) && !_hostname.empty()) {
+        if (IsKeyPressed(KEY_BACKSPACE) && !_hostname->empty()) {
             if (IsKeyDown(KEY_LEFT_CONTROL))
-                _hostname.clear();
+                _hostname->clear();
             else
-                _hostname.pop_back();
+                _hostname->pop_back();
         }
 
         int key = GetCharPressed();
         while (key > 0) {
             if (key >= 32 && key <= 126) {
-                if (_hostname.length() < MAX_SERVER_ID_LENGTH) {
-                    _hostname += (char)key;
+                if (_hostname->length() < MAX_SERVER_ID_LENGTH) {
+                    _hostname->push_back((char)key);
                     Debug::InfoLog("[GUI] Char pressed: " + std::string(1, (char)key));
                 }
             }
@@ -110,18 +120,18 @@ void gui::ui::Menu::handleTextInput()
     }
 
     if (_portActive) {
-        if (IsKeyPressed(KEY_BACKSPACE) && !_port.empty()) {
+        if (IsKeyPressed(KEY_BACKSPACE) && !_port->empty()) {
             if (IsKeyDown(KEY_LEFT_CONTROL))
-                _port.clear();
+                _port->clear();
             else
-                _port.pop_back();
+                _port->pop_back();
         }
 
         int key = GetCharPressed();
         while (key > 0) {
             if (key >= 32 && key <= 126) {
-                if (_port.length() < MAX_SERVER_ID_LENGTH) {
-                    _port += (char)key;
+                if (_port->length() < MAX_SERVER_ID_LENGTH) {
+                    _port->push_back((char)key);
                     Debug::InfoLog("[GUI] Char pressed: " + std::string(1, (char)key));
                 }
             }
@@ -161,8 +171,8 @@ void gui::ui::Menu::drawMainMenu()
     drawTextBox(_hostnameError, _hostnameActive, _hostnameBox, 220, "Hostname :", "Hostname is required!");
     drawTextBox(_portError, _portActive, _portBox, 120, "Port :", "Port is required!");
 
-    DrawText(_hostname.c_str(), static_cast<int>(_hostnameBox.x) + 10, static_cast<int>(_hostnameBox.y) + 10, _inputFontSize, BLACK);
-    DrawText(_port.c_str(), static_cast<int>(_portBox.x) + 10, static_cast<int>(_portBox.y) + 10, _inputFontSize, BLACK);
+    DrawText(_hostname->c_str(), static_cast<int>(_hostnameBox.x) + 10, static_cast<int>(_hostnameBox.y) + 10, _inputFontSize, BLACK);
+    DrawText(_port->c_str(), static_cast<int>(_portBox.x) + 10, static_cast<int>(_portBox.y) + 10, _inputFontSize, BLACK);
     EndDrawing();
 }
 
@@ -193,29 +203,29 @@ void gui::ui::Menu::drawConnectingScreen()
 {
     ClearBackground(_backgroundColor);
     DrawText("Connecting to server...", 100, 50, _titleFontSize, WHITE);
-    DrawText(_hostname.c_str(), 100, 150, _inputFontSize, BLACK);
+    DrawText(_hostname->c_str(), 100, 150, _inputFontSize, BLACK);
 }
 
 /************************************************************
 **         >>>>      SETTERS / GETTERS        <<<<         **
 ************************************************************/
 
-void gui::ui::Menu::setHostname(std::string name)
+void gui::ui::Menu::setHostname(std::shared_ptr<std::string> name)
 {
     this->_hostname = std::move(name);
 }
 
-void gui::ui::Menu::setPort(std::string name)
+void gui::ui::Menu::setPort(std::shared_ptr<std::string> name)
 {
     this->_port = std::move(name);
 }
 
-std::string gui::ui::Menu::getHostname()
+std::shared_ptr<std::string> gui::ui::Menu::getHostname()
 {
     return this->_hostname;
 }
 
-std::string gui::ui::Menu::getPort()
+std::shared_ptr<std::string> gui::ui::Menu::getPort()
 {
     return this->_port;
 }

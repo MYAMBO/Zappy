@@ -24,14 +24,16 @@ gui::Scene::Scene(const std::string& hostname, const std::string& port)
     _camera = std::make_shared<Camera>();
     _camState = std::make_shared<CamState>(CamState::WORLD);
     _currentState = std::make_shared<SceneState>(SceneState::MENU);
+    std::shared_ptr<std::string> sharedHostname = std::make_shared<std::string>(hostname);
+    std::shared_ptr<std::string> sharedPort = std::make_shared<std::string>(port);
     initWindow();
 
-    _display = std::make_unique<Display>(_camera, _camState, _currentState);
+    _display = std::make_shared<Display>(_camera, _camState, _currentState);
 
-    _display->_menu->setHostname(hostname);
-    _display->_menu->setPort(port);
+    _display->_menu->setHostname(sharedHostname);
+    _display->_menu->setPort(sharedPort);
 
-    _client = std::make_shared<gui::Client>(_display->getPlayers(), _display->getMap(), _display->getEggs(), _camera, _camState, _display->getModels(), _display, hostname, port);
+    _client = std::make_shared<gui::Client>(_display->getPlayers(), _display->getMap(), _display->getEggs(), _camera, _camState, _display->getModels(), _display, sharedHostname, sharedPort);
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     _client->sendCommand("sgt");
 }

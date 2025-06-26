@@ -19,7 +19,7 @@ namespace gui {
     namespace ui {
         class Menu {
             public:
-                Menu(std::shared_ptr<SceneState> sceneState);
+                Menu(std::shared_ptr<SceneState> sceneState, std::function<void()> function);
                 ~Menu();
 
                 /**
@@ -56,25 +56,25 @@ namespace gui {
                  *
                  * @brief Setter for Hostname
                  */
-                void setHostname(std::string name);
+                void setHostname(std::shared_ptr<std::string> name);
 
                 /**
                  *
                  * @brief Setter for Port
                  */
-                void setPort(std::string name);
+                void setPort(std::shared_ptr<std::string> name);
 
                 /**
                  *
                  * @brief Getter for Hostname
                  */
-                std::string getHostname();
+                std::shared_ptr<std::string> getHostname();
 
                 /**
                  *
                  * @brief Getter for Port
                  */
-                std::string getPort();
+                std::shared_ptr<std::string> getPort();
 
             private:
                 /**
@@ -92,12 +92,13 @@ namespace gui {
                  */
                 void settingClicked();
 
+                std::function<void()> _connectionFunction;
                 std::shared_ptr<SceneState> _sceneState;
                 int _frameCounter;
                 bool _hostnameActive;
                 bool _portActive;
-                std::string _hostname;
-                std::string _port;
+                std::shared_ptr<std::string> _hostname;
+                std::shared_ptr<std::string> _port;
 
                 Button _playButton;
                 Button _exitButton;
