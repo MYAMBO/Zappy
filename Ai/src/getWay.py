@@ -40,8 +40,7 @@ def get_better_way(layer_len, tile, resources, actual_tile, way, direction, need
 def check_number_of_tiles(tiles, resourcesList):
     count = 0
     for tile in tiles:
-        for current in tile:
-            count += 1
+        count += len(tile)
     if count != len(resourcesList):
         return False
     return True
@@ -60,4 +59,4 @@ def get_better_way_to_resources(tiles, resourcesList, needed):
 
     if keep['tile'] != -1:
         return get_better_way(1, keep['tile'], keep['resources'], 0, [], "nord", needed)
-    return ['Right']
+    return ['Right', "Forward"]

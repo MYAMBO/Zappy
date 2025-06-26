@@ -55,13 +55,6 @@ def try_connect(reply, ai):
     return True
 
 
-def handle_follow(ai, reply):
-    _, id = reply.strip()[0:-1].rsplit(';')
-    ai.set_ai_to_follow(id)
-    start, _ = reply.rsplit(',')
-    ai.set_tile_to_follow(int(start.split("message ")[1]))
-
-
 def manage_trantorian_turn(dir1, dir2, command_list, i):
     if dir1 in command_list:
         i -= 1
@@ -113,34 +106,19 @@ def handle_eject_command(eject_command, command_list):
     return command_list
 
 
-def handle_reply(reply, ai, command, name):
-    if "follow me !;" in reply:
-        handle_follow(ai, reply)
-        return False
-    if "hey_je_suis_:" in reply:
-        _, id = reply.rsplit(':', 1)
-        ai.add_in_team_inventory(id, {"sibur" : 0, "phiras" : 0, "thystame" : 0, "mendiane" : 0, "linemate" : 0, "deraumere" : 0})
-    if reply.startswith("message ") and "j'ai ça :" in reply:
-        _, info = reply.rsplit(":")
-        id, inventory = info.rsplit(";")
-        try:
-            ai.add_in_team_inventory(id, handle_inventory_string(inventory.strip()[0:-1]))
-        except:
-            return False
-    if command == name:
-        return True
-    elif reply == "ok\n":
-        if command.startswith("Take "):
-            ai.add_object_to_inventory(command.split(' ')[1])
-        elif command.startswith("Set "):
-            ai.set_down_object_from_inventory(command.split(' ')[1])
-        return True
-    elif reply == "ko\n":
-        return True
-    elif try_inventory(reply, ai) == True:
-        return True
-    if try_view(reply, ai) == True:
-        return True
-    if try_connect(reply, ai) == True:
-        return True
-    return False
+def get_droping_items_commands(inventory):
+        commands = []
+        for name, quantity in inventory.items():
+            if name == "food":
+                continue
+            commands += ["Set " + name] * quantity
+        return commands
+
+
+def get_inventory_string(inventory):
+        to_send = "["
+        for key, value in inventory.items():
+            to_send += key + " " + str(value) + ", "
+        to_send = to_send.removesuffix(", ")
+        to_send += "]"
+        return to_send

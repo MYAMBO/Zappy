@@ -5,7 +5,7 @@
 ## test
 ##
 
-from Ai.src.Message import follow_message
+from Message import follow_message
 
 def test_follow_message():
     assert follow_message(0) == None

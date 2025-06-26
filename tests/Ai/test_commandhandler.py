@@ -5,7 +5,7 @@
 ## test
 ##
 
-from Ai.src.CommandHandler import handle_look_string, handle_inventory_string, handle_eject_command
+from CommandHandler import handle_look_string, handle_inventory_string, handle_eject_command
 
 def test_handle_look_string():
     assert handle_look_string("[tile1, tile2]") == [["tile1"], ["tile2"]]
