@@ -767,17 +767,6 @@ void gui::Client::setMap(std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>
 **               >>>>   GETTERS   <<<<                     **
 ************************************************************/
 
-std::shared_ptr<Model> gui::Client::safeModelLoader(const std::string& string)
-{
-    std::cout << string << std::endl;
-    std::shared_ptr<Model> model = std::make_shared<Model>(LoadModel(string.c_str()));
-
-    if (model->meshCount == 0 || model->meshes == nullptr)
-        throw gui::FailedLoadModel();
-
-    return model;
-}
-
 std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> gui::Client::getEggs()
 {
     return _eggs;

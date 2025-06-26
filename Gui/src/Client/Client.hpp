@@ -75,7 +75,6 @@ namespace gui {
             void sbp(const std::vector<std::string>& stringArray); // command parameter
 
             std::vector<std::string> splitString(const std::string &string, char delimiter);
-            std::shared_ptr<Model> safeModelLoader(const std::string& string);
             int findPlayer(int id);
             int findTile(int x, int y);
 

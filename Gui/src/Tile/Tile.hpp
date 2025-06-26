@@ -13,8 +13,10 @@
     #include <utility>
     #include <raylib.h>
 
+    #include "Egg.hpp"
     #include "Food.hpp"
     #include "Sibur.hpp"
+    #include "Player.hpp"
     #include "Phiras.hpp"
     #include "Linemate.hpp"
     #include "Mendiane.hpp"
@@ -24,7 +26,10 @@
 namespace gui {
     class Tile {
         public:
-            Tile(std::pair<int, int> coord, std::vector<int> qty, std::vector<std::shared_ptr<Model>> model);
+            Tile(std::pair<int, int> coord, std::vector<int> qty, std::vector<std::shared_ptr<Model>> model,
+                 std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players,
+                 std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> _eggs,
+                 std::vector<std::string> _teams);
             ~Tile();
 
             /**
@@ -67,6 +72,11 @@ namespace gui {
             int getItem(int type) const;
 
             /**
+             * @brief Get all the player on a tile.
+             */
+            std::vector<int> getPlayersOnTile();
+
+            /**
              * @brief Get the coordinates of the tile.
              * @return A pair representing the coordinates of the tile.
              */
@@ -74,8 +84,11 @@ namespace gui {
         private:
             std::vector<int> _qty;
             std::pair<int, int> _coord;
+            std::vector<std::string> _teams;
             std::vector<std::shared_ptr<Model>> _models;
             std::vector<std::vector<std::shared_ptr<gui::AItem>>> _items;
+            std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> _eggs;
+            std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> _players;
     };
 };
 

@@ -7,6 +7,7 @@
 
 #include "Tile.hpp"
 #include "Logger.hpp"
+#include "Player.hpp"
 
 #include <functional>
 
@@ -15,8 +16,11 @@
 ************************************************************/
 
 
-gui::Tile::Tile(std::pair<int, int> coord, std::vector<int> qty, std::vector<std::shared_ptr<Model>> model)
-    : _qty(qty), _coord(std::move(coord)), _models(std::move(model)), _items(7)
+gui::Tile::Tile(std::pair<int, int> coord, std::vector<int> qty, std::vector<std::shared_ptr<Model>> model,
+                std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players,
+                std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs,
+                std::vector<std::string> teams)
+    : _qty(qty), _coord(std::move(coord)), _teams(teams), _models(std::move(model)), _items(7), _eggs(eggs), _players(players)
 {
     addItem(qty[FOOD], FOOD);
     addItem(qty[LINEMATE], LINEMATE);
@@ -92,4 +96,20 @@ int gui::Tile::getItem(int type) const
 std::pair<int, int> gui::Tile::getCoord()
 {
     return _coord;
+}
+
+std::vector<int> gui::Tile::getPlayersOnTile()
+{
+    std::vector<int> list;
+
+    for (int i = 0; i < (int) _players->size(); ++i) {
+        std::shared_ptr<gui::Player> entity = (*_players)[i];
+
+        Vector3 vectorThreePosition = entity->getPosition();
+        std::pair<int, int> pairPosition = {vectorThreePosition.x, vectorThreePosition.z};
+
+        if (pairPosition == _coord)
+            list.push_back(i);
+    }
+    return list;
 }
