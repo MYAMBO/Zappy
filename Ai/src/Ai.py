@@ -11,6 +11,7 @@ from Logger import logger, Output
 from Message import follow_message
 from getWay import get_better_way_to_resources
 from SortTiles import get_visible_tiles_sorted_by_distance
+from encrypt_message import encrypt_message, decrypt_message
 from CommandHandler import handle_inventory_string, try_inventory, try_view, try_connect, handle_eject_command, get_droping_items_commands, get_inventory_string
 
 class Ai:
@@ -56,11 +57,11 @@ class Ai:
                 self.__is_ready = True
                 self.__start_incantation()
             else:
-                self.__commands_queue = [f"Broadcast \"follow me !;{self.__id}\""]
+                self.__commands_queue = ["Broadcast " + encrypt_message(self.__team_name, f"\"follow me !;{self.__id}\"")]
 
     def __start_incantation(self):
         self.__commands_queue = get_droping_items_commands(self.__inventory)
-        self.__commands_queue.insert(0, "Broadcast \"etttt c'est partieee !!!\"")
+        self.__commands_queue.insert(0, "Broadcast " + encrypt_message(self.__team_name, "\"etttt c'est partieee !!!\""))
         self.__commands_queue.append("Incantation")
         self.__mates_to_wait = len(self.__team_inventory)
 
@@ -74,7 +75,7 @@ class Ai:
         if self.__commands_queue[0] == "Look":
             self.__commands_queue.insert(0, "Forward")
         else:
-            self.__commands_queue.insert(0, f"Broadcast \"j'ai ça :{self.__id};{get_inventory_string(self.__inventory)}\"")
+            self.__commands_queue.insert(0, "Broadcast " + encrypt_message(self.__team_name, f"\"j'ai ça :{self.__id};{get_inventory_string(self.__inventory)}\""))
 
     def update_commands_queue(self):
         if self.team_inventory_is_ready() and self.__ai_to_follow is None and len(self.__team_inventory) > 8:
@@ -116,13 +117,14 @@ class Ai:
             self.__ai_to_follow = id
         if self.__commands_queue is None or self.__commands_queue:
             return
+        print(reply)
         start, _ = reply.rsplit(',', 1)
         self.__commands_queue = follow_message(int(start.split("message ")[1]))
         if self.__commands_queue:
             self.__commands_queue.append("Look")
         else:
             self.__is_ready = True
-            self.__commands_queue = ["Broadcast \"" + str(self.__id) + ";en position !\""]
+            self.__commands_queue = ["Broadcast " + encrypt_message(self.__team_name, "\"" + str(self.__id) + ";en position !\"")]
 
     def handle_message(self, reply):
         if "follow me !;" in reply and self.__is_ready == False:
@@ -164,7 +166,11 @@ class Ai:
             handle_eject_command(reply, self.__commands_queue)
             return False
         if reply.startswith("message "):
-            self.handle_message(reply)
+            start, message = reply.rsplit(", ", 1)
+            decrypted_message = decrypt_message(self.__team_name, message)
+            if decrypted_message is None:
+                return False
+            self.handle_message(start + ", " + decrypted_message)
             return False
         command = self.__command_to_reply
         if command == self.__team_name:
