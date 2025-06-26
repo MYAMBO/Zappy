@@ -105,8 +105,6 @@ int parse_arguments(int ac, char **av, server_t *server)
         return FAILURE;
     init_density(server);
     generate_all_ressources(server);
-
-    ai_stats_t *ai = create_test_ai(0, "noot", server);
     return SUCCESS;
 }
 
