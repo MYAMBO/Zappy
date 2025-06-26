@@ -47,6 +47,19 @@ jobs:
           make
           make install
           ldconfig
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up venv and install pytest
+        shell: bash
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -U pip
+          pip install pytest
+          pip install nuitka
       - name: checkout
         uses: actions/checkout@v4
         with:
@@ -68,24 +81,6 @@ jobs:
             fi
           done
           echo "All executables are present."
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Set up venv and install pytest
-        shell: bash
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install -U pip
-          pip install pytest
-          pip install nuitka
 
       - name: Run pytest
         shell: bash
