@@ -214,24 +214,19 @@ void gui::Client::bct(std::vector<std::string> stringArray)
 
     if (stringArray.size() != 10)
         throw Error("Command with the wrong number of argument.");
-
     coord.first = std::stoi(stringArray[1]);
     coord.second = std::stoi(stringArray[2]);
 
     for (int i = 3; i <= 9 && i < (int)stringArray.size(); ++i)
         quantity.push_back(std::stoi(stringArray[i]));
-    
+
     if (coord.first >= 0 && coord.first <= _size.first && coord.second >= 0 && coord.first <= _size.second
         && quantity.size() == 7 && findTile(coord.first, coord.second) == -1) {
         _map->emplace_back(std::make_shared<Tile>(coord, quantity, *_models));
         return;
     } else if (findTile(coord.first, coord.second) != -1) {
-        
-        auto &_tile = (*_map)[findTile(coord.first, coord.second)];
-        
+        auto &_tile = _map->at(findTile(coord.first, coord.second));
         for (int i = 0; i < 7; ++i) {
-            Debug::InfoLog("Setting tile item " + std::to_string(i) + " to " + std::to_string(quantity[i]));
-            Debug::InfoLog("Current tile item " + std::to_string(i) + " is " + std::to_string(_tile->getItem(i)));
             while (quantity[i] > (_tile->getItem(i) / 2)) {
                 _tile->addItem(1, i);
             }
@@ -313,8 +308,8 @@ void gui::Client::ppo(std::vector<std::string> stringArray)
     if (orientation <= 0 || orientation >= 5)
         throw Error("Player's value are wrong.");
 
-    (*_players)[findPlayer(id)]->setOrientation(static_cast<Orientation>(orientation));
-    (*_players)[findPlayer(id)]->startMoveTo({(float)posX, 1, (float)posY});
+    _players->at(findPlayer(id))->setOrientation(static_cast<Orientation>(orientation));
+    _players->at(findPlayer(id))->startMoveTo({(float)posX, 1, (float)posY});
 }
 
 
@@ -336,7 +331,7 @@ void gui::Client::plv(std::vector<std::string> stringArray)
     if (level < 0)
         throw Error("Player's level can't have negative value");
 
-    (*_players)[findPlayer(id)]->setLevel(level);
+    _players->at(findPlayer(id))->setLevel(level);
 }
 
 
@@ -408,7 +403,7 @@ void gui::Client::pbc(std::vector<std::string> stringArray)
     if (findPlayer(id) == -1)
         return;
 
-    (*_players)[findPlayer(id)]->setBroadcasting(true);
+    _players->at(findPlayer(id))->setBroadcasting(true);
 }
 
 
@@ -526,21 +521,21 @@ void gui::Client::pgt(std::vector<std::string> stringArray)
 
     if (stringArray.size() != 3)
         throw Error("Command with the wrong number of argument.");
-
-    Debug::InfoLog("Received pgt command with arguments: " + std::to_string(stringArray.size()));
-
     id = std::stoi(stringArray[1].substr(1));
     nbResources = std::stoi(stringArray[2]);
 
     Debug::InfoLog("Player ID: " + std::to_string(id) + ", Resource ID: " + std::to_string(nbResources));
     if (id && findPlayer(id) == -1)
         return;
+
     if (nbResources < 0)
         throw Error("Resources can't have negative value");
-    auto &player = (*_players)[findPlayer(id)];
+
+    auto &player = _players->at(findPlayer(id));
     auto position = player->getPosition();
     size_t index = position.x * _size.first + position.y;
-    auto &tile = (*_map)[index];
+    auto &tile = _map->at(index);
+
     if (tile->getItem(nbResources) > 0) {
         tile->delItem(1, nbResources);
         sendCommand("pin #" + std::to_string(id) +"\n");
