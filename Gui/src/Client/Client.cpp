@@ -438,7 +438,7 @@ void gui::Client::pic(std::vector<std::string> stringArray)
         id = std::stoi(stringArray[i].substr(1));
         if (id && findPlayer(id) == -1)
             return;
-//        playersId.emplace(id);
+        _players->at(findPlayer(id))->setIncantation(true);
     }
 }
 
@@ -460,7 +460,16 @@ void gui::Client::pie(std::vector<std::string> stringArray) const
 
     if (posX < 0 || posX >= _size.first || posY < 0 || posY >= _size.second)
         throw Error("Player's position out of map");
-    std::cout << "in pie " << result << std::endl;
+    if (result < 0 || result > 8)
+        throw Error("Incantation result is invalid");
+
+    for (size_t i = 0; i < _players->size(); ++i) {
+        auto &player = _players->at(i);
+        if (player->getPosition().x == posX && player->getPosition().y == posY) {
+            player->setIncantationEnded(true);
+            sendCommand("plv #" + std::to_string(player->getId()) + "\n");
+        }
+    }
 }
 
 

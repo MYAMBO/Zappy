@@ -120,8 +120,6 @@ namespace gui {
              */
             void startMoveTo(Vector3 newPosition);
 
-            std::shared_ptr<ui::Inventory> getInventory();
-
             /**
              * @brief Check if the Player is selected.
              * This function checks if the Player is currently selected.
@@ -136,6 +134,19 @@ namespace gui {
              */
             bool getIsMoving() const;
 
+            /**
+             * @brief Set the selected state of the Player.
+             * This function sets whether the Player is currently selected.
+             * @param isSelected true if the Player is selected, false otherwise.
+             */
+            void setIncantation(bool incantation);
+
+            /**
+             * @brief Set the incantation ended state of the Player.
+             * This function sets whether the incantation has ended for the Player.
+             * @param incantationEnded true if the incantation has ended, false otherwise.
+             */
+            void setIncantationEnded(bool incantationEnded);
             
             /**
              * @brief Set the broadcasting state of the Player.
@@ -164,13 +175,26 @@ namespace gui {
              */
             void setisDead(bool isDead);
 
+            /**
+             * @brief set the inventory of the Player.
+             * This function sets the quantity of a specific item in the Player's inventory.
+             * @param item The name of the item to set in the inventory.
+             * @param quantity The quantity of the item to set in the inventory.
+             */
             void setInventory(const std::string item, int quantity);
+
         private:
             /**
              * @brief Animation of the broadcast.
              * This function handles the animation broadcast for the Player.
              */
             void broadcastAnimation();
+
+            /**
+             * @brief Animation of the incantation.
+             * This function handles the animation incantation for the Player.
+             */
+            void IncantationAnimation();
 
             enum class AnimState {
                 IDLE = 0,
@@ -202,13 +226,19 @@ namespace gui {
             bool _isMoving;
             bool _isDead = false;
             bool _isSelected = false;
+            bool _isIncantation = false;
             bool _isBroadcasting = false;
+            bool _isIncantationEnded = false;
             
             std::string _team;
 
             float _broadcastTimer;
             float _animationSpeed;
             float _broadcastDuration = 0.5f;
+
+
+            float _IncantationTimer;
+            float _IncantationDuration = 2.0f;
 
             Vector3 _targetPosition;
             
