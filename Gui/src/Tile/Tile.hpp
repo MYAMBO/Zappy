@@ -72,9 +72,16 @@ namespace gui {
             int getItem(int type) const;
 
             /**
-             * @brief Get all the player on a tile.
+             * @brief Get all the players on a Tile.
+             * @return A vector with all position in list of players on this Tile
              */
             std::vector<int> getPlayersOnTile();
+
+            /**
+             * @brief Get all the Eggs on a Tile.
+             * @return A vector with all position in list of Eggs on this Tile
+             */
+            std::vector<int> getEggOnTile();
 
             /**
              * @brief Get the coordinates of the tile.

@@ -10,6 +10,7 @@
 #include "Player.hpp"
 
 #include <functional>
+#include <utility>
 
 /************************************************************
 **         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
@@ -20,7 +21,7 @@ gui::Tile::Tile(std::pair<int, int> coord, std::vector<int> qty, std::vector<std
                 std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players,
                 std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs,
                 std::vector<std::string> teams)
-    : _qty(qty), _coord(std::move(coord)), _teams(teams), _models(std::move(model)), _items(7), _eggs(eggs), _players(players)
+    : _qty(qty), _coord(std::move(coord)), _teams(std::move(teams)), _models(std::move(model)), _items(7), _eggs(std::move(eggs)), _players(std::move(players))
 {
     addItem(qty[FOOD], FOOD);
     addItem(qty[LINEMATE], LINEMATE);
@@ -103,7 +104,23 @@ std::vector<int> gui::Tile::getPlayersOnTile()
     std::vector<int> list;
 
     for (int i = 0; i < (int) _players->size(); ++i) {
-        std::shared_ptr<gui::Player> entity = (*_players)[i];
+        std::shared_ptr<gui::Player> entity = _players->at(i);
+
+        Vector3 vectorThreePosition = entity->getPosition();
+        std::pair<int, int> pairPosition = {vectorThreePosition.x, vectorThreePosition.z};
+
+        if (pairPosition == _coord)
+            list.push_back(i);
+    }
+    return list;
+}
+
+std::vector<int> gui::Tile::getEggOnTile()
+{
+    std::vector<int> list;
+
+    for (int i = 0; i < (int) _eggs->size(); ++i) {
+        std::shared_ptr<gui::Egg> entity = _eggs->at(i);
 
         Vector3 vectorThreePosition = entity->getPosition();
         std::pair<int, int> pairPosition = {vectorThreePosition.x, vectorThreePosition.z};
