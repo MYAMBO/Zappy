@@ -16,7 +16,7 @@
 **         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
 ************************************************************/
 
-gui::Display::Display(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState, std::shared_ptr<SceneState> sceneState)
+gui::Display::Display(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState, std::shared_ptr<SceneState> sceneState, std::function<void()> function)
     : _camera(camera), _camState(camState), _sceneState(sceneState), _width(WIDTH), _height(HEIGHT)
 {
 
@@ -40,7 +40,7 @@ gui::Display::Display(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> 
     _players = std::make_shared<std::vector<std::shared_ptr<gui::Player>>>();
     _itemDisplay = {1, 1, 1, 1, 1, 1, 1};
 
-    _menu = std::make_unique<gui::ui::Menu>(_sceneState, gui::Client::);
+    _menu = std::make_unique<gui::ui::Menu>(_sceneState, function);
     _settings = std::make_unique<gui::ui::Settings>(_sceneState);
     _menu->initMenuUI();
     _settings->initSettingsUI();

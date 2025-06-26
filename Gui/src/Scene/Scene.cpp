@@ -28,7 +28,7 @@ gui::Scene::Scene(const std::string& hostname, const std::string& port)
     std::shared_ptr<std::string> sharedPort = std::make_shared<std::string>(port);
     initWindow();
 
-    _display = std::make_shared<Display>(_camera, _camState, _currentState);
+    _display = std::make_shared<Display>(_camera, _camState, _currentState, _client->connectToServer());
 
     _display->_menu->setHostname(sharedHostname);
     _display->_menu->setPort(sharedPort);

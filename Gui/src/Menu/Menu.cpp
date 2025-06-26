@@ -48,24 +48,18 @@ void gui::ui::Menu::initMenuUI()
 
 void gui::ui::Menu::playClicked()
 {
-    if (!_hostname->empty()) {
-        // call func for try connecting to server 
-        // if (connection good)
+    if (_hostname->empty())
+        _hostnameError = 60;
+
+    if (_port->empty())
+        _portError = 60;
+
+    if (!_hostname->empty() && !_port->empty()) {
         *_sceneState = SceneState::GAME;
         _hostnameActive = false;
-        Debug::InfoLog("[GUI] Play button clicked, connecting to server with Hostname: " + *_hostname);
-    } else {
-        _hostnameError = 60;
-    }
-
-    if (!_port->empty()) {
-        // call func for try connecting to server
-        // if (connection good)
-        *_sceneState = SceneState::GAME;
         _portActive = false;
+        Debug::InfoLog("[GUI] Play button clicked, connecting to server with Hostname: " + *_hostname);
         Debug::InfoLog("[GUI] Play button clicked, connecting to server with Port: " + *_port);
-    } else {
-        _portError = 60;
     }
 }
 
