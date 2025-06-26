@@ -18,8 +18,6 @@
 gui::Tile::Tile(std::pair<int, int> coord, std::vector<int> qty, std::vector<std::shared_ptr<Model>> model)
     : _qty(qty), _coord(std::move(coord)), _models(std::move(model)), _items(7)
 {
-    std::vector<std::shared_ptr<gui::AItem>> list;
-
     addItem(qty[FOOD], FOOD);
     addItem(qty[LINEMATE], LINEMATE);
     addItem(qty[DERAUMERE], DERAUMERE);
@@ -82,4 +80,16 @@ void gui::Tile::displayTile(std::vector<int> displayItem)
     Vector3 position = {(float)_coord.first, 0, (float)_coord.second};
     DrawCube(position, 1.0f, 1.0f, 1.0f, {61, 110, 49, 255});
     DrawCubeWires(position, 1.0f, 1.0f, 1.0f, {61, 0, 49, 255});
+}
+
+int gui::Tile::getItem(int type) const
+{
+    if (type < 0 || type >= (int)_qty.size())
+        return 0;
+    return _qty[type];
+}
+
+std::pair<int, int> gui::Tile::getCoord()
+{
+    return _coord;
 }

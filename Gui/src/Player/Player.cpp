@@ -24,7 +24,7 @@ gui::Player::Player(int id, std::pair<int, int> position, Orientation orientatio
     : AEntity({(float)position.first, 1.0f, (float)position.second}, scale, WHITE), 
     _model(model), _id(id), _level(level), _animCount(animCount), _currentAnim(2), _animFrameCounter(0), _isMoving(false), _isSelected(false), _team(std::move(team)), _animationSpeed(1.0f),
     _camButton([this, &camera, &sceneState]() { HandleCamButton(camera, sceneState); }, Rectangle{0, static_cast<float>(screenHeight - 70), 150, 70}, "Camera"),
-    _inventory(screenWidth, screenHeight), _deadModel(deadModel), _direction(orientation), _currentAnimState(AnimState::IDLE),
+    _inventory(std::make_shared<gui::ui::Inventory>(screenWidth, screenHeight)), _deadModel(deadModel), _direction(orientation), _currentAnimState(AnimState::IDLE),
     _animations(animations)
 {
     _mutex.lock();
@@ -51,6 +51,10 @@ void gui::Player::startMoveTo(Vector3 newPosition)
     _targetPosition = newPosition;
     if (_targetPosition.x - _position.x > 1 || _targetPosition.x - _position.x < -1 ||
         _targetPosition.z - _position.z > 1 || _targetPosition.z - _position.z < -1) {
+        _position = _targetPosition;
+        return;
+    }
+    if (*_timeUnit >= 200) {
         _position = _targetPosition;
         return;
     }
@@ -95,7 +99,7 @@ void gui::Player::draw()
 void gui::Player::drawUI()
 {
     if (_isSelected) {
-        _inventory.draw();
+        _inventory->draw();
         _camButton.draw();
     }
 }
@@ -120,14 +124,9 @@ void gui::Player::updateMovementAndAnimation()
             stopMoving();
         }
     }
-    Debug::DebugLog("animation count: " + std::to_string(_animCount) + ", current animation: " + std::to_string(_currentAnim));
-    Debug::DebugLog("current animation state: " + std::to_string(static_cast<int>(_currentAnimState)));
     if (_animCount > 0 && _currentAnim < _animCount) {
-        Debug::InfoLog("Player animation count is less than the current animation index.");
         _animFrameCounter++;
-
         if (_animFrameCounter >= _animations[_currentAnim].frameCount) {
-            Debug::InfoLog("Resetting animation frame counter for Player.");
             _animFrameCounter = 0;
         }
         UpdateModelAnimation(*_model, _animations[_currentAnim], _animFrameCounter);
@@ -212,7 +211,7 @@ int gui::Player::getLevel() const
     return _level;
 }
 
-gui::ui::Inventory gui::Player::getInventory()
+std::shared_ptr<gui::ui::Inventory> gui::Player::getInventory()
 {
     return _inventory;
 }

@@ -120,7 +120,7 @@ namespace gui {
              */
             void startMoveTo(Vector3 newPosition);
 
-            ui::Inventory getInventory();
+            std::shared_ptr<ui::Inventory> getInventory();
 
             /**
              * @brief Check if the Player is selected.
@@ -211,7 +211,7 @@ namespace gui {
             Vector3 _targetPosition;
             
             ui::Button _camButton;
-            ui::Inventory _inventory;
+            std::shared_ptr<ui::Inventory> _inventory;
 
             Model _deadModel; 
             Orientation _direction;
