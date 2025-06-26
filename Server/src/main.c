@@ -55,35 +55,35 @@ map_t *init_map(int width, int height)
 
 //create one AI to test
 
-ai_stats_t *create_test_ai(int id, const char *team_name, server_t *server)
-{
-    ai_stats_t *ai = malloc(sizeof(ai_stats_t));
-
-    if (!ai)
-        return NULL;
-    ai->connected = true;
-    ai->fd = id + 3;
-    ai->tmp_command = NULL;
-    ai->id = id;
-    ai->life = 126;
-    ai->x = server->map_width - 1;
-    ai->y = server->map_height - 1;
-    ai->direction = SOUTH;
-    ai->level = 1;
-    ai->team_name = strdup(team_name);
-    ai->nb_food = 3;
-    ai->nb_linemate = 1;
-    ai->nb_deraumere = 6;
-    ai->nb_sibur = 5;
-    ai->nb_mendiane = 8;
-    ai->nb_phiras = 2;
-    ai->nb_thystame = 3;
-    ai->in_incantation = false;
-    for (int i = 0; i < 7; i++)
-        ai->inventory.resources[i] = rand() % 3;
-
-    return ai;
-}
+//ai_stats_t *create_test_ai(int id, const char *team_name, server_t *server)
+//{
+//    ai_stats_t *ai = malloc(sizeof(ai_stats_t));
+//
+//    if (!ai)
+//        return NULL;
+//    ai->connected = true;
+//    ai->fd = id + 3;
+//    ai->tmp_command = NULL;
+//    ai->id = id;
+//    ai->life = 126;
+//    ai->x = server->map_width - 1;
+//    ai->y = server->map_height - 1;
+//    ai->direction = SOUTH;
+//    ai->level = 1;
+//    ai->team_name = strdup(team_name);
+//    ai->nb_food = 3;
+//    ai->nb_linemate = 1;
+//    ai->nb_deraumere = 6;
+//    ai->nb_sibur = 5;
+//    ai->nb_mendiane = 8;
+//    ai->nb_phiras = 2;
+//    ai->nb_thystame = 3;
+//    ai->in_incantation = false;
+//    for (int i = 0; i < 7; i++)
+//        ai->inventory.resources[i] = rand() % 3;
+//
+//    return ai;
+//}
 
 
 int parse_arguments(int ac, char **av, server_t *server)
@@ -123,6 +123,22 @@ void stop_server(int tmp)
     *val = 0;
 }
 
+static void show_usage(void)
+{
+    printf("\nZAPPY_SERVER HELP:\n\nMANDATORY OPTIONS:\n\n"
+        "  -p NUMBER: port used by the server\n"
+        "  -x NUMBER: width of the map\n"
+        "  -y NUMBER: height of the map\n"
+        "  -c NUMBER: total of slots available per team\n"
+        "  -n STRING STRING ...: all team names available"
+        "\n\nNON MANDATORY OPTIONS:\n\n"
+        "  -f NUMBER: freq used (100 by default)"
+        "\n\nUSAGE:\n"
+        "  $ ./zappy_server -p 1234 -x 2 -y 5 -c 10 -n team1 team2 -f 60\n\n"
+
+        );
+}
+
 int main(int ac, char **av)
 {
     server_t server;
@@ -133,6 +149,7 @@ int main(int ac, char **av)
     if (parse_arguments(ac, av, &server) == FAILURE ||
         start_server(&server) == FAILURE) {
         free_garbage();
+        show_usage();
         return FAILURE;
     }
     free_garbage();
