@@ -22,9 +22,9 @@ gui::Display::Display(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> 
     : _camera(camera), _camState(camState), _sceneState(sceneState), _width(WIDTH), _height(HEIGHT)
 {
 
-    _model = std::make_shared<Model>(LoadModel("assets/player/scene.gltf"));
+    _model = std::make_shared<Model>(LoadModel("assets/player/scene.glb"));
     _deadModel = LoadModel("assets/dead/scene.gltf");
-    _animations = LoadModelAnimations("assets/player/scene.gltf", &_animCount);
+    _animations = LoadModelAnimations("assets/player/scene.glb", &_animCount);
     _eggModel = std::make_shared<Model>(LoadModel("assets/egg/scene.gltf"));
 
     _timeUnit = timeUnit;
