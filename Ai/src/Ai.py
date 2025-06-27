@@ -23,6 +23,7 @@ class Ai:
         self.__unused_slots = 0
         self.__is_ready = False
         self.__mates_to_wait = 0
+        self.__follow_counter = 0
         self.__ai_to_follow = None
         self.__team_inventory = {}
         self.__time_for_food = 126
@@ -57,11 +58,12 @@ class Ai:
                 self.__is_ready = True
                 self.__start_incantation()
             else:
-                self.__commands_queue = ["Broadcast " + encrypt_message(self.__team_name, f"\"follow me !;{self.__id}\"")]
+                self.__commands_queue = ["Broadcast " + encrypt_message(self.__team_name, f"\"follow me !;{self.__id}${self.__follow_counter}\"")]
+                self.__follow_counter += 1
 
     def __start_incantation(self):
         self.__commands_queue = get_droping_items_commands(self.__inventory)
-        self.__commands_queue.insert(0, "Broadcast " + encrypt_message(self.__team_name, "\"etttt c'est partieee !!!\""))
+        self.__commands_queue.insert(0, "Broadcast " + encrypt_message(self.__team_name, "\"etttt c'est partiiiiii !!!\""))
         self.__commands_queue.append("Incantation")
         self.__mates_to_wait = len(self.__team_inventory)
 
@@ -109,7 +111,12 @@ class Ai:
         return True
 
     def handle_follow(self, reply):
-        _, id = reply.strip()[:-1].rsplit(';', 1)
+        _, count_and_id = reply.strip()[:-1].rsplit(';', 1)
+        id, count = count_and_id.strip().rsplit('$', 1)
+        if int(count) != self.__follow_counter:
+            logger.info("an enemy try to usurp our commander !", Output.BOTH)
+            return
+        self.__follow_counter += 1
         if self.__ai_to_follow == self.__id and str(self.__id) < id:
             self.__ai_to_follow = id
             return
@@ -138,7 +145,7 @@ class Ai:
                 self.__team_inventory[id] = handle_inventory_string(inventory.strip()[:-1])
             except:
                 return
-        if "\"etttt c'est partieee !!!\"" in reply:
+        if "\"etttt c'est partiiiiii !!!\"" in reply:
             self.__commands_queue = get_droping_items_commands(self.__inventory)
 
     def handle_command(self):
