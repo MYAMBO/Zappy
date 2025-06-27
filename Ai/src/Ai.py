@@ -125,7 +125,6 @@ class Ai:
             self.__ai_to_follow = id
         if self.__commands_queue is None or self.__commands_queue:
             return
-        print(reply)
         start, _ = reply.rsplit(',', 1)
         self.__commands_queue = follow_message(int(start.split("message ")[1]))
         if self.__commands_queue:
