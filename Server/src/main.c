@@ -142,14 +142,16 @@ static void show_usage(void)
 int main(int ac, char **av)
 {
     server_t server;
+    int failure = parse_arguments(ac, av, &server);
 
     signal(SIGINT, stop_server);
     logger_clear_log_file();
     logger_info("Server starting...", FILE_OUTPUT, true);
-    if (parse_arguments(ac, av, &server) == FAILURE ||
+    if (failure == FAILURE ||
         start_server(&server) == FAILURE) {
         free_garbage();
-        show_usage();
+        if (failure)
+            show_usage();
         return FAILURE;
     }
     free_garbage();
