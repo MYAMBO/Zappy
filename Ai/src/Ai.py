@@ -30,6 +30,9 @@ class Ai:
         self.__commands_queue = [team_name, "Look", "Inventory"]
         self.__needed_list = ["food", "sibur", "phiras", "thystame", "mendiane", "linemate", "deraumere"]
         self.__inventory = {"sibur" : 0, "phiras" : 0, "thystame" : 0, "mendiane" : 0, "linemate" : 0, "deraumere" : 0}
+        self.__is_guard = False
+        self.__is_in_place = False
+        self.__nb_guard_in_place = 0
         self.__time_by_command = {
             "Forward" : 7,
             "Right" : 7,
@@ -53,7 +56,6 @@ class Ai:
     def __handle_ai_follow_logic(self):
         if self.__ai_to_follow == self.__id and self.__is_ready == False:
             if self.__mates_to_wait == 0:
-                self.__is_ready = True
                 self.__start_incantation()
             else:
                 self.__commands_queue = [f"Broadcast \"follow me !;{self.__id}\""]
@@ -61,8 +63,25 @@ class Ai:
     def __start_incantation(self):
         self.__commands_queue = get_droping_items_commands(self.__inventory)
         self.__commands_queue.insert(0, "Broadcast \"etttt c'est partieee !!!\"")
-        self.__commands_queue.append("Incantation")
-        self.__mates_to_wait = len(self.__team_inventory)
+        if self.__nb_guard_in_place >= 12:
+            self.__is_ready = True
+            self.__commands_queue.append("Incantation")
+            self.__mates_to_wait = len(self.__team_inventory)
+        else:
+            self.__team_inventory = dict(sorted(self.__team_inventory.items()))
+            keys = list(self.__team_inventory.keys())
+            if self.__nb_guard_in_place < 4:
+                target = 4
+            else:
+                target = 8
+            i = 0
+            while i < target:
+                if self.__id == keys[i] and self.__ai_to_follow != keys[i]:
+                    self.__is_guard = True
+                if target >= 8 and i < (target / 2) and self.__is_guard:
+                    self.__is_guard = False
+                if self.__ai_to_follow == keys[i]:
+                    target += 1
 
     def __set_commands_queue_to_search_resources(self):
         if self.__view is None:
@@ -77,6 +96,25 @@ class Ai:
             self.__commands_queue.insert(0, f"Broadcast \"j'ai ça :{self.__id};{get_inventory_string(self.__inventory)}\"")
 
     def update_commands_queue(self):
+        if self.__nb_guard_in_place < 8 and self.__is_guard and not self.__is_in_place:
+            nb_guard = 0
+            if self.__nb_guard_in_place > 4:
+                nb_guard = 1
+            if self.__command_to_reply == "Look":
+                if self.__view[2].count("player") > nb_guard:
+                    self.__commands_queue.insert(0, "Right")
+                    self.__commands_queue.insert(1, "Look")
+                else:
+                    self.__commands_queue = ["Forward", "Broadcast guard in place", "Right", "Left"]
+                    self.__commands_queue.append(["Eject" * 100])
+                    self.__is_in_place = True
+            else:
+                self.__commands_queue.insert(0, "Look")
+
+        if not self.__is_guard and self.__is_in_place:
+            self.__commands_queue = ["Right", "Right", "Forward","Broadcast guard in place"]
+            self.__is_in_place = False
+
         if self.team_inventory_is_ready() and self.__ai_to_follow is None and len(self.__team_inventory) > 8:
             self.__assign_leader()
 
@@ -136,8 +174,10 @@ class Ai:
                 self.__team_inventory[id] = handle_inventory_string(inventory.strip()[:-1])
             except:
                 return
-        if "\"etttt c'est partieee !!!\"" in reply:
+        elif "\"etttt c'est partieee !!!\"" in reply:
             self.__commands_queue = get_droping_items_commands(self.__inventory)
+        elif "guard in place" in reply:
+            self.__nb_guard_in_place += 1
 
     def handle_command(self):
         try:

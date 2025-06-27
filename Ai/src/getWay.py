@@ -47,7 +47,7 @@ def check_number_of_tiles(tiles, resourcesList):
 
 def get_better_way_to_resources(tiles, resourcesList, needed):
     if not check_number_of_tiles(tiles, resourcesList):
-        return None
+        return []
     keep = {"tile" : -1, "resources" : []}
     for tile in tiles:
         for current in tile:
