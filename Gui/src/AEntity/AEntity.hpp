@@ -9,7 +9,6 @@
     #define ZAPPY_AENTITY_HPP
 
     #include <string>
-    #include <memory>
     #include "IEntity.hpp"
 
 namespace gui {

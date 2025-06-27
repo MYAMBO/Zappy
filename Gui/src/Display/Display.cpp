@@ -6,7 +6,6 @@
 */
 
 #include "Menu.hpp"
-#include "Player.hpp"
 #include "Display.hpp"
 #include "Settings.hpp"
 

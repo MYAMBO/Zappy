@@ -12,12 +12,10 @@
     #include <mutex>
 
     #include "Type.hpp"
-    #include "Scene.hpp"
     #include "Button.hpp"
     #include "AEntity.hpp"
     #include "Inventory.hpp"
 
-    
 namespace gui {
     class Player : public AEntity {
         public:

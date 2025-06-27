@@ -6,16 +6,12 @@
 */
 
 #include "Client.hpp"
+#include "Error.hpp"
+#include "Logger.hpp"
 
-#include <string>
-#include <vector>
-#include <thread>
 #include <time.h>
 #include <netdb.h>
-#include <sstream>
-#include <utility>
 #include <unistd.h>
-#include <iostream>
 #include <algorithm>
 #include <sys/socket.h>
 
@@ -222,7 +218,7 @@ void gui::Client::bct(std::vector<std::string> stringArray)
 
     if (coord.first >= 0 && coord.first <= _size.first && coord.second >= 0 && coord.first <= _size.second
         && quantity.size() == 7 && findTile(coord.first, coord.second) == -1) {
-        _map->emplace_back(std::make_shared<Tile>(coord, quantity, *_models));
+        _map->emplace_back(std::make_shared<Tile>(coord, quantity, *_models, _players, _eggs, _teams));
         return;
     } else if (findTile(coord.first, coord.second) != -1) {
         auto &_tile = _map->at(findTile(coord.first, coord.second));
@@ -565,6 +561,7 @@ void gui::Client::pdi(std::vector<std::string> stringArray)
 
 void gui::Client::enw(std::vector<std::string> stringArray)
 {
+    int playerIndice;
     int eggId;
     int playerId;
     int posX;
@@ -581,10 +578,12 @@ void gui::Client::enw(std::vector<std::string> stringArray)
     if (posX < 0 || posX >= _size.first || posY < 0 || posY >= _size.second)
         throw Error("Player's position out of map");
 
-    if (eggId && findPlayer(eggId) == -1)
-        return;
-    (void)playerId;
-    _eggs->emplace_back(std::make_shared<gui::Egg>(eggId, std::make_pair(posX, posY), _display->_eggModel));
+    playerIndice = findPlayer(eggId);
+
+    if (playerId == -1)
+        _eggs->emplace_back(std::make_shared<gui::Egg>(eggId, std::make_pair(posX, posY), _display->_eggModel, "Undefined"));
+    else
+        _eggs->emplace_back(std::make_shared<gui::Egg>(eggId, std::make_pair(posX, posY), _display->_eggModel, _players->at(playerIndice)->getTeam()));
 }
 
 

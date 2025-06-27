@@ -7,7 +7,6 @@
 
 #include "Tile.hpp"
 #include "Logger.hpp"
-#include "Player.hpp"
 
 #include <functional>
 #include <utility>

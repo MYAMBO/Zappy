@@ -11,9 +11,7 @@
     #include <vector>
     #include <string>
 
-    #include "Type.hpp"
     #include "Scene.hpp"
-    #include "Button.hpp"
 
 namespace gui {
     namespace ui {

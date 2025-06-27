@@ -8,24 +8,9 @@
 #ifndef ZAPPY_CLIENT_HPP
     #define ZAPPY_CLIENT_HPP
 
-    #include <map>
-    #include <vector>
     #include <thread>
-    #include <memory>
-    #include <utility>
-    #include <iostream>
-    #include <iostream>
-    #include <functional>
-    #include <arpa/inet.h>
-    #include <sys/socket.h>
 
-    #include "Tile.hpp"
-    #include "AItem.hpp"
     #include "Scene.hpp"
-    #include "Error.hpp"
-    #include "Player.hpp"
-    #include "Display.hpp"
-    #include "AEntity.hpp"
 
 namespace gui {
     class Client {
