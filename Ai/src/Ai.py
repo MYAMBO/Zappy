@@ -18,6 +18,7 @@ class Ai:
     def __init__(self, team_name, client):
         self.__id = uuid.uuid4()
         self.__view = None
+        self.__ready_id = []
         self.__map_size = None
         self.__client = client
         self.__unused_slots = 0
@@ -137,7 +138,12 @@ class Ai:
         if "follow me !;" in reply and self.__is_ready == False:
             self.handle_follow(reply)
         elif ";en position !" in reply and self.__id == self.__ai_to_follow:
+            start, _ = reply.rsplit(';', 1)
+            _, id = start.rsplit('\"', 1)
+            if id in self.__ready_id:
+                return
             self.__mates_to_wait -= 1
+            self.__ready_id.append(id)
         elif "j'ai ça :" in reply:
             _, info = reply.rsplit(":", 1)
             id, inventory = info.rsplit(";", 1)
