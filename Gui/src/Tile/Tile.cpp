@@ -130,21 +130,7 @@ void gui::Tile::displayContent()
 {
     if (_isSelected) {
         _displayTeams->display(_coord);
-
-        DrawRectangleRec(_tileInventory, {255, 255, 255, 50});
-        DrawRectangleLinesEx(_tileInventory, 2, BLACK);
-        std::string string = "Tile : " + std::to_string(_coord.first) + "/" + std::to_string(_coord.second);
-        DrawText(string.c_str(), _tileInventory.x + 10, _tileInventory.y + 10, _fontSize, BLACK);
-
-        float itemWidth = _tileInventory.width / static_cast<float>(_items.size());
-        for (int i = 0; i < static_cast<int>(_itemsText.size()); ++i) {
-            Debug::InfoLog("[GUI] Drawing inventory item: " + _itemsText.at(i).first + " with quantity: " + std::to_string(_qty.at(i)));
-            std::string text = _itemsText.at(i).first + " : " + std::to_string(_qty.at(i));
-            Vector2 textSize = MeasureTextEx(GetFontDefault(), text.c_str(), _fontSize, 1);
-            float textX = _tileInventory.x + i * itemWidth + (itemWidth - textSize.x) / 2;
-            float textY = _tileInventory.y + (_tileInventory.height - textSize.y) / 2;
-            DrawText(text.c_str(), static_cast<int>(textX), static_cast<int>(textY), _fontSize, _itemsText.at(i).second);
-        }
+        // display inventory
     }
 }
 

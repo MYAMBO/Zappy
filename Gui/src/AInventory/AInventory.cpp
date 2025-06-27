@@ -38,18 +38,20 @@ gui::ui::AInventory::~AInventory()
 ************************************************************/
 
 
-void gui::ui::AInventory::draw()
+void gui::ui::AInventory::drawBackground()
 {
     DrawRectangleRec(_bounds, {255, 255, 255, 50});
     DrawRectangleLinesEx(_bounds, 2, BLACK);
-    DrawText("Inventory", _bounds.x + 10, _bounds.y + 10, _fontSize, BLACK);
+}
 
+void gui::ui::AInventory::drawItems()
+{
     float itemWidth = _bounds.width / static_cast<float>(_items.size());
-    int index = 0;
+    float index = 0;
 
     for (const auto& item : _items) {
         std::string text = item.first + ": " + std::to_string(item.second.first);
-        Vector2 textSize = MeasureTextEx(GetFontDefault(), text.c_str(), _fontSize, 1);
+        Vector2 textSize = MeasureTextEx(GetFontDefault(), text.c_str(), static_cast<float>(_fontSize), 1);
         float textX = _bounds.x + index * itemWidth + (itemWidth - textSize.x) / 2;
         float textY = _bounds.y + (_bounds.height - textSize.y) / 2;
         DrawText(text.c_str(), static_cast<int>(textX), static_cast<int>(textY), _fontSize, item.second.second);

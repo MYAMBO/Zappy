@@ -18,12 +18,6 @@ namespace gui {
             ~AInventory();
 
             /**
-             * @brief Draw the Inventory on the screen.
-             * This function draws the Inventory.
-             */
-            void draw() override;
-
-            /**
              * @brief Setter for the bounds.
              * This functions allow you to set the bounds.
              * @param bounds The rectangle defining the Inventory's position and size.
@@ -53,11 +47,22 @@ namespace gui {
              */
             int getInventoryItem(const std::string &item) const override;
 
-        private:
+        protected:
+            /**
+             * @brief Draw the background of the inventory.
+             */
+            virtual void drawBackground() = 0;
+
+            /**
+             * @brief Draw the items and qty for inventory.
+             */
+            virtual void drawItems() = 0;
+
             int _fontSize;
             std::map<std::string, std::pair<int, Color>> _items;
 
             Rectangle _bounds;
+        private:
         };
     }
 }

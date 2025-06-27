@@ -17,8 +17,7 @@ namespace gui {
         class IInventory {
         public:
             /**
-             * @brief Draw the Inventory on the screen.
-             * This function draws the Inventory.
+             *@brief Function to draw everything
              */
             virtual void draw() = 0;
 
@@ -51,6 +50,16 @@ namespace gui {
              * @return The quantity of the item, or 0 if the item does not exist.
              */
             virtual int getInventoryItem(const std::string &item) const = 0;
+        protected:
+            /**
+             * @brief Draw the background of the inventory.
+             */
+            virtual void drawBackground() = 0;
+
+            /**
+             * @brief Draw the items and qty for inventory.
+             */
+            virtual void drawItems() = 0;
         };
     }
 }

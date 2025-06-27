@@ -180,26 +180,6 @@ void gui::Player::drawUI()
 {
     if (_isSelected) {
         _inventory->draw();
-        std::string text;
-        if (_team.size() > 5)
-            text = _team.substr(0, 5) + "... : ";
-        else
-            text = _team + " : ";
-        DrawText(("Team name: " + text).c_str(), static_cast<float>(SCREEN_WIDTH) / 5.0f, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam->operator[](_team));
-        DrawText(("Player ID: " + std::to_string(_id)).c_str(), static_cast<float>(SCREEN_WIDTH) / 2.8, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam->operator[](_team));
-        int falseId = _id;
-        int counter = 0;
-        if (falseId > static_cast<int>(_playersNames.size())) {
-            while (falseId >= static_cast<int>(_playersNames.size())) {
-                counter++;
-                falseId -= _playersNames.size();
-            }
-        }
-        if (counter == 0)
-            DrawText(("Player name: " + _playersNames[falseId]).c_str(), static_cast<float>(SCREEN_WIDTH) / 2, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam->operator[](_team));
-        else 
-            DrawText(("Player name: " + _playersNames[falseId] + " " + std::to_string(counter)).c_str(), static_cast<float>(SCREEN_WIDTH) / 2, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam->operator[](_team));
-        DrawText(("Level: " + std::to_string(_level)).c_str(), static_cast<float>(SCREEN_WIDTH) / 1.2, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam->operator[](_team));
         _camButton.draw();
     }
 }
