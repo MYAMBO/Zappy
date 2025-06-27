@@ -19,8 +19,10 @@
 gui::Tile::Tile(std::pair<int, int> coord, std::vector<int> qty, std::vector<std::shared_ptr<Model>> model,
                 std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players,
                 std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs,
-                std::vector<std::string> teams)
-    : _qty(qty), _coord(std::move(coord)), _teams(std::move(teams)), _models(std::move(model)), _items(7), _eggs(std::move(eggs)), _players(std::move(players))
+                std::vector<std::string> teams, int screenWidth, int screenHeight)
+    : _isSelected(false), _qty(qty), _coord(std::move(coord)), _teams(std::move(teams)), _models(std::move(model)), _items(7), _eggs(std::move(eggs)), _players(std::move(players)),
+    _fontSize(30), _bounds({0, static_cast<float>(screenHeight) * 0.8f, static_cast<float>(screenWidth), static_cast<float>(screenHeight) / 5.0f})
+
 {
     addItem(qty[FOOD], FOOD);
     addItem(qty[LINEMATE], LINEMATE);
@@ -84,6 +86,48 @@ void gui::Tile::displayTile(std::vector<int> displayItem)
     Vector3 position = {(float)_coord.first, 0, (float)_coord.second};
     DrawCube(position, 1.0f, 1.0f, 1.0f, {61, 110, 49, 255});
     DrawCubeWires(position, 1.0f, 1.0f, 1.0f, {61, 0, 49, 255});
+}
+
+void gui::Tile::handleUserInput(Camera camera)
+{
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && IsKeyDown(KEY_LEFT_SHIFT)) {
+        Ray ray = GetMouseRay(GetMousePosition(), camera);
+        BoundingBox box = {
+            { static_cast<float>(_coord.first - 1), 0, static_cast<float>(_coord.second - 1)},
+            { static_cast<float>(_coord.first + 1), 0, static_cast<float>(_coord.second + 1)}
+        };
+        RayCollision collision = GetRayCollisionBox(ray, box);
+        if (collision.hit) {
+            _isSelected = true;
+            Debug::InfoLog("Tile Pressed");
+        } else {
+           _isSelected = false;
+        }
+    }
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !IsKeyDown(KEY_LEFT_SHIFT)) {
+        _isSelected = false;
+    }
+}
+
+void gui::Tile::displayContent()
+{
+    if (_isSelected) {
+        Debug::InfoLog("DRAWING !!");
+        DrawRectangleRec(_bounds, {255, 255, 255, 50});
+        DrawRectangleLinesEx(_bounds, 2, BLACK);
+        DrawText("Inventory", _bounds.x + 10, _bounds.y + 10, _fontSize, BLACK);
+        float itemWidth = _bounds.width / static_cast<float>(_items.size());
+        int index = 0;
+        for (int i = 0; i < static_cast<int>(_itemsText.size()); ++i) {
+            Debug::InfoLog("[GUI] Drawing inventory item: " + _itemsText.at(i).first + " with quantity: " + std::to_string(_qty.at(i)));
+            std::string text =  + ": " + std::to_string(_qty.at(i));
+            Vector2 textSize = MeasureTextEx(GetFontDefault(), text.c_str(), _fontSize, 1);
+            float textX = _bounds.x + index * itemWidth + (itemWidth - textSize.x) / 2;
+            float textY = _bounds.y + (_bounds.height - textSize.y) / 2;
+            DrawText(text.c_str(), static_cast<int>(textX), static_cast<int>(textY), _fontSize, _itemsText.at(i).second);
+            index++;
+        }
+    }
 }
 
 int gui::Tile::getItem(int type) const

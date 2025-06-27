@@ -130,9 +130,10 @@ void gui::Display::handleInput()
     eventToggleDisplay();
     updateCamera();
 
-    for (auto& player : *_players) {
+    for (auto& player : *_players)
         player->update(*_camera);
-    }
+    for (auto& tile: *_map)
+        tile->handleUserInput(*_camera);
 }
 
 void gui::Display::render()
@@ -149,6 +150,9 @@ void gui::Display::render()
     for (auto& player : *_players) {
         player->drawUI();
         player->updateUI();
+    }
+    for (auto& tile: *_map) {
+        tile->displayContent();
     }
     EndDrawing();
 }
