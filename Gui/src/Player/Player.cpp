@@ -132,7 +132,7 @@ void gui::Player::draw()
 {
     if (_isDead) {
         if (_countBeforeExpire > 0) {
-            DrawModelEx(_deadModel, {_position.x, _position.y - 0.5f, _position.z}, {0, 1, 0}, _rotationY, {0.01f, 0.01f, 0.01f}, _color);
+            DrawModelEx(_deadModel, {_position.x, _position.y - 0.5f, _position.z}, {0, 1, 0}, _rotationY, {0.01f, 0.01f, 0.01f}, WHITE);
             _countBeforeExpire--;
         }
         return;
@@ -146,7 +146,7 @@ void gui::Player::draw()
     else if (_direction == Orientation::West)
         _rotationY = 270.0f;
     UpdateModelAnimation(*_model, _animations[_currentAnim], _animFrameCounter);
-    DrawModelEx(*_model, _position, {0, 1, 0}, _rotationY, {_scale, _scale, _scale}, _color);
+    DrawModelEx(*_model, _position, {0, 1, 0}, _rotationY, {_scale, _scale, _scale}, WHITE);
     if (_isSelected)
         DrawCubeWires(_position, 1, 1, 1, {255, 0, 0, 255});
     broadcastAnimation();
@@ -342,6 +342,7 @@ bool gui::Player::getIsMoving() const
 void gui::Player::setColorTeam(std::map<std::string, Color> colorTeam)
 {
     _colorTeam = colorTeam;
+    _color = _colorTeam[_team];
 }
 
 void gui::Player::setLevel(int level)
