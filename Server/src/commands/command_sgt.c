@@ -2,23 +2,23 @@
 ** EPITECH PROJECT, 2025
 ** Zappy
 ** File description:
-** command_take
+** command_sgt
 */
 
 #include "commands.h"
 #include "utils.h"
-#include "actions_communication.h"
+#include "time_unit_protocol.h"
 #include "unistd.h"
 
-int take_command(server_t *server, poll_handling_t *node, char **args)
+int sgt_command(server_t *server, poll_handling_t *node, char **args)
 {
     char *str = NULL;
 
-    if (array_len(args) != 2) {
-        write(node->poll_fd.fd, "ko\n", 3);
+    if (array_len(args) != 1) {
+        write(node->poll_fd.fd, "sbp\n", 4);
         return SUCCESS;
     }
-    str = can_player_takes_items(node->player, server->map, args[1], server);
+    str = time_unit_request(server);
     if (!str)
         return FAILURE;
     write(node->poll_fd.fd, str, strlen(str));

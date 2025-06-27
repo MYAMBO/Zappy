@@ -48,39 +48,16 @@ static bool increment_ai_inventory(ai_stats_t *ai, map_t *map,
         return false;
     map->tiles[ai->y][ai->x].resources[i]--;
     server->current_res[i]--;
-    if (i == 0)
-        ai->nb_food++;
-    if (i == 1)
-        ai->nb_linemate++;
-    if (i == 2)
-        ai->nb_deraumere++;
-    if (i == 3)
-        ai->nb_sibur++;
-    if (i == 4)
-        ai->nb_mendiane++;
-    if (i == 5)
-        ai->nb_phiras++;
-    if (i == 6)
-        ai->nb_thystame++;
+    ai->inventory.resources[i]++;
     return true;
 }
 
 static bool increment_map_tile(ai_stats_t *ai, map_t *map,
     int i, server_t *server)
 {
-    int *inventory[7] = {
-            &ai->nb_food,
-            &ai->nb_linemate,
-            &ai->nb_deraumere,
-            &ai->nb_sibur,
-            &ai->nb_mendiane,
-            &ai->nb_phiras,
-            &ai->nb_thystame
-    };
-
-    if (*inventory[i] <= 0)
+    if (ai->inventory.resources[i] <= 0)
         return false;
-    (*inventory[i])--;
+    ai->inventory.resources[i]--;
     map->tiles[ai->y][ai->x].resources[i]++;
     server->current_res[i]++;
     return true;
@@ -90,6 +67,8 @@ static int get_ressources_index(char *item)
 {
     int i = -1;
 
+    if (item == NULL)
+        return -1;
     if (strcmp(item, "food") == 0)
         i = 0;
     if (strcmp(item, "linemate") == 0)
