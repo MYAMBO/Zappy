@@ -162,8 +162,8 @@ void gui::Player::drawUI()
         DrawText(("Player ID: " + std::to_string(_id)).c_str(), static_cast<float>(SCREEN_WIDTH) / 2.8, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam[_team]);
         int falseId = _id;
         int counter = 0;
-        if (falseId > _playersNames.size()) {
-            while (falseId >= _playersNames.size()) {
+        if (falseId > static_cast<int>(_playersNames.size())) {
+            while (falseId >= static_cast<int>(_playersNames.size())) {
                 counter++;
                 falseId -= _playersNames.size();
             }
