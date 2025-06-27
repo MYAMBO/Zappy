@@ -6,7 +6,7 @@
 */
 
 #include <raylib.h>
-
+#include <utility>
 #include "Player.hpp"
 #include "Logger.hpp"
 
@@ -16,12 +16,14 @@
 ************************************************************/
 
 
-gui::Player::Player(Vector3 position, float scale, Color color, int screenWidth, int screenHeight, Camera3D &camera, int &sceneState)
-    : AEntity(position, scale, color), _camButton([this, &camera, &sceneState]() { HandleCamButton(camera, sceneState); },
-    Rectangle{0, static_cast<float>(screenHeight - 70), 150, 70}, "Camera"), _direction(North), _inventory(screenWidth, screenHeight)
+gui::Player::Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team, float scale, int screenWidth, int screenHeight, Camera3D &camera, CamState &sceneState)
+    : AEntity({(float)position.first, 0.5, (float)position.second}, scale, RED), _id(id), _level(level), _team(std::move(team)),
+    _camButton([this, &camera, &sceneState]() { HandleCamButton(camera, sceneState); }, Rectangle{0, static_cast<float>(screenHeight - 70), 150, 70}, "Camera"),
+    _direction(orientation), _inventory(screenWidth, screenHeight)
 {
     Mesh mesh = GenMeshCylinder(0.25f, 1.0f, 50);
-    _model = LoadModelFromMesh(mesh);
+    _model = std::make_unique<Model>(LoadModelFromMesh(mesh));
+
 }
 
 gui::Player::~Player() = default;
@@ -34,7 +36,7 @@ gui::Player::~Player() = default;
 
 void gui::Player::draw()
 {
-    DrawModel(_model, _position, _scale, _color);
+    DrawModel(*_model, _position, _scale, _color);
 
     if (_isSelected) {
         DrawCubeWires(_position, _scale, _scale, _scale, {255, 0, 0, 255});
@@ -76,76 +78,47 @@ int gui::Player::update(Camera3D camera)
                 _isSelected = false;
         }
     }
+    if (IsKeyPressed(KEY_ESCAPE))
+        _isSelected = false;
     return 0;
 }
 
-
-void gui::Player::Left()
+int gui::Player::getId() const
 {
-    switch (this->_direction) {
-        case North:
-            this->_direction = West;
-            break;
-        case Est:
-            this->_direction = North;
-            break;
-        case South:
-            this->_direction = Est;
-            break;
-        case West:
-            this->_direction = South;
-            break;
-    }
+    return _id;
 }
 
-void gui::Player::Right() {
-    switch (this->_direction) {
-        case North:
-            this->_direction = Est;
-            break;
-        case Est:
-            this->_direction = South;
-            break;
-        case South:
-            this->_direction = West;
-            break;
-        case West:
-            this->_direction = North;
-            break;
-    }
+int gui::Player::getLevel() const
+{
+    return _level;
 }
 
-void gui::Player::forward()
+Orientation gui::Player::getOrientation() const
 {
-    float x = this->_position.x;
-    float y = this->_position.y;
-    float z = this->_position.z;
-
-    switch (this->_direction) {
-        case North:
-            this->_position = {x, y, z + 1};
-            break;
-        case Est:
-            this->_position = {x - 1, y, z};
-            break;
-        case South:
-            this->_position = {x, y, z - 1};
-            break;
-        case West:
-            this->_position = {x + 1, y, z};
-            break;
-    }
+    return _direction;
 }
 
-void gui::Player::HandleCamButton(Camera3D &camera, int &sceneState)
+std::string gui::Player::getTeam() const
 {
-    Debug::InfoLog("[GUI] Camera button clicked");
-    Debug::InfoLog("[GUI] Current position: x = " + std::to_string(_position.x) +
-                   ", y = " + std::to_string(_position.y) + ", z = " + std::to_string(_position.z));
+    return  _team;
+}
+
+void gui::Player::setLevel(int level)
+{
+    _level = level;
+}
+
+void gui::Player::setOrientation(Orientation orientation)
+{
+    _direction = orientation;
+}
+
+void gui::Player::HandleCamButton(Camera3D &camera, CamState &sceneState)
+{
     camera = { { _position.x - 2, _position.y + 2, _position.z - 2 },
         { _position.x, _position.y, _position.z },
         { 0.0f, 1.0f, 0.0f },
         45.0f,
         0 };
-    sceneState = 2;
+    sceneState = CamState::PLAYER;
 }

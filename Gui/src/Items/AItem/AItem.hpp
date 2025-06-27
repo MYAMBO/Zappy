@@ -13,7 +13,7 @@
 namespace gui {
     class AItem : public AEntity {
         public:
-            AItem(Vector3 position, float scale, Color color);
+            AItem(std::pair<int, int> position, float scale, Color color);
             ~AItem();
     };
 };

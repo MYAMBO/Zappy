@@ -13,7 +13,7 @@
 namespace gui {
     class Thystame : public AItem {
         public:
-            Thystame(Vector3 position, float scale, Color color);
+            Thystame(std::pair<int, int> position, float scale, std::shared_ptr<Model> model);
             ~Thystame();
 
             std::string getType() override;

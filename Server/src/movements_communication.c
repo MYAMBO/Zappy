@@ -10,14 +10,13 @@
 
 #include <stdio.h>
 
-
 static bool verif_out_map_player(server_t *serv, ai_stats_t *ai, int x, int y)
 {
-    if (ai->x + x > serv->map_height) {
+    if (ai->x + x >= serv->map_height) {
         ai->x = 0;
         return true;
     }
-    if (ai->y + y > serv->map_width) {
+    if (ai->y + y >= serv->map_width) {
         ai->y = 0;
         return true;
     }
@@ -55,25 +54,20 @@ char *handle_forward_action(ai_stats_t *ai, server_t *server)
 
 char *player_turns_right(ai_stats_t *ai)
 {
-    if (ai->direction == 3) {
-        ai->direction = 0;
+    if (ai->direction == WEST) {
+        ai->direction = NORTH;
         return "ok";
     }
-    ai->direction += 1;
+    ai->direction += 2;
     return "ok";
 }
 
 char *player_turns_left(ai_stats_t *ai)
 {
-    if (ai->direction == 0) {
-        ai->direction = 3;
+    if (ai->direction == NORTH) {
+        ai->direction = WEST;
         return "ok";
     }
-    ai->direction -= 1;
+    ai->direction -= 2;
     return "ok";
 }
-
-//char *player_looks_around(ai_stats_t *ai, server_t *server)
-//{
-//
-//}

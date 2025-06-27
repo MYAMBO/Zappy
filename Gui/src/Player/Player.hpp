@@ -10,11 +10,12 @@
 
     #include <tuple>
 
+    #include "Scene.hpp"
     #include "Button.hpp"
     #include "AEntity.hpp"
     #include "Inventory.hpp"
 
-enum orientation {
+enum Orientation {
     North,
     Est,
     South,
@@ -24,32 +25,33 @@ enum orientation {
 namespace gui {
     class Player : public AEntity {
         public:
-            Player(Vector3 position, float scale, Color color, int screenWidth, int screenHeight, Camera3D &camera, int &sceneState);
+            Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team, float scale, int screenWidth, int screenHeight, Camera3D &camera, CamState &sceneState);
             ~Player();
 
+            int getId() const;
+            int getLevel() const;
+            Orientation getOrientation() const;
+            std::string getTeam() const;
+
             /**
-             * @brief Move the model to the left.
-             * This function changes the direction of the model to the left.
+             * @brief Set the level of the Player.
+             * This function sets the level of the Player.
+             * @param level The new level of the Player.
              */
-            void Left();
+            void setLevel(int level);
+
+            /**
+             * @brief Set the orientation of the Player.
+             * This function sets the orientation of the Player.
+             * @param orientation The new orientation of the Player.
+             */
+            void setOrientation(Orientation orientation);
 
             /**
              * @brief Draw the Player on the screen.
              * This function draws the Player.
              */
             void draw();
-
-            /**
-             * @brief Move the model to the right.
-             * This function changes the direction of the model to the right.
-             */
-            void Right();
-
-            /**
-             * @brief Move the model forward.
-             * This function moves the model in the current direction.
-             */
-            void forward();
 
             /**
              * @brief Draw the UI of the Player.
@@ -61,7 +63,7 @@ namespace gui {
              * @brief Handle the camera button action.
              * This function handles the action when the camera button is clicked.
              */
-            void HandleCamButton(Camera3D &camera, int &sceneState);
+            void HandleCamButton(Camera3D &camera, CamState &sceneState);
 
             /**
              * @brief Update the Player.
@@ -77,12 +79,15 @@ namespace gui {
              */
             void updateUI();
         private:
+            int _id;
+            int _level;
+            std::string _team;
             bool _isSelected = false;
 
             ui::Button _camButton;
-            orientation _direction;
+            Orientation _direction;
             ui::Inventory _inventory;
     };
-};
+}
 
-#endif
+#endif //ZAPPY_PLAYER_HPP

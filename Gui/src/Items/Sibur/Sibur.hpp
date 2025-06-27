@@ -13,7 +13,7 @@
 namespace gui {
     class Sibur : public AItem {
         public:
-            Sibur(Vector3 position, float scale, Color color);
+            Sibur(std::pair<int, int> position, float scale, std::shared_ptr<Model> model);
             ~Sibur();
 
             std::string getType() override;

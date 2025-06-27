@@ -22,6 +22,7 @@
 
 typedef struct pollfd pollfd_t;
 
+int *is_running(void);
 int start_server(server_t *server);
 int handle_event(server_t *server);
 void init_density(server_t *server);

@@ -6,7 +6,7 @@
 ##
 
 def follow_message(tile):
-    if tile == 0:
+    if tile <= 0 or tile >= 9:
         return []
     elif tile == 1 or tile == 2 or tile == 8:
         return ["Forward"]

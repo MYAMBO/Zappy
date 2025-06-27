@@ -9,6 +9,7 @@
 SERVER_SRC = 												\
 				Server/src/main.c 							\
 				Server/src/garbage.c 						\
+				Server/src/look_utils.c                     \
 				Server/src/init_server.c 					\
                 Server/src/init_player.c 					\
 				Server/src/handle_event.c					\
@@ -16,19 +17,40 @@ SERVER_SRC = 												\
 				Server/src/split_string.c 					\
 				Server/src/start_server.c 					\
 				Server/src/map_protocol.c   				\
+				Server/src/slot_handler.c					\
 				Server/src/poll_handling.c  				\
 				Server/src/options_parser.c 				\
 				Server/src/actions_protocol.c				\
                 Server/src/handle_connection.c				\
+				Server/src/command_execution.c				\
 				Server/src/technical_protocol.c 			\
-				Server/src/player_informations_protocol.c 	\
-                Server/src/unique_connection_id_getter.c \
-                Server/src/commands/command_quit.c	\
+				Server/src/eject_communication.c            \
+				Server/src/generate_ressources.c			\
+				Server/src/incantation_protocol.c           \
+                Server/src/commands/command_quit.c			\
 				Server/src/actions_communication.c          \
 				Server/src/inventory_communication.c        \
-				Server/src/movements_communication.c		\
-				Server/src/slot_handler.c	\
-				Server/src/command_execution.c	\
+				Server/src/movements_communication.c        \
+				Server/src/look_around_communication.c      \
+				Server/src/incantation_communication.c      \
+                Server/src/unique_connection_id_getter.c 	\
+				Server/src/player_informations_protocol.c 	\
+				Server/src/graphic_connect.c \
+				Server/src/commands/command_pin.c	\
+				Server/src/commands/command_plv.c	\
+				Server/src/commands/command_ppo.c	\
+				Server/src/commands/command_msz.c	\
+				Server/src/commands/command_mct.c	\
+				Server/src/commands/command_bct.c	\
+				Server/src/utils.c	\
+				Server/src/commands/command_forward.c	\
+				Server/src/commands/command_right.c	\
+				Server/src/commands/command_left.c	\
+				Server/src/commands/command_look.c	\
+				Server/src/commands/command_inventory.c	\
+				Server/src/commands/command_broadcast.c	\
+				Server/src/commands/command_eject.c	\
+				Server/src/get_signal_direction.c	\
 
 GUI_SRC = 												\
 				Gui/src/main.cpp 						\
@@ -42,9 +64,13 @@ GUI_SRC = 												\
 				Gui/src/Items/Linemate/Linemate.cpp		\
 				Gui/src/Items/Deraumere/Deraumere.cpp	\
 														\
+				Gui/src/Tile/Tile.cpp					\
+				Gui/src/Menu/Menu.cpp					\
+				Gui/src/Scene/Scene.cpp					\
 				Gui/src/Button/Button.cpp 				\
 				Gui/src/Player/Player.cpp				\
 				Gui/src/AEntity/AEntity.cpp				\
+				Gui/src/Settings/Settings.cpp			\
 				Gui/src/Inventory/Inventory.cpp
 
 TEST_SRC =
@@ -56,13 +82,17 @@ AI_NAME = zappy_ai
 GUI_NAME = zappy_gui
 SERVER_NAME = zappy_server
 
-SERVER_FLAGS = -I Server/include -I Debug
+SERVER_FLAGS = -I Server/include -I Debug -lm
 GUI_FLAGS = -lraylib -lpthread -lGL -I Debug 		\
         											\
+			-I Gui/src/Tile			 				\
+			-I Gui/src/Menu 						\
 			-I Gui/src/Items 						\
+			-I Gui/src/Scene						\
 			-I Gui/src/Player 						\
 			-I Gui/src/Button 						\
 			-I Gui/src/AEntity 						\
+			-I Gui/src/Settings						\
 			-I Gui/src/Inventory 					\
 			-I Gui/src/Items/Food 					\
 			-I Gui/src/Items/Sibur 					\
@@ -72,7 +102,7 @@ GUI_FLAGS = -lraylib -lpthread -lGL -I Debug 		\
 			-I Gui/src/Items/Mendiane 				\
 			-I Gui/src/Items/Thystame 				\
 			-I Gui/include/interfaces				\
-			-I Gui/src/Items/Deraumere 				\
+			-I Gui/src/Items/Deraumere
 
 ALL_FLAGS = $(SERVER_FLAGS) $(GUI_FLAGS)
 CFLAGS = -Werror -Wall -Wextra -Iinclude

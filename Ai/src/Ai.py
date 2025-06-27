@@ -11,17 +11,20 @@ from Logger import logger, Output
 from Message import follow_message
 from getWay import get_better_way_to_resources
 from SortTiles import get_visible_tiles_sorted_by_distance
+from encrypt_message import encrypt_message, decrypt_message
 from CommandHandler import handle_inventory_string, try_inventory, try_view, try_connect, handle_eject_command, get_droping_items_commands, get_inventory_string
 
 class Ai:
     def __init__(self, team_name, client):
         self.__id = uuid.uuid4()
         self.__view = None
+        self.__ready_id = []
         self.__map_size = None
         self.__client = client
         self.__unused_slots = 0
         self.__is_ready = False
         self.__mates_to_wait = 0
+        self.__follow_counter = 0
         self.__ai_to_follow = None
         self.__team_inventory = {}
         self.__time_for_food = 126
@@ -58,7 +61,8 @@ class Ai:
             if self.__mates_to_wait == 0:
                 self.__start_incantation()
             else:
-                self.__commands_queue = [f"Broadcast \"follow me !;{self.__id}\""]
+                self.__commands_queue = ["Broadcast " + encrypt_message(self.__team_name, f"\"follow me !;{self.__id}${self.__follow_counter}\"")]
+                self.__follow_counter += 1
 
     def __start_incantation(self):
         self.__commands_queue = get_droping_items_commands(self.__inventory)
@@ -93,7 +97,7 @@ class Ai:
         if self.__commands_queue[0] == "Look":
             self.__commands_queue.insert(0, "Forward")
         else:
-            self.__commands_queue.insert(0, f"Broadcast \"j'ai ça :{self.__id};{get_inventory_string(self.__inventory)}\"")
+            self.__commands_queue.insert(0, "Broadcast " + encrypt_message(self.__team_name, f"\"j'ai ça :{self.__id};{get_inventory_string(self.__inventory)}\""))
 
     def update_commands_queue(self):
         if self.__nb_guard_in_place < 8 and self.__is_guard and not self.__is_in_place:
@@ -146,7 +150,12 @@ class Ai:
         return True
 
     def handle_follow(self, reply):
-        _, id = reply.strip()[:-1].rsplit(';', 1)
+        _, count_and_id = reply.strip()[:-1].rsplit(';', 1)
+        id, count = count_and_id.strip().rsplit('$', 1)
+        if int(count) != self.__follow_counter:
+            logger.info("an enemy try to usurp our commander !", Output.BOTH)
+            return
+        self.__follow_counter += 1
         if self.__ai_to_follow == self.__id and str(self.__id) < id:
             self.__ai_to_follow = id
             return
@@ -160,21 +169,32 @@ class Ai:
             self.__commands_queue.append("Look")
         else:
             self.__is_ready = True
-            self.__commands_queue = ["Broadcast \"" + str(self.__id) + ";en position !\""]
+            self.__commands_queue = ["Broadcast " + encrypt_message(self.__team_name, "\"" + str(self.__id) + ";en position !\"")]
 
     def handle_message(self, reply):
         if "follow me !;" in reply and self.__is_ready == False:
             self.handle_follow(reply)
         elif ";en position !" in reply and self.__id == self.__ai_to_follow:
+            start, _ = reply.rsplit(';', 1)
+            _, id = start.rsplit('\"', 1)
+            if id in self.__ready_id:
+                return
             self.__mates_to_wait -= 1
+            self.__ready_id.append(id)
         elif "j'ai ça :" in reply:
             _, info = reply.rsplit(":", 1)
             id, inventory = info.rsplit(";", 1)
             try:
-                self.__team_inventory[id] = handle_inventory_string(inventory.strip()[:-1])
+                new_inventory = handle_inventory_string(inventory.strip()[:-1])
             except:
                 return
-        elif "\"etttt c'est partieee !!!\"" in reply:
+            last_inventory = self.__team_inventory.get(id)
+            if last_inventory != None:
+                for key, value in new_inventory.items():
+                    if key != "food" and last_inventory[key] > value:
+                        return
+            self.__team_inventory[id] = new_inventory
+        if "\"etttt c'est partiiiiii !!!\"" in reply:
             self.__commands_queue = get_droping_items_commands(self.__inventory)
         elif "guard in place" in reply:
             self.__nb_guard_in_place += 1
@@ -204,7 +224,11 @@ class Ai:
             handle_eject_command(reply, self.__commands_queue)
             return False
         if reply.startswith("message "):
-            self.handle_message(reply)
+            start, message = reply.rsplit(", ", 1)
+            decrypted_message = decrypt_message(self.__team_name, message)
+            if decrypted_message is None:
+                return False
+            self.handle_message(start + ", " + decrypted_message)
             return False
         command = self.__command_to_reply
         if command == self.__team_name:

@@ -42,7 +42,11 @@ static char *return_tile_ressources(map_t *map, int alloc, int x, int y)
 
 char *get_tile_content(map_t *map, int x, int y)
 {
-    int alloc = snprintf(NULL, 0, "bct %d %d %d %d %d %d %d %d %d\n", x, y,
+    int alloc = 0;
+
+    if (x < 0 || y < 0 || x >= map->width || y >= map->height)
+        return "sbc\n";
+    alloc = snprintf(NULL, 0, "bct %d %d %d %d %d %d %d %d %d\n", x, y,
         map->tiles[y][x].resources[0],
         map->tiles[y][x].resources[1],
         map->tiles[y][x].resources[2],
@@ -50,7 +54,6 @@ char *get_tile_content(map_t *map, int x, int y)
         map->tiles[y][x].resources[4],
         map->tiles[y][x].resources[5],
         map->tiles[y][x].resources[6]);
-
     return return_tile_ressources(map, alloc, x, y);
 }
 

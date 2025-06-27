@@ -27,10 +27,20 @@ typedef enum ressources_index_s {
 
 typedef enum direction_s {
     NORTH,
+    NORTH_EAST,
     EAST,
+    SOUTH_EAST,
     SOUTH,
-    WEST
+    SOUTH_WEST,
+    WEST,
+    NORTH_WEST,
 } direction_t;
+
+typedef struct map_s {
+    int width;
+    int height;
+    ressources_t **tiles;
+} map_t;
 
 typedef struct server_s {
     long port;
@@ -39,6 +49,7 @@ typedef struct server_s {
     int poll_count;
     int map_width;
     int map_height;
+    map_t *map;
     slot_table_t **team_names;
     int team_count;
     int client_per_slot;
@@ -50,25 +61,19 @@ typedef struct server_s {
     double mendiane_density;
     double phiras_density;
     double thystame_density;
-
+    int food_value;
+    int linemate_value;
+    int deraumere_value;
+    int sibur_value;
+    int mendiane_value;
+    int phiras_value;
+    int thystame_value;
+    int current_res[7];
 } server_t;
 
 typedef struct entry_s {
     char *command;
     int (*function)(server_t *server, poll_handling_t *node, char **args);
 } entry_t;
-
-/*
- *
- *  include the following map_t in the server struct after some
- *  amelioration
- *
-*/
-
-typedef struct map_s {
-    int width;
-    int height;
-    ressources_t **tiles;
-} map_t;
 
 #endif //STRUCT_H

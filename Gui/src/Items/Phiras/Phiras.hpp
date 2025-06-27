@@ -13,7 +13,7 @@
 namespace gui {
     class Phiras : public AItem {
         public:
-            Phiras(Vector3 position, float scale, Color color);
+            Phiras(std::pair<int, int> position, float scale, std::shared_ptr<Model> model);
             ~Phiras();
 
             std::string getType() override;
