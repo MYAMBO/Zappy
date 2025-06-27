@@ -21,9 +21,9 @@ gui::Display::Display(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> 
     : _camera(camera), _camState(camState), _sceneState(sceneState), _width(WIDTH), _height(HEIGHT)
 {
 
-    _model = std::make_shared<Model>(LoadModel("assets/player/scene.gltf"));
+    _model = std::make_shared<Model>(LoadModel("assets/player/scene.glb"));
     _deadModel = LoadModel("assets/dead/scene.gltf");
-    _animations = LoadModelAnimations("assets/player/scene.gltf", &_animCount);
+    _animations = LoadModelAnimations("assets/player/scene.glb", &_animCount);
     _eggModel = std::make_shared<Model>(LoadModel("assets/egg/scene.gltf"));
 
     _timeUnit = timeUnit;
@@ -130,10 +130,17 @@ void gui::Display::handleInput()
     eventToggleDisplay();
     updateCamera();
 
-    for (auto& player : *_players)
-        player->update(*_camera);
     for (auto& tile: *_map)
         tile->handleUserInput(*_camera);
+    for (auto& player : *_players) {
+        if (player->update(*_camera) == 1) {
+            for (auto& p : *_players) {
+                if (p->getId() != player->getId() && p->getSelected()) {
+                    player->setSelected(false);
+                }
+            }
+        }
+    }
 }
 
 void gui::Display::render()
@@ -205,5 +212,5 @@ std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> gui::Display::getPlay
 void gui::Display::addPlayer(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team)
 {
     _players->emplace_back(std::make_shared<gui::Player>(id, position, orientation, level, team, 0.35, SCREEN_WIDTH, SCREEN_HEIGHT,
-        *_camera, *_camState, _timeUnit, _model, _deadModel, _animations, _animCount));
+        *_camera, *_camState, _timeUnit, _model, _deadModel, _animations, _animCount, _models->at(4)));
 }

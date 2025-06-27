@@ -251,7 +251,19 @@ void gui::Client::tna(std::vector<std::string> stringArray)
     if (std::find(_teams.begin(), _teams.end(), team_name) != _teams.end())
         return;
 
+    std::vector <Color> colors = {
+        {255, 0, 255, 255}, {0, 255, 255, 255}, {255, 165, 0, 255}, {128, 0, 128, 255},
+        {0, 128, 128, 255}, {192, 192, 192, 255}, {255, 20, 147, 255},
+        {0, 0, 139, 255}, {0, 100, 0, 255}, {70, 130, 180, 255},
+        {255, 105, 180, 255}, {255, 0, 0, 255}, {0, 0, 255, 255},
+        {0, 128, 0, 255}, {128, 128, 0, 255}, {128, 128, 128, 255}
+    };
     _teams.push_back(team_name);
+    if (_teams.size() > colors.size()) {
+        _teamColors[team_name] = {255, 255, 255, 255};
+        return;
+    }
+    _teamColors[team_name] = colors[_teams.size()];
 }
 
 
@@ -278,6 +290,11 @@ void gui::Client::pnw(std::vector<std::string> stringArray)
     if (id >= 0 && x >= 0 && x < _size.first && y >= 0 && y < _size.second &&
         orientation > 0 && orientation < 5 && level > 0 && level < 9) {
         _display->addPlayer(id, position, static_cast<Orientation>(orientation), level, team_name);
+        auto player = _players->at(findPlayer(id)); {
+        if (player->getId() == id) {
+            player->setColorTeam(_teamColors);
+        }
+        }
     } else
         throw Error("Player's value are wrong.");
 }
@@ -345,13 +362,13 @@ void gui::Client::pin(std::vector<std::string> stringArray)
     int id = std::stoi(stringArray[1].substr(1));
     int posX = std::stoi(stringArray[2]);
     int posY = std::stoi(stringArray[3]);
-    inventory.emplace("food", std::stoi(stringArray[4]));
-    inventory.emplace("linemate", std::stoi(stringArray[5]));
-    inventory.emplace("deraumere", std::stoi(stringArray[6]));
-    inventory.emplace("sibur", std::stoi(stringArray[7]));
-    inventory.emplace("mendiane", std::stoi(stringArray[8]));
-    inventory.emplace("phiras", std::stoi(stringArray[9]));
-    inventory.emplace("thystame", std::stoi(stringArray[10]));
+    inventory.emplace("Food", std::stoi(stringArray[4]));
+    inventory.emplace("Linemate", std::stoi(stringArray[5]));
+    inventory.emplace("Deraumere", std::stoi(stringArray[6]));
+    inventory.emplace("Sibur", std::stoi(stringArray[7]));
+    inventory.emplace("Mendiane", std::stoi(stringArray[8]));
+    inventory.emplace("Phiras", std::stoi(stringArray[9]));
+    inventory.emplace("Thystame", std::stoi(stringArray[10]));
 
     if (posX < 0 || posX >= _size.first || posY < 0 || posY >= _size.second)
         throw Error("Player's position out of map");
@@ -363,8 +380,9 @@ void gui::Client::pin(std::vector<std::string> stringArray)
         if (elt.second < 0)
             throw Error("Player's inventory can't have negative value");
 
+    Debug::InfoLog("[GUI] Set inventory for player ID: " + std::to_string(id) + "\n");
     for (auto & item : inventory) {
-        _players->at(findPlayer(id))->getInventory()->setInventoryItem(item.first, item.second);
+        _players->at(findPlayer(id))->setInventory(item.first, item.second);
     }
 }
 
@@ -433,7 +451,7 @@ void gui::Client::pic(std::vector<std::string> stringArray)
         id = std::stoi(stringArray[i].substr(1));
         if (id && findPlayer(id) == -1)
             return;
-//        playersId.emplace(id);
+        _players->at(findPlayer(id))->setIncantation(true);
     }
 }
 
@@ -455,7 +473,16 @@ void gui::Client::pie(std::vector<std::string> stringArray) const
 
     if (posX < 0 || posX >= _size.first || posY < 0 || posY >= _size.second)
         throw Error("Player's position out of map");
-    std::cout << "in pie " << result << std::endl;
+    if (result < 0 || result > 8)
+        throw Error("Incantation result is invalid");
+
+    for (size_t i = 0; i < _players->size(); ++i) {
+        auto &player = _players->at(i);
+        if (player->getPosition().x == posX && player->getPosition().y == posY) {
+            player->setIncantationEnded(true);
+            sendCommand("plv #" + std::to_string(player->getId()) + "\n");
+        }
+    }
 }
 
 
@@ -486,14 +513,22 @@ void gui::Client::pdr(std::vector<std::string> stringArray)
     int id = std::stoi(stringArray[1].substr(1));
     int nbResources = std::stoi(stringArray[2]);
 
+    Debug::InfoLog("Player ID: " + std::to_string(id) + ", Resource ID: " + std::to_string(nbResources));
     if (id && findPlayer(id) == -1)
         return;
 
     if (nbResources < 0)
         throw Error("Resources can't have negative value");
 
-    // get Player and remove item
-    // addItem on Tile
+    auto &player = _players->at(findPlayer(id));
+    auto position = player->getPosition();
+    size_t index = position.x * _size.first + position.y;
+    auto &tile = _map->at(index);
+
+    if (tile->getItem(nbResources) > 0) {
+        tile->addItem(1, nbResources);
+        sendCommand("pin #" + std::to_string(id) +"\n");
+    }
 }
 
 
