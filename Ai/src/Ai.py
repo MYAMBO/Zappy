@@ -148,9 +148,15 @@ class Ai:
             _, info = reply.rsplit(":", 1)
             id, inventory = info.rsplit(";", 1)
             try:
-                self.__team_inventory[id] = handle_inventory_string(inventory.strip()[:-1])
+                new_inventory = handle_inventory_string(inventory.strip()[:-1])
             except:
                 return
+            last_inventory = self.__team_inventory.get(id)
+            if last_inventory != None:
+                for key, value in new_inventory.items():
+                    if key != "food" and last_inventory[key] > value:
+                        return
+            self.__team_inventory[id] = new_inventory
         if "\"etttt c'est partiiiiii !!!\"" in reply:
             self.__commands_queue = get_droping_items_commands(self.__inventory)
 
