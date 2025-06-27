@@ -46,6 +46,8 @@ void gui::Scene::initWindow()
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Zappy");
     SetTargetFPS(TARGET_FPS);
 
+    ToggleFullscreen();
+
     _camera->position = { -WIDTH, 10.0f, -HEIGHT };
     _camera->target = { WIDTH / 2, 0.0f, HEIGHT / 2 };
     _camera->up = { 0.0f, 1.0f, 0.0f };
