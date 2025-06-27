@@ -8,24 +8,9 @@
 #ifndef ZAPPY_CLIENT_HPP
     #define ZAPPY_CLIENT_HPP
 
-    #include <map>
-    #include <vector>
     #include <thread>
-    #include <memory>
-    #include <utility>
-    #include <iostream>
-    #include <iostream>
-    #include <functional>
-    #include <arpa/inet.h>
-    #include <sys/socket.h>
 
-    #include "Tile.hpp"
-    #include "AItem.hpp"
     #include "Scene.hpp"
-    #include "Error.hpp"
-    #include "Player.hpp"
-    #include "Display.hpp"
-    #include "AEntity.hpp"
 
 namespace gui {
     class Client {
@@ -43,8 +28,6 @@ namespace gui {
             std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> getEggs();
             std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> getPlayers();
             std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> getMap();
-
-            void drawPlayers();
         private:
             void connectToServer();
             void receiveLoop();
@@ -75,7 +58,6 @@ namespace gui {
             void sbp(const std::vector<std::string>& stringArray); // command parameter
 
             std::vector<std::string> splitString(const std::string &string, char delimiter);
-            std::shared_ptr<Model> safeModelLoader(const std::string& string);
             int findPlayer(int id);
             int findTile(int x, int y);
 

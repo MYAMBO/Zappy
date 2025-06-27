@@ -8,19 +8,7 @@
 #ifndef ZAPPY_DISPLAY_HPP
 #define ZAPPY_DISPLAY_HPP
 
-    #include "Egg.hpp"
     #include "Tile.hpp"
-    #include "Food.hpp"
-    #include "Type.hpp"
-    #include "Sibur.hpp"
-    #include "AItem.hpp"
-    #include "Button.hpp"
-    #include "Logger.hpp"
-    #include "Phiras.hpp"
-    #include "Linemate.hpp"
-    #include "Mendiane.hpp"
-    #include "Thystame.hpp"
-    #include "Deraumere.hpp"
 
     #include <vector>
     #include <memory>
@@ -53,14 +41,14 @@ namespace gui {
 
             void addPlayer(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team);
 
-            std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> getMap();
-            std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> getEggs();
+            std::shared_ptr<std::vector<std::shared_ptr<Tile>>> getMap();
+            std::shared_ptr<std::vector<std::shared_ptr<Egg>>> getEggs();
             std::shared_ptr<std::vector<std::shared_ptr<Model>>> getModels();
-            std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> getPlayers();
+            std::shared_ptr<std::vector<std::shared_ptr<Player>>> getPlayers();
 
             std::unique_ptr<ui::Menu> _menu;
             std::unique_ptr<ui::Settings> _settings;
-            std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> _players;
+            std::shared_ptr<std::vector<std::shared_ptr<Player>>> _players;
 
             std::shared_ptr<Model> _model;
             std::shared_ptr<Model> _eggModel;
@@ -94,8 +82,8 @@ namespace gui {
             std::shared_ptr<CamState> _camState;
             std::shared_ptr<SceneState> _sceneState;
             std::shared_ptr<std::vector<std::shared_ptr<Model>>> _models;
-            std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> _eggs;
-            std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> _map;
+            std::shared_ptr<std::vector<std::shared_ptr<Egg>>> _eggs;
+            std::shared_ptr<std::vector<std::shared_ptr<Tile>>> _map;
 
             std::vector<int> _itemDisplay;
             float _width;

@@ -8,7 +8,6 @@
 #ifndef ZAPPY_SCENE_HPP
 #define ZAPPY_SCENE_HPP
 
-#include "Type.hpp"
 #include "Display.hpp"
 
 #include <vector>

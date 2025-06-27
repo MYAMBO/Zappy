@@ -13,8 +13,10 @@
     #include <utility>
     #include <raylib.h>
 
+    #include "Egg.hpp"
     #include "Food.hpp"
     #include "Sibur.hpp"
+    #include "Player.hpp"
     #include "Phiras.hpp"
     #include "Linemate.hpp"
     #include "Mendiane.hpp"
@@ -24,7 +26,10 @@
 namespace gui {
     class Tile {
         public:
-            Tile(std::pair<int, int> coord, std::vector<int> qty, std::vector<std::shared_ptr<Model>> model);
+            Tile(std::pair<int, int> coord, std::vector<int> qty, std::vector<std::shared_ptr<Model>> model,
+                 std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players,
+                 std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> _eggs,
+                 std::vector<std::string> _teams, int screenHeight, int screenWidth);
             ~Tile();
 
             /**
@@ -67,15 +72,49 @@ namespace gui {
             int getItem(int type) const;
 
             /**
+             * @brief Get all the players on a Tile.
+             * @return A vector with all position in list of players on this Tile
+             */
+            std::vector<int> getPlayersOnTile();
+
+            /**
+             * @brief Get all the Eggs on a Tile.
+             * @return A vector with all position in list of Eggs on this Tile
+             */
+            std::vector<int> getEggOnTile();
+
+            /**
              * @brief Get the coordinates of the tile.
              * @return A pair representing the coordinates of the tile.
              */
             std::pair<int, int> getCoord();
+
+            /**
+             * @brief Handle user input for the Tile.
+             * @param camera The Camera3D used for ray picking.
+             */
+            void handleUserInput(Camera camera);
+
+            /**
+             * @brief Display Tile content
+             */
+            void displayContent();
+
         private:
+            bool _isSelected;
             std::vector<int> _qty;
             std::pair<int, int> _coord;
+            std::vector<std::string> _teams;
             std::vector<std::shared_ptr<Model>> _models;
             std::vector<std::vector<std::shared_ptr<gui::AItem>>> _items;
+            std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> _eggs;
+            std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> _players;
+
+            /* Inventory part */
+            int _fontSize;
+            std::vector<std::pair<std::string, Color>> _itemsText;
+
+            Rectangle _bounds;
     };
 };
 

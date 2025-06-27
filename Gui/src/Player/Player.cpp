@@ -208,7 +208,7 @@ void gui::Player::updateMovementAndAnimation()
 
 int gui::Player::handleUserInput(Camera camera)
 {
-    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !IsKeyDown(KEY_LEFT_SHIFT)) {
         Ray ray = GetMouseRay(GetMousePosition(), camera);
         BoundingBox box = {
             { _position.x - 0.5f, _position.y - 0.5f, _position.z - 0.5f},

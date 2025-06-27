@@ -5,15 +5,13 @@
 ** Scene
 */
 
-#include <math.h>
 #include <thread>
-#include <chrono>
 
-#include "Menu.hpp"
 #include "Scene.hpp"
+#include "Menu.hpp"
 #include "Client.hpp"
-#include "Player.hpp"
 #include "Settings.hpp"
+#include "Logger.hpp"
 
 /************************************************************
 **         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **

@@ -6,7 +6,6 @@
 */
 
 #include "Menu.hpp"
-#include "Player.hpp"
 #include "Display.hpp"
 #include "Settings.hpp"
 
@@ -131,6 +130,8 @@ void gui::Display::handleInput()
     eventToggleDisplay();
     updateCamera();
 
+    for (auto& tile: *_map)
+        tile->handleUserInput(*_camera);
     for (auto& player : *_players) {
         if (player->update(*_camera) == 1) {
             for (auto& p : *_players) {
@@ -156,6 +157,9 @@ void gui::Display::render()
     for (auto& player : *_players) {
         player->drawUI();
         player->updateUI();
+    }
+    for (auto& tile: *_map) {
+        tile->displayContent();
     }
     EndDrawing();
 }
