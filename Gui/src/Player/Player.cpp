@@ -20,12 +20,12 @@
 
 gui::Player::Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team,
         float scale, int screenWidth, int screenHeight, Camera &camera, CamState &sceneState, std::shared_ptr<int> timeUnit,
-        std::shared_ptr<Model> model, Model deadModel, ModelAnimation *animations, int animCount)
+        std::shared_ptr<Model> model, Model deadModel, ModelAnimation *animations, int animCount, std::shared_ptr<Model> teamModel)
     : AEntity({(float)position.first, 1.0f, (float)position.second}, scale, WHITE), 
     _model(model), _id(id), _level(level), _animCount(animCount), _currentAnim(2), _animFrameCounter(0), _isMoving(false), _isSelected(false), _team(std::move(team)), _animationSpeed(1.0f),
     _camButton([this, &camera, &sceneState]() { HandleCamButton(camera, sceneState); }, Rectangle{0, static_cast<float>(screenHeight - 70), 150, 70}, "Camera"),
     _inventory(std::make_shared<gui::ui::Inventory>(screenWidth, screenHeight)), _deadModel(deadModel), _direction(orientation), _currentAnimState(AnimState::IDLE),
-    _animations(animations)
+    _animations(animations), _teamModel(teamModel)
 {
     _mutex.lock();
 
@@ -36,6 +36,62 @@ gui::Player::Player(int id, std::pair<int, int> position, Orientation orientatio
         setAnimationState(AnimState::IDLE);
     }
     _model->transform = MatrixScale(scale, scale, scale);
+    _playersNames = {
+        {0, "piairkiroulnamaszpamouss"},
+        {1, "aportéçapiairalidifiss"},
+        {2, "cassoeurdepiair"},
+        {3, "fairdunepiairdecou"},
+        {4, "piairafeu"},
+        {5, "piairfilosofale"},
+        {6, "jeunevoujaitepalapiarpiair"},
+        {7, "robespiair"},
+        {8, "tailleurdepièr"},
+        {9, "piairgeantdeukarpantri"},
+        {10, "geanPiair"},
+        {11, "pièrdemèere"},
+        {12, "pièrponsse"},
+        {13, "piairninez"},
+        {14, "pièrpraissieuze"},
+        {15, "piairdelastarac"},
+        {16, "piérkifédelatutureéboompula"},
+        {17, "piairfeuilsizo"},
+        {18, "piairrauchar"},
+        {19, "piairshabriaicontedementécristeau"},
+        {20, "abépiair"},
+        {21, "piairtonballe"},
+        {22, "keuredepiair"},
+        {23, "vodkayu"},
+        {24, "kayulotre"},
+        {25, "kakayu"},
+        {26, "kayumoulox"},
+        {27, "kayutube"},
+        {28, "rocheboboi"},
+        {29, "bazukayu"},
+        {30, "babouchkayu"},
+        {31, "kayuyak"},
+        {32, "lençaideuxkayu"},
+        {33, "petikayudenléshossur"},
+        {34, "iverocher"},
+        {35, "fereroroché"},
+        {36, "zerock"},
+        {37, "rockérole"},
+        {38, "barock"},
+        {39, "crockcarote"},
+        {40, "rockète"},
+        {41, "rocksthar"},
+        {42, "prockureurdelaraiepublic"},
+        {43, "gelamédenmonchapoélmedikifétrochojelamédenmontiroireélmedikifétronoirgelamédenmakuloteélmefétroipetitekrock"},
+        {44, "jéchiaidanmonfrock"},
+        {45, "interstonar"},
+        {46, "stonanalizis"},
+        {47, "gaymoffstaunne"},
+        {48, "rolingstone"},
+        {49, "emastone"},
+        {50, "silvestonestaler"},
+        {51, "aistoni"},
+        {52, "stonitark"},
+        {53, "rockibalbaua"}
+    };
     _mutex.unlock();
 }
 
@@ -95,12 +151,28 @@ void gui::Player::draw()
         DrawCubeWires(_position, 1, 1, 1, {255, 0, 0, 255});
     broadcastAnimation();
     IncantationAnimation();
+    DrawModelEx(*_teamModel, {_position.x, _position.y + 0.8f, _position.z}, {0, 1, 0}, _rotationY, {0.05, 0.05, 0.05}, _colorTeam[_team]);
 }
 
 void gui::Player::drawUI()
 {
     if (_isSelected) {
         _inventory->draw();
+        DrawText(("Team name: " + _team).c_str(), static_cast<float>(SCREEN_WIDTH) / 5.0f, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam[_team]);
+        DrawText(("Player ID: " + std::to_string(_id)).c_str(), static_cast<float>(SCREEN_WIDTH) / 2.8, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam[_team]);
+        int falseId = _id;
+        int counter = 0;
+        if (falseId > _playersNames.size()) {
+            while (falseId >= _playersNames.size()) {
+                counter++;
+                falseId -= _playersNames.size();
+            }
+        }
+        if (counter == 0)
+            DrawText(("Player name: " + _playersNames[falseId]).c_str(), static_cast<float>(SCREEN_WIDTH) / 2, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam[_team]);
+        else 
+            DrawText(("Player name: " + _playersNames[falseId] + " " + std::to_string(counter)).c_str(), static_cast<float>(SCREEN_WIDTH) / 2, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam[_team]);
+        DrawText(("Level: " + std::to_string(_level)).c_str(), static_cast<float>(SCREEN_WIDTH) / 1.2, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam[_team]);
         _camButton.draw();
     }
 }
@@ -134,17 +206,18 @@ void gui::Player::updateMovementAndAnimation()
     }
 }
 
-void gui::Player::handleUserInput(Camera camera)
+int gui::Player::handleUserInput(Camera camera)
 {
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         Ray ray = GetMouseRay(GetMousePosition(), camera);
         BoundingBox box = {
-            { _position.x - 1, _position.y - 1, _position.z - 1},
-            { _position.x + 1, _position.y + 1, _position.z + 1}
+            { _position.x - 0.5f, _position.y - 0.5f, _position.z - 0.5f},
+            { _position.x + 0.5f, _position.y + 0.5f, _position.z + 0.5f}
         };
         RayCollision collision = GetRayCollisionBox(ray, box);
         if (collision.hit) {
             _isSelected = true;
+            return 1;
         } else {
             Vector2 mousePos = GetMousePosition();
             Rectangle bounds = _camButton.getBounds();
@@ -155,12 +228,14 @@ void gui::Player::handleUserInput(Camera camera)
     }
     if (IsKeyPressed(KEY_ESCAPE))
         _isSelected = false;
+    return 0;
 }
 
 int gui::Player::update(Camera camera)
 {
     updateMovementAndAnimation();
-    handleUserInput(camera);
+    if (handleUserInput(camera) == 1)
+        return 1;
     return 0;
 }
 
@@ -260,9 +335,14 @@ bool gui::Player::getIsMoving() const
 
 
 /************************************************************
-**              >>>>   SETTERS FUNCTIONS   <<<<            **
-************************************************************/
+ **              >>>>   SETTERS FUNCTIONS   <<<<            **
+ ************************************************************/
 
+
+void gui::Player::setColorTeam(std::map<std::string, Color> colorTeam)
+{
+    _colorTeam = colorTeam;
+}
 
 void gui::Player::setLevel(int level)
 {
@@ -317,4 +397,9 @@ void gui::Player::setIncantationEnded(bool isIncantationEnded)
     _isIncantationEnded = isIncantationEnded;
     if (_isIncantationEnded)
         _IncantationTimer = 0.0f;
+}
+
+void gui::Player::setSelected(bool selected)
+{
+    _isSelected = selected;
 }

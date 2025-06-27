@@ -132,7 +132,13 @@ void gui::Display::handleInput()
     updateCamera();
 
     for (auto& player : *_players) {
-        player->update(*_camera);
+        if (player->update(*_camera) == 1) {
+            for (auto& p : *_players) {
+                if (p->getId() != player->getId() && p->getSelected()) {
+                    player->setSelected(false);
+                }
+            }
+        }
     }
 }
 
@@ -202,5 +208,5 @@ std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> gui::Display::getPlay
 void gui::Display::addPlayer(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team)
 {
     _players->emplace_back(std::make_shared<gui::Player>(id, position, orientation, level, team, 0.35, SCREEN_WIDTH, SCREEN_HEIGHT,
-        *_camera, *_camState, _timeUnit, _model, _deadModel, _animations, _animCount));
+        *_camera, *_camState, _timeUnit, _model, _deadModel, _animations, _animCount, _models->at(4)));
 }
