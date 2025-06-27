@@ -255,7 +255,19 @@ void gui::Client::tna(std::vector<std::string> stringArray)
     if (std::find(_teams.begin(), _teams.end(), team_name) != _teams.end())
         return;
 
+    std::vector <Color> colors = {
+        {255, 0, 255, 255}, {0, 255, 255, 255}, {255, 165, 0, 255}, {128, 0, 128, 255},
+        {0, 128, 128, 255}, {192, 192, 192, 255}, {255, 20, 147, 255},
+        {0, 0, 139, 255}, {0, 100, 0, 255}, {70, 130, 180, 255},
+        {255, 105, 180, 255}, {255, 0, 0, 255}, {0, 0, 255, 255},
+        {0, 128, 0, 255}, {128, 128, 0, 255}, {128, 128, 128, 255}
+    };
     _teams.push_back(team_name);
+    if (_teams.size() > colors.size()) {
+        _teamColors[team_name] = {255, 255, 255, 255};
+        return;
+    }
+    _teamColors[team_name] = colors[_teams.size()];
 }
 
 
@@ -282,6 +294,11 @@ void gui::Client::pnw(std::vector<std::string> stringArray)
     if (id >= 0 && x >= 0 && x < _size.first && y >= 0 && y < _size.second &&
         orientation > 0 && orientation < 5 && level > 0 && level < 9) {
         _display->addPlayer(id, position, static_cast<Orientation>(orientation), level, team_name);
+        auto player = _players->at(findPlayer(id)); {
+        if (player->getId() == id) {
+            player->setColorTeam(_teamColors);
+        }
+        }
     } else
         throw Error("Player's value are wrong.");
 }
