@@ -691,14 +691,6 @@ void gui::Client::sbp(const std::vector<std::string>& stringArray)
  **           >>>>  MEMBER FUNCTIONS   <<<<          **
  ************************************************************/
 
-
-void gui::Client::drawPlayers()
-{
-    for (const auto& player : *_players) {
-        player->draw();
-    }
-}
-
 std::vector<std::string> gui::Client::splitString(const std::string& string, char delimiter)
 {
     std::vector<std::string> list;

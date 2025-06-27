@@ -28,8 +28,6 @@ namespace gui {
             std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> getEggs();
             std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> getPlayers();
             std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> getMap();
-
-            void drawPlayers();
         private:
             void connectToServer();
             void receiveLoop();
