@@ -23,7 +23,7 @@ namespace gui {
         public:
             Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team,
                 float scale, int screenWidth, int screenHeight, Camera &camera, CamState &sceneState, std::shared_ptr<int> timeUnit,
-                std::shared_ptr<Model> model, Model deadModel, ModelAnimation *animations, int animCount);
+                std::shared_ptr<Model> model, Model deadModel, ModelAnimation *animations, int animCount, std::shared_ptr<Model> teamModel);
             ~Player();
 
             /**
@@ -92,7 +92,7 @@ namespace gui {
              * @param camera The Camera3D used for ray picking.
              * @return An integer indicating the result of the update (e.g., success or failure).
              */
-            int update(Camera camera);
+            [[nodiscard]] int update(Camera camera);
 
             /**
              * @brief Update the UI of the Player.
@@ -165,8 +165,9 @@ namespace gui {
              * @brief Handle user input for the Player.
              * This function processes user input to control the Player's actions, such as movement and broadcasting.
              * @param camera The Camera3D used for ray picking.
+             * @return An integer indicating the result of the user input handling (e.g., success or failure).
              */
-            void handleUserInput(Camera camera);
+            [[nodiscard]] int handleUserInput(Camera camera);
             
             /**
              * @brief set the dead state of the Player.
@@ -183,6 +184,19 @@ namespace gui {
              */
             void setInventory(const std::string item, int quantity);
 
+            /**
+             * @brief set the selected state of the Player.
+             * This function sets whether the Player is currently selected.
+             * @param selected true if the Player is selected, false otherwise.
+             */
+            void setSelected(bool selected);
+
+            /**
+             * @brief Set the color of the Player's team.
+             * This function retrieves the color associated with the Player's team.
+             * @param color The color to set for the Player's team.
+             */
+            void setColorTeam(std::map<std::string, Color> colorTeam);
         private:
             /**
              * @brief Animation of the broadcast.
@@ -254,6 +268,11 @@ namespace gui {
             std::map<std::string, std::pair<int, Color>> _items;
 
             Rectangle _bounds;
+
+            std::shared_ptr<Model> _teamModel;
+
+            std::map<std::string, Color> _colorTeam;
+            std::map<int, std::string> _playersNames;
     };
 }
 
