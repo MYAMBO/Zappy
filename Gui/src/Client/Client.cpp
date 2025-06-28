@@ -37,7 +37,14 @@ gui::Client::Client(std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> p
 
 gui::Client::~Client()
 {
-    _thread.join();
+    if (_socket >= 0) {
+        close(_socket);
+        _socket = -1;
+    }
+
+    if (_thread.joinable()) {
+        _thread.join();
+    }
 }
 
 /************************************************************
@@ -133,10 +140,13 @@ void gui::Client::receiveLoop()
                 
             auto it = funcMap.find(stringArray[0]);
             if (it != funcMap.end()) {
-                it->second(stringArray);
+                try {
+                    it->second(stringArray);
+                } catch (const std::exception &e) {
+                    Debug::WarningLog(e.what());
+                }
             } else {
                 Debug::DebugLog("Unknown command received: " + stringArray[0]);
-                throw Error("This protocol don't exist : " + stringArray[0]);
             }
         }
     }

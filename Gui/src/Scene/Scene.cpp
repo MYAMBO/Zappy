@@ -55,17 +55,6 @@ void gui::Scene::initWindow()
     _camera->projection = CAMERA_PERSPECTIVE;
 }
 
-std::shared_ptr<Model> gui::Scene::safeModelLoader(const std::string& path)
-{
-    std::cout << path << std::endl;
-    std::shared_ptr<Model> model = std::make_shared<Model>(LoadModel(path.c_str()));
-
-    if (model->meshCount == 0 || model->meshes == nullptr)
-        throw gui::FailedLoadModel();
-
-    return model;
-}
-
 bool gui::Scene::isOpen() const
 {
     return _isOpen;

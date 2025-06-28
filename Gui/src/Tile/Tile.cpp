@@ -7,6 +7,7 @@
 
 #include "Tile.hpp"
 #include "Logger.hpp"
+#include "Error.hpp"
 
 #include <functional>
 #include <utility>
@@ -66,7 +67,7 @@ void gui::Tile::addItem(int qty, int type)
 
     auto it = factoryMap.find(type);
     if (it == factoryMap.end())
-        throw ;
+        throw Error("This type don't exist : " + std::to_string(type));
 
     for (int i = 0; i < qty; ++i)
         _items[type].emplace_back(it->second());

@@ -56,11 +56,6 @@ namespace gui {
             std::shared_ptr<Camera> _camera;
             std::shared_ptr<CamState> _camState;
             std::shared_ptr<SceneState> _currentState;
-
-            /**
-             * @brief Safe model loader with error handling.
-             */
-            static std::shared_ptr<Model> safeModelLoader(const std::string& path);
     };
 
     class FailedLoadModel : public std::exception {
