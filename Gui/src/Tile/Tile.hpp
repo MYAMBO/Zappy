@@ -28,8 +28,9 @@ namespace gui {
         public:
             Tile(std::pair<int, int> coord, std::vector<int> qty, std::vector<std::shared_ptr<Model>> model,
                  std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players,
-                 std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> _eggs,
-                 std::vector<std::string> _teams, int screenHeight, int screenWidth);
+                 std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs,
+                 std::shared_ptr<std::vector<std::string>> teams, int screenHeight, int screenWidth,
+                 std::shared_ptr<std::map<std::string , Color>> teamsColor);
             ~Tile();
 
             /**
@@ -101,11 +102,15 @@ namespace gui {
             void displayContent();
 
         private:
+            int getNbrEggsOnTile(const std::string& team);
+            int getNbrPlayerOnTile(std::string team);
+
             bool _isSelected;
             std::vector<int> _qty;
             std::pair<int, int> _coord;
-            std::vector<std::string> _teams;
             std::vector<std::shared_ptr<Model>> _models;
+            std::shared_ptr<std::vector<std::string>> _teams;
+            std::shared_ptr<std::map<std::string , Color>> _teamsColor;
             std::vector<std::vector<std::shared_ptr<gui::AItem>>> _items;
             std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> _eggs;
             std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> _players;
@@ -114,7 +119,8 @@ namespace gui {
             int _fontSize;
             std::vector<std::pair<std::string, Color>> _itemsText;
 
-            Rectangle _bounds;
+            Rectangle _tileInventory;
+            Rectangle _tileTeams;
     };
 };
 

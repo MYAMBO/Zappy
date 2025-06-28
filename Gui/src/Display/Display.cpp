@@ -147,11 +147,11 @@ void gui::Display::handleInput()
 void gui::Display::teamsDisplay()
 {
     int yOffset = 0;
-    if (_teams.empty()) {
+    if (_teams->empty()) {
         return;
     }
-    for (size_t i = 0; i < _teams.size(); i++) {
-        DrawText(_teams.at(i).c_str(), 10, 10 + yOffset, 30, _teamColors[_teams.at(i).c_str()]);
+    for (size_t i = 0; i < _teams->size(); i++) {
+        DrawText(_teams->at(i).c_str(), 10, 10 + yOffset, 30, _teamColors->operator[](_teams->at(i).c_str()));
         yOffset += 30;
     }
 }
@@ -223,14 +223,14 @@ std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> gui::Display::getPlay
     return _players;
 }
 
-void gui::Display::setTeams(std::vector<std::string> teams)
+void gui::Display::setTeams(std::shared_ptr<std::vector<std::string>> teams)
 {
-    _teams = teams;
+    _teams = std::move(teams);
 }
 
-void gui::Display::setTeamsColors(std::map<std::string, Color> teamColors)
+void gui::Display::setTeamsColors(std::shared_ptr<std::map<std::string, Color>> teamColors)
 {
-    _teamColors = teamColors;
+    _teamColors = std::move(teamColors);
 }
 
 void gui::Display::addPlayer(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team)

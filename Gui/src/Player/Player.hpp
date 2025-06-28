@@ -194,7 +194,7 @@ namespace gui {
              * This function retrieves the color associated with the Player's team.
              * @param color The color to set for the Player's team.
              */
-            void setColorTeam(std::map<std::string, Color> colorTeam);
+            void setColorTeam(std::shared_ptr<std::map<std::string, Color>> colorTeam);
         private:
             /**
              * @brief Animation of the broadcast.
@@ -269,7 +269,7 @@ namespace gui {
 
             std::shared_ptr<Model> _teamModel;
 
-            std::map<std::string, Color> _colorTeam;
+            std::shared_ptr<std::map<std::string, Color>> _colorTeam;
             std::map<int, std::string> _playersNames;
     };
 }

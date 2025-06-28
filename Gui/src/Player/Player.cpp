@@ -151,15 +151,15 @@ void gui::Player::draw()
         DrawCubeWires(_position, 1, 1, 1, {255, 0, 0, 255});
     broadcastAnimation();
     IncantationAnimation();
-    DrawModelEx(*_teamModel, {_position.x, _position.y + 0.8f, _position.z}, {0, 1, 0}, _rotationY, {0.05, 0.05, 0.05}, _colorTeam[_team]);
+    DrawModelEx(*_teamModel, {_position.x, _position.y + 0.8f, _position.z}, {0, 1, 0}, _rotationY, {0.05, 0.05, 0.05}, _colorTeam->operator[](_team));
 }
 
 void gui::Player::drawUI()
 {
     if (_isSelected) {
         _inventory->draw();
-        DrawText(("Team name: " + _team).c_str(), static_cast<float>(SCREEN_WIDTH) / 5.0f, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam[_team]);
-        DrawText(("Player ID: " + std::to_string(_id)).c_str(), static_cast<float>(SCREEN_WIDTH) / 2.8, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam[_team]);
+        DrawText(("Team name: " + _team).c_str(), static_cast<float>(SCREEN_WIDTH) / 5.0f, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam->operator[](_team));
+        DrawText(("Player ID: " + std::to_string(_id)).c_str(), static_cast<float>(SCREEN_WIDTH) / 2.8, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam->operator[](_team));
         int falseId = _id;
         int counter = 0;
         if (falseId > static_cast<int>(_playersNames.size())) {
@@ -169,10 +169,10 @@ void gui::Player::drawUI()
             }
         }
         if (counter == 0)
-            DrawText(("Player name: " + _playersNames[falseId]).c_str(), static_cast<float>(SCREEN_WIDTH) / 2, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam[_team]);
+            DrawText(("Player name: " + _playersNames[falseId]).c_str(), static_cast<float>(SCREEN_WIDTH) / 2, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam->operator[](_team));
         else 
-            DrawText(("Player name: " + _playersNames[falseId] + " " + std::to_string(counter)).c_str(), static_cast<float>(SCREEN_WIDTH) / 2, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam[_team]);
-        DrawText(("Level: " + std::to_string(_level)).c_str(), static_cast<float>(SCREEN_WIDTH) / 1.2, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam[_team]);
+            DrawText(("Player name: " + _playersNames[falseId] + " " + std::to_string(counter)).c_str(), static_cast<float>(SCREEN_WIDTH) / 2, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam->operator[](_team));
+        DrawText(("Level: " + std::to_string(_level)).c_str(), static_cast<float>(SCREEN_WIDTH) / 1.2, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam->operator[](_team));
         _camButton.draw();
     }
 }
@@ -339,10 +339,10 @@ bool gui::Player::getIsMoving() const
  ************************************************************/
 
 
-void gui::Player::setColorTeam(std::map<std::string, Color> colorTeam)
+void gui::Player::setColorTeam(std::shared_ptr<std::map<std::string, Color>> colorTeam)
 {
     _colorTeam = colorTeam;
-    _color = _colorTeam[_team];
+    _color = _colorTeam->operator[](_team);
 }
 
 void gui::Player::setLevel(int level)
