@@ -6,6 +6,7 @@
 */
 
 #include "Menu.hpp"
+#include "Client.hpp"
 #include "Display.hpp"
 #include "Settings.hpp"
 
@@ -143,6 +144,18 @@ void gui::Display::handleInput()
     }
 }
 
+void gui::Display::teamsDisplay()
+{
+    int yOffset = 0;
+    if (_teams.empty()) {
+        return;
+    }
+    for (size_t i = 0; i < _teams.size(); i++) {
+        DrawText(_teams.at(i).c_str(), 10, 10 + yOffset, 30, _teamColors[_teams.at(i).c_str()]);
+        yOffset += 30;
+    }
+}
+
 void gui::Display::render()
 {
     BeginDrawing();
@@ -161,6 +174,7 @@ void gui::Display::render()
     for (auto& tile: *_map) {
         tile->displayContent();
     }
+    teamsDisplay();
     EndDrawing();
 }
 
@@ -207,6 +221,16 @@ std::shared_ptr<std::vector<std::shared_ptr<Model>>> gui::Display::getModels()
 std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> gui::Display::getPlayers()
 {
     return _players;
+}
+
+void gui::Display::setTeams(std::vector<std::string> teams)
+{
+    _teams = teams;
+}
+
+void gui::Display::setTeamsColors(std::map<std::string, Color> teamColors)
+{
+    _teamColors = teamColors;
 }
 
 void gui::Display::addPlayer(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team)
