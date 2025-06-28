@@ -61,6 +61,7 @@ SERVER_SRC = 												\
 				Server/src/commands/command_sst.c			\
 				Server/src/commands/command_tna.c			\
 				Server/src/commands/command_connect_nbr.c	\
+				Server/src/commands/command_incantation.c	\
 
 GUI_SRC = 												\
 				Gui/src/main.cpp 						\

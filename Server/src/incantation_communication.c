@@ -55,8 +55,6 @@ static bool verif_players_stats(poll_handling_t *players,
     int count = 0;
 
     for (poll_handling_t *poll = players; poll != NULL; poll = poll->next){
-        if (!poll->player->is_alive)
-            continue;
         if (poll->player->level == lead->level &&
             poll->player->x == lead->x &&
             poll->player->y == lead->y) {
@@ -78,9 +76,10 @@ char *start_incantation(ai_stats_t *lead, poll_handling_t *players, map_t *map)
     char *result = my_malloc(alloc + 1);
 
     if (!result)
-        return "ko\n";
+        return NULL;
     if (!verif_players_stats(players, lead, map))
         return "ko\n";
+
     snprintf(result, alloc + 1,
         "Elevation underway\nCurrent level: %d\n", lead->level);
     return result;
