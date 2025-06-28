@@ -125,8 +125,6 @@ static int show_current_team_name(server_t *server,
         return FAILURE;
     server->team_names[count + 1] = NULL;
     server->team_count = count;
-    for (int k = 0; server->team_names[k] != NULL; k++)
-        printf("%s\n", server->team_names[k]->name);
     return SUCCESS;
 }
 
