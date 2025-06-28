@@ -14,12 +14,13 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include "commands.h"
+#include "command_exec_handler.h"
 #include "garbage.h"
 #include "handle_connection.h"
 #include "logger.h"
 #include "split_string.h"
 
-int handle_client_error(ssize_t bytes_read, server_t *server,
+static int handle_read_error(ssize_t bytes_read, server_t *server,
     poll_handling_t *node)
 {
     if (bytes_read < 0) {
@@ -29,6 +30,14 @@ int handle_client_error(ssize_t bytes_read, server_t *server,
         server->poll_count--;
         return FAILURE;
     }
+    return SUCCESS;
+}
+
+int handle_client_error(ssize_t bytes_read, server_t *server,
+    poll_handling_t *node, char *buffer)
+{
+    if (handle_read_error(bytes_read, server, node) == FAILURE)
+        return FAILURE;
     if (bytes_read == 0) {
         if (send_message_disconnect(node) == FAILURE)
             return FAILURE;
@@ -40,6 +49,8 @@ int handle_client_error(ssize_t bytes_read, server_t *server,
         server->poll_count--;
         return SUCCESS;
     }
+    if (bytes_read == 1 && buffer[0] == '\n')
+        return SUCCESS;
     return 1;
 }
 
@@ -130,7 +141,7 @@ int handle_command(server_t *server, poll_handling_t *node)
         return SUCCESS;
     bytes_read = read(node->poll_fd.fd, buffer,
         sizeof(buffer) - 1);
-    handle_value = handle_client_error(bytes_read, server, node);
+    handle_value = handle_client_error(bytes_read, server, node, buffer);
     if (handle_value != 1)
         return handle_value;
     handle_value = handle_command_execution(buffer, server, node);

@@ -10,8 +10,7 @@
 #ifndef GET_SIGNAL_DIRECTION_H
     #define GET_SIGNAL_DIRECTION_H
 
-typedef struct vector_s
-{
+typedef struct vector_s {
     int x1;
     int y1;
     int y2;
@@ -20,6 +19,7 @@ typedef struct vector_s
     int best_y;
 } vector_t;
 
-int get_signal_direction(ai_stats_t *source, ai_stats_t *receptor, server_t *server);
+int get_signal_direction(ai_stats_t *source, ai_stats_t *receptor,
+    server_t *server);
 
 #endif //GET_SIGNAL_DIRECTION_H

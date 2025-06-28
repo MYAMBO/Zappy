@@ -24,6 +24,8 @@ void init_resources(ai_stats_t *new_tmp)
     new_tmp->nb_phiras = 0;
     new_tmp->nb_sibur = 0;
     new_tmp->nb_thystame = 0;
+    new_tmp->nb_command_exec = 0;
+    new_tmp->command_exec_list = NULL;
 }
 
 ai_stats_t *init_new_player(int fd, int x, int y, char *team_name)

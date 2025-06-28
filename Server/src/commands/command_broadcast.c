@@ -18,7 +18,8 @@ int broadcast_command(server_t *server, poll_handling_t *node, char **args)
         write(node->poll_fd.fd, "ko\n", 3);
         return SUCCESS;
     }
-    player_plays_broadcast(node->player, args[1], server);
+    if (player_plays_broadcast(node->player, args[1], server) == NULL)
+        return FAILURE;
     write(node->poll_fd.fd, "ok\n", 3);
     return SUCCESS;
 }

@@ -59,7 +59,7 @@ static bool verif_players_stats(poll_handling_t *players,
             continue;
         if (poll->player->level == lead->level &&
             poll->player->x == lead->x &&
-            poll->player->y == lead->y) { // same lvl, same x, same y
+            poll->player->y == lead->y) {
             count++;
             poll->player->in_incantation = true;
         }
