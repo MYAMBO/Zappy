@@ -419,6 +419,13 @@ void gui::Client::pex(std::vector<std::string> stringArray)
 
     if (id && findPlayer(id) == -1)
         return;
+
+    std::string command;
+
+    for (int i = 0; i < _players->size() ; ++i) {
+        command = "ppo #" + std::to_string(_players->at(i)->getId()) + "\n";
+        sendCommand(command);
+    }
 }
 
 
