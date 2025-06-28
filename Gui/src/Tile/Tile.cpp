@@ -17,14 +17,9 @@
 ************************************************************/
 
 
-gui::Tile::Tile(std::pair<int, int> coord, std::vector<int> qty, std::vector<std::shared_ptr<Model>> model,
-                std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players,
-                std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs,
-                std::shared_ptr<std::vector<std::string>> teams, int screenWidth, int screenHeight,
-                std::shared_ptr<std::map<std::string, Color>> teamsColor)
-    : _isSelected(false), _qty(qty), _coord(std::move(coord)), _models(std::move(model)), _teams(std::move(teams)), _teamsColor(std::move(teamsColor)), _items(7), _eggs(std::move(eggs)), _players(std::move(players)),
-      _fontSize(30), _tileInventory({0, static_cast<float>(screenHeight) * 0.8f, static_cast<float>(screenWidth), static_cast<float>(screenHeight) / 5.0f}),
-      _tileTeams({static_cast<float>(screenWidth) * 0.8f, static_cast<float>(screenWidth) * 0.02f, static_cast<float>(screenWidth) * 0.8f, static_cast<float>(screenHeight) * 0.7f})
+gui::Tile::Tile(std::pair<int, int> coord, std::vector<int> qty, std::vector<std::shared_ptr<Model>> model, int screenWidth, int screenHeight, std::shared_ptr<TeamsDisplay> displayTeams)
+    : _isSelected(false), _qty(qty), _coord(std::move(coord)), _displayTeams(displayTeams), _models(std::move(model)), _items(7),
+      _fontSize(30), _tileInventory({0, static_cast<float>(screenHeight) * 0.8f, static_cast<float>(screenWidth), static_cast<float>(screenHeight) / 5.0f})
 {
     addItem(qty[FOOD], FOOD);
     addItem(qty[LINEMATE], LINEMATE);
@@ -114,12 +109,18 @@ void gui::Tile::handleUserInput(Camera camera)
         };
         RayCollision collision = GetRayCollisionBox(ray, box);
         if (collision.hit) {
+            if (!_isSelected)
+                _displayTeams->enableIsTile();
             _isSelected = true;
         } else {
-           _isSelected = false;
+            if (_isSelected)
+                _displayTeams->disableIsTile();
+            _isSelected = false;
         }
     }
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !IsKeyDown(KEY_LEFT_SHIFT)) {
+        if (_isSelected)
+            _displayTeams->disableIsTile();
         _isSelected = false;
     }
 }
@@ -127,27 +128,7 @@ void gui::Tile::handleUserInput(Camera camera)
 void gui::Tile::displayContent()
 {
     if (_isSelected) {
-        DrawRectangleRec(_tileTeams, {255, 255, 255, 50});
-
-        DrawText("On tile :", static_cast<int>(_tileTeams.x + 25), static_cast<int>(_tileTeams.y + 30), 50, WHITE);
-
-        for (int i = 0; i < static_cast<int>(_teams->size()); ++i) {
-            Debug::InfoLog("[GUI] Drawing Team : " + _teams->at(i));
-
-            std::string text;
-            if (_teams->at(i).size() > 15)
-                text = _teams->at(i).substr(0, 15) + "... : ";
-            else
-                text = _teams->at(i) + " : ";
-
-            std::string playerText = "Players : " + std::to_string(getNbrPlayerOnTile(_teams->at(i)));
-            std::string eggsText = "Eggs : " + std::to_string(getNbrEggsOnTile(_teams->at(i)));
-            float textX = _tileTeams.x + 25;
-            float textY = _tileTeams.y + 100 * i + 125;
-            DrawText(text.c_str(), static_cast<int>(textX), static_cast<int>(textY), _fontSize, _teamsColor->operator[](_teams->at(i)));
-            DrawText(playerText.c_str(), static_cast<int>(textX + 25), static_cast<int>(textY + 45), _fontSize - 12, WHITE);
-            DrawText(eggsText.c_str(), static_cast<int>(textX + 25), static_cast<int>(textY + 70), _fontSize - 12, WHITE);
-        }
+        _displayTeams->display(_coord);
 
         DrawRectangleRec(_tileInventory, {255, 255, 255, 50});
         DrawRectangleLinesEx(_tileInventory, 2, BLACK);
@@ -176,60 +157,4 @@ int gui::Tile::getItem(int type) const
 std::pair<int, int> gui::Tile::getCoord()
 {
     return _coord;
-}
-
-std::vector<int> gui::Tile::getPlayersOnTile()
-{
-    std::vector<int> list;
-
-    for (int i = 0; i < (int) _players->size(); ++i) {
-        std::shared_ptr<gui::Player> entity = _players->at(i);
-
-        Vector3 vectorThreePosition = entity->getPosition();
-        std::pair<int, int> pairPosition = {vectorThreePosition.x, vectorThreePosition.z};
-
-        if (pairPosition == _coord)
-            list.push_back(i);
-    }
-    return list;
-}
-
-int gui::Tile::getNbrPlayerOnTile(std::string team)
-{
-    int nbr = 0;
-    std::vector<int> playersIndice = getPlayersOnTile();
-
-    for (auto indice:playersIndice) {
-        if (_players->at(indice)->getTeam() == team)
-            ++nbr;
-    }
-    return nbr;
-}
-
-std::vector<int> gui::Tile::getEggOnTile()
-{
-    std::vector<int> list;
-
-    for (int i = 0; i < (int) _eggs->size(); ++i) {
-        std::shared_ptr<gui::Egg> entity = _eggs->at(i);
-
-        Vector3 vectorThreePosition = entity->getPosition();
-        std::pair<int, int> pairPosition = {vectorThreePosition.x, vectorThreePosition.z};
-
-        if (pairPosition == _coord)
-            list.push_back(i);
-    }
-    return list;
-}
-
-int gui::Tile::getNbrEggsOnTile(const std::string& team)
-{
-    int nbr = 0;
-    std::vector<int> eggsIndice = getEggOnTile();
-
-    for (auto indice:eggsIndice) {
-        if (_eggs->at(indice)->getTeam() == team)
-            ++nbr;
-    }
-    return nbr;
 }

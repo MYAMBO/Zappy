@@ -9,7 +9,6 @@
 #include "Error.hpp"
 #include "Logger.hpp"
 
-#include <time.h>
 #include <netdb.h>
 #include <unistd.h>
 #include <algorithm>
@@ -28,7 +27,11 @@ gui::Client::Client(std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> p
 {
     _teams->push_back("Undefined");
     _teamColors->operator[]("Undefined") = WHITE;
+    _displayTeams = std::make_shared<TeamsDisplay>(_teams, _teamColors, _eggs, _players);
     _display = display;
+    _display->setTeams(_teams);
+    _display->setTeamsColors(_teamColors);
+    _display->setDisplayTeams(_displayTeams);
     _camera = camera;
     _camState = camState;
     _timeUnit = timeUnit;
@@ -231,7 +234,7 @@ void gui::Client::bct(std::vector<std::string> stringArray)
 
     if (coord.first >= 0 && coord.first <= _size.first && coord.second >= 0 && coord.first <= _size.second
         && quantity.size() == 7 && findTile(coord.first, coord.second) == -1) {
-        _map->emplace_back(std::make_shared<Tile>(coord, quantity, *_models, _players, _eggs, _teams, SCREEN_WIDTH, SCREEN_HEIGHT, _teamColors));
+        _map->emplace_back(std::make_shared<Tile>(coord, quantity, *_models, SCREEN_WIDTH, SCREEN_HEIGHT, _displayTeams));
         return;
     } else if (findTile(coord.first, coord.second) != -1) {
         auto &_tile = _map->at(findTile(coord.first, coord.second));
@@ -276,14 +279,11 @@ void gui::Client::tna(std::vector<std::string> stringArray)
         {0, 128, 0, 255}, {128, 128, 0, 255}, {128, 128, 128, 255}
     };
     _teams->push_back(team_name);
-    _display->setTeams(_teams);
     if (_teams->size() > colors.size()) {
         _teamColors->operator[](team_name) = {255, 255, 255, 255};
-        _display->setTeamsColors(_teamColors);
         return;
     }
     _teamColors->operator[](team_name) = colors[_teams->size()];
-    _display->setTeamsColors(_teamColors);
 }
 
 
@@ -559,16 +559,6 @@ void gui::Client::pgt(std::vector<std::string> stringArray)
     int id;
     int nbResources;
     std::map<int, std::string> resources;
-
-    resources = {
-        {0, "Food"},
-        {1, "Linemate"},
-        {2, "Deraumere"},
-        {3, "Sibur"},
-        {4, "Mendiane"},
-        {5, "Phiras"},
-        {6, "Thystame"}
-    };
 
     if (stringArray.size() != 3)
         throw Error("Command with the wrong number of argument.");
