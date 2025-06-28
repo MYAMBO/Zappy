@@ -71,9 +71,9 @@ namespace gui {
             std::thread _thread;
             std::pair<int, int> _size;
             std::shared_ptr<int> _timeUnit;
-            std::vector<std::string> _teams;
             std::shared_ptr<Display> _display;
-            std::map<std::string, Color> _teamColors;
+            std::shared_ptr<std::vector<std::string>> _teams;
+            std::shared_ptr<std::map<std::string, Color>> _teamColors;
             std::shared_ptr<std::vector<std::shared_ptr<Model>>> _models;
             std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> _eggs;
             std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> _map;

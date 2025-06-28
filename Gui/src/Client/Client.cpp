@@ -23,7 +23,8 @@
 gui::Client::Client(std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players, std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> map,
         std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs, std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState,
         std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, std::shared_ptr<Display> display, std::shared_ptr<int> timeUnit)
-    : _socket(), _isActive(true), _teams(),  _models(models), _eggs(eggs), _map(map), _players(players)
+    : _socket(), _isActive(true), _teams(std::make_shared<std::vector<std::string>>()), _teamColors(std::make_shared<std::map<std::string, Color>>()),
+      _models(models), _eggs(eggs), _map(map), _players(players)
 {
     _display = display;
     _camera = camera;
@@ -218,7 +219,7 @@ void gui::Client::bct(std::vector<std::string> stringArray)
 
     if (coord.first >= 0 && coord.first <= _size.first && coord.second >= 0 && coord.first <= _size.second
         && quantity.size() == 7 && findTile(coord.first, coord.second) == -1) {
-        _map->emplace_back(std::make_shared<Tile>(coord, quantity, *_models, _players, _eggs, _teams, SCREEN_WIDTH, SCREEN_HEIGHT));
+        _map->emplace_back(std::make_shared<Tile>(coord, quantity, *_models, _players, _eggs, _teams, SCREEN_WIDTH, SCREEN_HEIGHT, _teamColors));
         return;
     } else if (findTile(coord.first, coord.second) != -1) {
         auto &_tile = _map->at(findTile(coord.first, coord.second));
@@ -248,7 +249,7 @@ void gui::Client::tna(std::vector<std::string> stringArray)
     if (team_name[team_name.length() - 1] == '\n')
         team_name[team_name.length() - 1] = '\0';
 
-    if (std::find(_teams.begin(), _teams.end(), team_name) != _teams.end())
+    if (std::find(_teams->begin(), _teams->end(), team_name) != _teams->end())
         return;
 
     std::vector <Color> colors = {
@@ -258,12 +259,12 @@ void gui::Client::tna(std::vector<std::string> stringArray)
         {255, 105, 180, 255}, {255, 0, 0, 255}, {0, 0, 255, 255},
         {0, 128, 0, 255}, {128, 128, 0, 255}, {128, 128, 128, 255}
     };
-    _teams.push_back(team_name);
-    if (_teams.size() > colors.size()) {
-        _teamColors[team_name] = {255, 255, 255, 255};
+    _teams->push_back(team_name);
+    if (_teams->size() > colors.size()) {
+        _teamColors->operator[](team_name) = {255, 255, 255, 255};
         return;
     }
-    _teamColors[team_name] = colors[_teams.size()];
+    _teamColors->operator[](team_name) = colors[_teams->size()];
 }
 
 
