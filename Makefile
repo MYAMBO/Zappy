@@ -59,6 +59,8 @@ SERVER_SRC = 												\
 				Server/src/time_unit_protocol.c				\
 				Server/src/commands/command_sgt.c			\
 				Server/src/commands/command_sst.c			\
+				Server/src/commands/command_fork.c			\
+				Server/src/handle_fork_communication.c			\
 
 GUI_SRC = 												\
 				Gui/src/main.cpp 						\

@@ -8,26 +8,44 @@
 */
 
 #include "slot_handler.h"
-#include <time.h>
-#include "garbage.h"
-#include "server.h"
 
-static slot_t *init_slot(slot_table_t *table)
+#include <string.h>
+
+static int get_global_id(void)
+{
+    static int id = -1;
+
+    id++;
+    return id;
+}
+
+static slot_t *init_slot(slot_table_t *table, int xy[2], int id_user, server_t *server)
 {
     slot_t *slot = my_malloc(sizeof(slot_t));
 
     if (!slot)
         return NULL;
+    slot->global_id = get_global_id();
     slot->id_slot = table->id_slot_current;
     table->id_slot_current = table->id_slot_current + 1;
-    slot->id_user = -1;
+    slot->id_user = id_user;
+    if (xy[0] < 0 || xy[1] < 0)
+    {
+        slot->x = rand() % server->map_width;
+        slot->y = rand() % server->map_height;
+    }
+    else
+    {
+        slot->x = xy[0];
+        slot->y = xy[1];
+    }
     slot->next = NULL;
     return slot;
 }
 
-int add_slot(slot_table_t *slot_table)
+int add_slot(slot_table_t *slot_table, int xy[2], int id_user, server_t *server)
 {
-    slot_t *slot = init_slot(slot_table);
+    slot_t *slot = init_slot(slot_table, xy, id_user, server);
     slot_t *tmp;
 
     if (slot == NULL)
@@ -69,17 +87,24 @@ void remove_slot(slot_t **slot_table, int id_slot)
     }
 }
 
-int connect_player(slot_table_t *slot_table, int id_user)
+int connect_player(slot_table_t *slot_table, ai_stats_t *user)
 {
     slot_t *slot;
 
     if (slot_table == NULL || slot_table->slots_remaining == 0 ||
         slot_table->slots == NULL)
-        return FAILURE;
+        return SUCCESS;
     slot = slot_table->slots;
     while (slot->id_user != -1)
         slot = slot->next;
-    slot->id_user = id_user;
+    slot->id_user = user->id;
+    user->x = slot->x;
+    user->y = slot->y;
+    user->team_name = my_malloc(sizeof(char) *
+        (strlen(slot_table->name) + 1));
+    if (user->team_name == NULL)
+        return FAILURE;
+    strcpy(user->team_name, slot_table->name);
     slot_table->slots_remaining--;
     return SUCCESS;
 }
@@ -110,7 +135,7 @@ int disconnect_player(slot_table_t **slot_table, int id_user)
     return FAILURE;
 }
 
-slot_table_t *create_slot_table(int nb_slots, char *name)
+slot_table_t *create_slot_table(int nb_slots, char *name, server_t *server)
 {
     slot_table_t *slot_table = my_malloc(sizeof(slot_table_t));
     int error_num = 0;
@@ -122,7 +147,7 @@ slot_table_t *create_slot_table(int nb_slots, char *name)
     slot_table->slots = NULL;
     slot_table->id_slot_current = 0;
     for (int i = 0; i < nb_slots; i++) {
-        error_num = add_slot(slot_table);
+        error_num = add_slot(slot_table, (int[2]){-1, -1}, -1, server);
         if (error_num == FAILURE)
             return NULL;
     }

@@ -12,6 +12,7 @@
 #include "command_exec_handler.h"
 #include "server.h"
 #include "garbage.h"
+#include "slot_handler.h"
 #include "time_handler.h"
 
 int call_poll(server_t *server)
@@ -47,7 +48,7 @@ int start_server(server_t *server)
         if (exec_time_exec_handler(server) == FAILURE)
             return FAILURE;
         if (server->team_names[0]->nb_slots == 0 &&
-            add_slot(server->team_names[0]) == FAILURE)
+            add_slot(server->team_names[0], (int[2]){-1, -1}, -1, server) == FAILURE)
             return FAILURE;
         poll_val = call_poll(server);
         if (poll_val == -1)

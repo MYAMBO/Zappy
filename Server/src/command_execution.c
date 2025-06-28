@@ -16,9 +16,10 @@
 #include "server.h"
 #include "split_string.h"
 #include "graphic_connect.h"
+#include "slot_handler.h"
 
 static int send_map_size_message(server_t *server,
-    poll_handling_t *node)
+                                 poll_handling_t *node)
 {
     int j;
     char *str;
@@ -61,31 +62,17 @@ static int send_slot_remaining(int *val, server_t *server,
     for (int i = 0; server->team_names[i] != NULL; i++) {
         if (strcmp(args[0], server->team_names[i]->name) != 0)
             continue;
-        *val = connect_player(server->team_names[i], node->player->id);
+        *val = connect_player(server->team_names[i], node->player);
+        if (*val == FAILURE)
+            return FAILURE;
         if (*val != 0)
             continue;
-        node->player->team_name = my_malloc(sizeof(char) *
-            (strlen(server->team_names[i]->name) + 1));
-        if (node->player->team_name == NULL)
-            return FAILURE;
-        strcpy(node->player->team_name, server->team_names[i]->name);
+
         return send_slot_remaining_massages(server, node, i);
     }
     return SUCCESS;
 }
 
-// static int handle_disconnect(server_t *server,
-//      poll_handling_t *node, int val)
-// {
-//     if (val != 0) {
-//         if (send_message_disconnect(node) == FAILURE)
-//             return FAILURE;
-//         close(node->poll_fd.fd);
-//         remove_node_poll_handling(&server->poll_list, node->poll_fd.fd);
-//         server->poll_count--;
-//     }
-//     return SUCCESS;
-// }
 int execute_commands_graphic(server_t *server, poll_handling_t *node,
     char **args)
 {

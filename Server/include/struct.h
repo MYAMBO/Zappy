@@ -13,7 +13,7 @@
     #include "poll_handling.h"
     #include <stdbool.h>
     #include <time.h>
-    #include "slot_handler.h"
+    #include "slot_struct.h"
 
 typedef enum ressources_index_s {
     FOOD,

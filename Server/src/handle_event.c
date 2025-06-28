@@ -18,6 +18,7 @@
 #include "garbage.h"
 #include "handle_connection.h"
 #include "logger.h"
+#include "slot_handler.h"
 #include "split_string.h"
 
 static int handle_read_error(ssize_t bytes_read, server_t *server,
