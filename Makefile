@@ -8,6 +8,7 @@
 
 SERVER_SRC = 												\
 				Server/src/main.c 							\
+				Server/src/utils.c							\
 				Server/src/garbage.c 						\
 				Server/src/look_utils.c                     \
 				Server/src/init_server.c 					\
@@ -42,7 +43,6 @@ SERVER_SRC = 												\
 				Server/src/commands/command_msz.c	\
 				Server/src/commands/command_mct.c	\
 				Server/src/commands/command_bct.c	\
-				Server/src/utils.c	\
 				Server/src/commands/command_forward.c	\
 				Server/src/commands/command_right.c	\
 				Server/src/commands/command_left.c	\
@@ -53,6 +53,12 @@ SERVER_SRC = 												\
 				Server/src/get_signal_direction.c	\
 				Server/src/time_handler.c	\
 				Server/src/command_exec_handler.c	\
+				Server/src/player_connection_protocol.c 	\
+				Server/src/commands/command_take.c       	\
+				Server/src/commands/command_drop.c       	\
+				Server/src/time_unit_protocol.c				\
+				Server/src/commands/command_sgt.c			\
+				Server/src/commands/command_sst.c			\
 
 GUI_SRC = 												\
 				Gui/src/main.cpp 						\

@@ -27,6 +27,7 @@
 #include "eject_communication.h"
 #include "incantation_communication.h"
 #include "generate_ressources.h"
+#include "player_connection_protocol.h"
 
 map_t *init_map(int width, int height)
 {
@@ -89,16 +90,35 @@ void stop_server(int tmp)
     *val = 0;
 }
 
+static void show_usage(void)
+{
+    printf("\nZAPPY_SERVER HELP:\n\nMANDATORY OPTIONS:\n\n"
+        "  -p NUMBER: port used by the server\n"
+        "  -x NUMBER: width of the map\n"
+        "  -y NUMBER: height of the map\n"
+        "  -c NUMBER: total of slots available per team\n"
+        "  -n STRING STRING ...: all team names available"
+        "\n\nNON MANDATORY OPTIONS:\n\n"
+        "  -f NUMBER: freq used (100 by default)"
+        "\n\nUSAGE:\n"
+        "  $ ./zappy_server -p 1234 -x 2 -y 5 -c 10 -n team1 team2 -f 60\n\n"
+
+        );
+}
+
 int main(int ac, char **av)
 {
     server_t server;
+    int failure = parse_arguments(ac, av, &server);
 
     signal(SIGINT, stop_server);
     logger_clear_log_file();
     logger_info("Server starting...", FILE_OUTPUT, true);
-    if (parse_arguments(ac, av, &server) == FAILURE ||
+    if (failure == FAILURE ||
         start_server(&server) == FAILURE) {
         free_garbage();
+        if (failure)
+            show_usage();
         return FAILURE;
     }
     free_garbage();
