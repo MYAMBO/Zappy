@@ -30,10 +30,10 @@ def core(name, port, machine):
         ai.update_commands_queue()
         if not ai.send_command():
             return 84
-        reply = ai.handle_command()
-        if reply == None:
-            return 0
-        while ai.handle_reply(reply) == False:
+        reply = None
+        while reply is None:
             reply = ai.handle_command()
-            if reply == None:
+            if reply == "dead" or reply is None:
                 return 0
+            if not ai.handle_reply(reply):
+                reply = None

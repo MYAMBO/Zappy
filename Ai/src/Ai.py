@@ -30,6 +30,7 @@ class Ai:
         self.__time_for_food = 126
         self.__team_name = team_name
         self.__command_to_reply = None
+        self.__send_inventory_counter = 5
         self.__commands_queue = [team_name, "Look", "Inventory"]
         self.__needed_list = ["food", "sibur", "phiras", "thystame", "mendiane", "linemate", "deraumere"]
         self.__inventory = {"sibur" : 0, "phiras" : 0, "thystame" : 0, "mendiane" : 0, "linemate" : 0, "deraumere" : 0}
@@ -58,7 +59,7 @@ class Ai:
             if self.__mates_to_wait == 0:
                 self.__is_ready = True
                 self.__start_incantation()
-            else:
+            elif not self.__commands_queue:
                 self.__commands_queue = ["Broadcast " + encrypt_message(self.__team_name, f"\"follow me !;{self.__id}${self.__follow_counter}\"")]
                 self.__follow_counter += 1
 
@@ -77,8 +78,12 @@ class Ai:
         
         if self.__commands_queue[0] == "Look":
             self.__commands_queue.insert(0, "Forward")
-        else:
-            self.__commands_queue.insert(0, "Broadcast " + encrypt_message(self.__team_name, f"\"j'ai ça :{self.__id};{get_inventory_string(self.__inventory)}\""))
+        elif self.__inventory["food"] > 20:
+            if self.__send_inventory_counter == 5:
+                self.__commands_queue.insert(0, "Broadcast " + encrypt_message(self.__team_name, f"\"j'ai ça :{self.__id};{get_inventory_string(self.__inventory)}\""))
+                self.__send_inventory_counter = 0
+            else:
+                self.__send_inventory_counter += 1
 
     def update_commands_queue(self):
         if self.team_inventory_is_ready() and self.__ai_to_follow is None and len(self.__team_inventory) > 8:
@@ -123,7 +128,7 @@ class Ai:
             return
         elif self.__ai_to_follow is None:
             self.__ai_to_follow = id
-        if self.__commands_queue is None or self.__commands_queue:
+        if self.__commands_queue:
             return
         start, _ = reply.rsplit(',', 1)
         self.__commands_queue = follow_message(int(start.split("message ")[1]))
