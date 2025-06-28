@@ -9,6 +9,7 @@
 
 #include <unistd.h>
 #include "commands.h"
+#include "command_exec_handler.h"
 #include "garbage.h"
 #include "handle_connection.h"
 #include "logger.h"
@@ -109,10 +110,9 @@ static int execute_command_loop(server_t *server,
     for (int i = 0; commands_ai_list[i].command != NULL; i++) {
         if (strcmp(args[0], commands_ai_list[i].command) != 0)
             continue;
-        if (commands_ai_list[i].function(server, node, args) == FAILURE) {
-            my_free_array(args);
+        if (add_command_exec(&node->player->command_exec_list,
+            args, commands_ai_list[i].time) == FAILURE)
             return FAILURE;
-        }
         return SUCCESS;
     }
     write(node->poll_fd.fd, "ko\n", 3);
