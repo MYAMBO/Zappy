@@ -14,11 +14,13 @@
 
 int msz_command(server_t *server, poll_handling_t *node, char **args)
 {
+    char *str;
+
     if (array_len(args) != 1) {
         write(node->poll_fd.fd, "sbp\n", 4);
         return SUCCESS;
     }
-    char *str = get_map_size(server);
+    str = get_map_size(server);
     if (str == NULL)
         return FAILURE;
     write(node->poll_fd.fd, str, strlen(str));
