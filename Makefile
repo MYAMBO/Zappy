@@ -51,6 +51,8 @@ SERVER_SRC = 												\
 				Server/src/commands/command_broadcast.c	\
 				Server/src/commands/command_eject.c	\
 				Server/src/get_signal_direction.c	\
+				Server/src/time_handler.c	\
+				Server/src/command_exec_handler.c	\
 
 GUI_SRC = 												\
 				Gui/src/main.cpp 						\

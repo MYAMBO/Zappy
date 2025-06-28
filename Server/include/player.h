@@ -16,7 +16,16 @@ typedef struct ressources_s {
     int resources[7]; // all possible ressources
 } ressources_t;
 
+typedef struct command_exec_s {
+    char **args;
+    int tick_launch;
+    int time_to_exec;
+    struct command_exec_s *next;
+} command_exec_t;
+
 typedef struct ai_stats_s {
+    int nb_command_exec;
+    command_exec_t *command_exec_list;
     bool connected;
     int fd;
     char *tmp_command;
