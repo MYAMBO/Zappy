@@ -17,12 +17,12 @@
 ************************************************************/
 
 
-gui::Tile::Tile(std::pair<int, int> coord, std::vector<int> qty, std::vector<std::shared_ptr<Model>> model,
+gui::Tile::Tile(std::pair<int, int> coord, std::vector<int> qty, std::shared_ptr<std::vector<std::shared_ptr<Model>>> model,
                 std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players,
                 std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs,
                 std::shared_ptr<std::vector<std::string>> teams, int screenWidth, int screenHeight,
                 std::shared_ptr<std::map<std::string, Color>> teamsColor)
-    : _isSelected(false), _qty(qty), _coord(std::move(coord)), _models(std::move(model)), _teams(std::move(teams)), _teamsColor(std::move(teamsColor)), _items(7), _eggs(std::move(eggs)), _players(std::move(players)),
+    : _isSelected(false), _qty(qty), _coord(std::move(coord)), _teams(std::move(teams)), _teamsColor(std::move(teamsColor)), _models(std::move(model)), _items(7), _eggs(std::move(eggs)), _players(std::move(players)),
       _fontSize(30), _tileInventory({0, static_cast<float>(screenHeight) * 0.8f, static_cast<float>(screenWidth), static_cast<float>(screenHeight) / 5.0f}),
       _tileTeams({static_cast<float>(screenWidth) * 0.8f, static_cast<float>(screenWidth) * 0.02f, static_cast<float>(screenWidth) * 0.8f, static_cast<float>(screenHeight) * 0.7f})
 {
@@ -56,13 +56,13 @@ gui::Tile::~Tile()
 void gui::Tile::addItem(int qty, int type)
 {
     const std::unordered_map<int, std::function<std::shared_ptr<gui::AItem>()>> factoryMap = {
-        { FOOD,      [this]() { return std::make_shared<gui::Food>(this->_coord, 0.7, this->_models[FOOD]); } },
-        { LINEMATE,  [this]() { return std::make_shared<gui::Linemate>(this->_coord, 0.27, this->_models[LINEMATE]); } },
-        { DERAUMERE, [this]() { return std::make_shared<gui::Deraumere>(this->_coord, 0.3, this->_models[DERAUMERE]); } },
-        { SIBUR,     [this]() { return std::make_shared<gui::Sibur>(this->_coord, 0.07, this->_models[SIBUR]); } },
-        { MENDIANE,  [this]() { return std::make_shared<gui::Mendiane>(this->_coord, 0.025, this->_models[MENDIANE]); } },
-        { PHIRAS,    [this]() { return std::make_shared<gui::Phiras>(this->_coord, 0.04, this->_models[PHIRAS]); } },
-        { THYSTAME,  [this]() { return std::make_shared<gui::Thystame>(this->_coord, 0.4, this->_models[THYSTAME]); } }
+        { FOOD,      [this]() { return std::make_shared<gui::Food>(this->_coord, 0.7, this->_models->operator[](FOOD)); } },
+        { LINEMATE,  [this]() { return std::make_shared<gui::Linemate>(this->_coord, 0.27, this->_models->operator[](LINEMATE)); } },
+        { DERAUMERE, [this]() { return std::make_shared<gui::Deraumere>(this->_coord, 0.3, this->_models->operator[](DERAUMERE)); } },
+        { SIBUR,     [this]() { return std::make_shared<gui::Sibur>(this->_coord, 0.07, this->_models->operator[](SIBUR)); } },
+        { MENDIANE,  [this]() { return std::make_shared<gui::Mendiane>(this->_coord, 0.025, this->_models->operator[](MENDIANE)); } },
+        { PHIRAS,    [this]() { return std::make_shared<gui::Phiras>(this->_coord, 0.04, this->_models->operator[](PHIRAS)); } },
+        { THYSTAME,  [this]() { return std::make_shared<gui::Thystame>(this->_coord, 0.4, this->_models->operator[](THYSTAME)); } }
     };
 
     auto it = factoryMap.find(type);
