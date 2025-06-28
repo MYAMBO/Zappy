@@ -606,8 +606,7 @@ void gui::Client::pdi(std::vector<std::string> stringArray)
         return;
 
     if (id > 0) {
-        // replace by an other model
-        _players->erase(_players->begin() + findPlayer(id));
+        _players->at(indice)->setisDead(true);
     }
 }
 
