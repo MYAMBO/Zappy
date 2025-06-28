@@ -35,6 +35,12 @@ namespace gui {
              * @return The teamn of the Egg
              */
             std::string getTeam();
+
+            /**
+             * @brief Give the Id of the Egg
+             * @return The Id of the Egg
+             */
+            int getId();
         private:
             int _id;
             std::string _team;

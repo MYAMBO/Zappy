@@ -61,6 +61,7 @@ namespace gui {
 
             std::vector<std::string> splitString(const std::string &string, char delimiter);
             int findPlayer(int id);
+            int findEgg(int id);
             int findTile(int x, int y);
 
             std::mutex _mutex;

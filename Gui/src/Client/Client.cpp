@@ -653,7 +653,12 @@ void gui::Client::ebo(std::vector<std::string> stringArray)
 
     id = std::stoi(stringArray[1].substr(1));
 
-    std::cout << "in ebo " << id << std::endl;
+    int indice = findEgg(id);
+
+    if (indice != -1)
+        _eggs->erase(_eggs->begin() + indice);
+    else
+        throw Error("Invalid Egg Id");
 }
 
 
@@ -668,7 +673,12 @@ void gui::Client::edi(std::vector<std::string> stringArray)
 
     id = std::stoi(stringArray[1].substr(1));
 
-    std::cout << "in edi " << id << std::endl;
+    int indice = findEgg(id);
+
+    if (indice != -1)
+        _eggs->erase(_eggs->begin() + indice);
+    else
+        throw Error("Invalid Egg Id");
 }
 
 
@@ -776,6 +786,16 @@ int gui::Client::findPlayer(int id)
 {
     for (int i = 0; i < (int)_players->size(); ++i) {
         std::shared_ptr<gui::Player> entity = (*_players)[i];
+
+        if (entity->getId() == id)
+            return i;
+    }
+    return -1;
+}
+
+int gui::Client::findEgg(int id) {
+    for (int i = 0; i < (int)_eggs->size(); ++i) {
+        std::shared_ptr<gui::Egg> entity = _eggs->operator[](i);
 
         if (entity->getId() == id)
             return i;

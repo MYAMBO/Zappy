@@ -34,3 +34,8 @@ std::string gui::Egg::getTeam()
 {
     return _team;
 }
+
+int gui::Egg::getId()
+{
+    return _id;
+}
