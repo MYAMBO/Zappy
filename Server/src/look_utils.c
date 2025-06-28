@@ -6,7 +6,7 @@
 */
 
 
-#include "../include/look_utils.h"
+#include "look_utils.h"
 
 size_t count_visible_tiles(int level)
 {
@@ -26,7 +26,7 @@ int get_dx(int dir, int d, int p)
 
 int get_dy(int dir, int d, int p)
 {
-    int dy[] = {-d, p, d, -p};
+    int dy[] = {- d, p, d, -p};
 
     return dy[dir % 4];
 }
