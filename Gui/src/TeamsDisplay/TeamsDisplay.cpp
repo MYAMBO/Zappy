@@ -14,7 +14,7 @@ gui::TeamsDisplay::TeamsDisplay(std::shared_ptr<std::vector<std::string>> teams,
     std::shared_ptr<std::map<std::string, Color>> teamsColor,
     std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs,
     std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players) :
-    _isTile(0), _fontSize(30),
+    _isTile(0), _display(true), _fontSize(30),
     _tileTeams({static_cast<float>(SCREEN_WIDTH) * 0.8f, static_cast<float>(SCREEN_WIDTH) * 0.02f, static_cast<float>(SCREEN_WIDTH) * 0.8f, static_cast<float>(SCREEN_HEIGHT) * 0.7f}),
     _teams(std::move(teams)), _teamsColor(std::move(teamsColor)), _eggs(std::move(eggs)), _players(std::move(players))
 {}
@@ -23,6 +23,8 @@ gui::TeamsDisplay::~TeamsDisplay() = default;
 
 void gui::TeamsDisplay::display(std::pair<int, int> coord)
 {
+    if (!_display)
+        return;
     DrawRectangleRec(_tileTeams, {255, 255, 255, 50});
 
     if (_isTile)
@@ -120,4 +122,7 @@ void gui::TeamsDisplay::disableIsTile()
     _isTile -= 1;
 }
 
-
+void gui::TeamsDisplay::toggleDisplay()
+{
+    _display = !_display;
+}

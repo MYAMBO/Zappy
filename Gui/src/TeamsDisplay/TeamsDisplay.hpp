@@ -31,9 +31,11 @@ namespace gui {
         int getStatus();
         void enableIsTile();
         void disableIsTile();
+        void toggleDisplay();
 
     private:
         int _isTile;
+        bool _display;
         int _fontSize;
         Rectangle _tileTeams;
         std::shared_ptr<std::vector<std::string>> _teams;

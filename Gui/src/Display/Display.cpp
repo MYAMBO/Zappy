@@ -142,6 +142,8 @@ void gui::Display::handleInput()
             }
         }
     }
+    if (IsKeyPressed(KEY_P))
+        _displayTeams->toggleDisplay();
 }
 
 void gui::Display::teamsDisplay()
