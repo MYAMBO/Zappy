@@ -22,12 +22,14 @@ namespace gui {
 
             void sendCommand(const std::string& command) const;
 
-            void setPlayers(std::shared_ptr<std::vector<std::shared_ptr<Player>>> players);
             void setMap(std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> map);
+            void setPlayers(std::shared_ptr<std::vector<std::shared_ptr<Player>>> players);
 
+            std::vector<std::string> getTeams();
             std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> getEggs();
-            std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> getPlayers();
             std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> getMap();
+            std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> getPlayers();
+
         private:
             void connectToServer();
             void receiveLoop();

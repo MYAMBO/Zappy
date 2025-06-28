@@ -251,8 +251,12 @@ void gui::Client::tna(std::vector<std::string> stringArray)
     if (team_name[team_name.length() - 1] == '\n')
         team_name[team_name.length() - 1] = '\0';
 
-    if (std::find(_teams->begin(), _teams->end(), team_name) != _teams->end())
-        return;
+    for (const auto &team : _teams) {
+        if (team == team_name) {
+            Debug::InfoLog("Team already exists: " + team_name);
+            return;
+        }
+    }
 
     std::vector <Color> colors = {
         {255, 0, 255, 255}, {0, 255, 255, 255}, {255, 165, 0, 255}, {128, 0, 128, 255},
@@ -261,12 +265,15 @@ void gui::Client::tna(std::vector<std::string> stringArray)
         {255, 105, 180, 255}, {255, 0, 0, 255}, {0, 0, 255, 255},
         {0, 128, 0, 255}, {128, 128, 0, 255}, {128, 128, 128, 255}
     };
-    _teams->push_back(team_name);
-    if (_teams->size() > colors.size()) {
+    _teams.push_back(team_name);
+    _display->setTeams(_teams);
+    if (_teams.size() > colors.size()) {
         _teamColors->operator[](team_name) = {255, 255, 255, 255};
+        _display->setTeamsColors(_teamColors);
         return;
     }
     _teamColors->operator[](team_name) = colors[_teams->size()];
+    _display->setTeamsColors(_teamColors);
 }
 
 
@@ -809,4 +816,12 @@ std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> gui::Client::getPlaye
 std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> gui::Client::getMap()
 {
     return _map;
+}
+
+std::vector<std::string> gui::Client::getTeams()
+{
+    if (_teams.empty()) {
+        return {};
+    }
+    return _teams;
 }
