@@ -63,10 +63,11 @@ void pop_command_exec(command_exec_t **head)
 
 void command_exec_queue(poll_handling_t *node, int actual_tick)
 {
-    command_exec_t *tmp = node->player->command_exec_list;
+    command_exec_t *tmp;
 
     if (!node || !node->player || !node->player->command_exec_list)
         return;
+    tmp = node->player->command_exec_list;
     if (tmp->tick_launch == -1)
         tmp->tick_launch = actual_tick + tmp->time_to_exec * 1000;
 }
