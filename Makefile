@@ -60,6 +60,7 @@ SERVER_SRC = 												\
 				Server/src/commands/command_sgt.c			\
 				Server/src/commands/command_sst.c			\
 				Server/src/commands/command_tna.c			\
+				Server/src/commands/command_connect_nbr.c	\
 
 GUI_SRC = 												\
 				Gui/src/main.cpp 						\

@@ -34,6 +34,7 @@ int tna_command(server_t *server, poll_handling_t *node, char **args);
 int sst_command(server_t *server, poll_handling_t *node, char **args);
 int take_command(server_t *server, poll_handling_t *node, char **args);
 int drop_command(server_t *server, poll_handling_t *node, char **args);
+int connect_nbr_command(server_t *server, poll_handling_t *node, char **args);
 
 static entry_ai_t const commands_ai_list[] = {
     {"quit", quit_command, 0},
@@ -46,6 +47,7 @@ static entry_ai_t const commands_ai_list[] = {
     {"Eject", eject_command, 7},
     {"Take", take_command, 7},
     {"Set", drop_command, 7},
+    {"Connect_nbr", connect_nbr_command, 0},
     {NULL, NULL, 0}
 };
 
