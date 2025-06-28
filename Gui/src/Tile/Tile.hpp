@@ -102,6 +102,9 @@ namespace gui {
             void displayContent();
 
         private:
+            int getNbrEggsOnTile(const std::string& team);
+            int getNbrPlayerOnTile(std::string team);
+
             bool _isSelected;
             std::vector<int> _qty;
             std::pair<int, int> _coord;

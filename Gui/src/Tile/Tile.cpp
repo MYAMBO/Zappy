@@ -128,22 +128,24 @@ void gui::Tile::displayContent()
     if (_isSelected) {
         DrawRectangleRec(_tileTeams, {255, 255, 255, 50});
 
+        DrawText("On tile :", static_cast<int>(_tileTeams.x + 25), static_cast<int>(_tileTeams.y + 30), 50, WHITE);
+
         for (int i = 0; i < static_cast<int>(_teams->size()); ++i) {
-            Debug::InfoLog("[GUI] Drawing Team number: " + _teams->at(i) + " with quantity: " + std::to_string(_qty.at(i))); // get all player on this tile, and get all player who are in this team
+            Debug::InfoLog("[GUI] Drawing Team : " + _teams->at(i));
 
             std::string text;
             if (_teams->at(i).size() > 15)
                 text = _teams->at(i).substr(0, 15) + "... : ";
             else
-                text = _teams->at(i) + ": ";
+                text = _teams->at(i) + " : ";
 
-            std::string playerText = "Players : " + std::to_string(_qty.at(i) / 2);
-            std::string eggsText = "Eggs : " + std::to_string(_qty.at(i) / 2);
+            std::string playerText = "Players : " + std::to_string(getNbrPlayerOnTile(_teams->at(i)));
+            std::string eggsText = "Eggs : " + std::to_string(getNbrEggsOnTile(_teams->at(i)));
             float textX = _tileTeams.x + 25;
-            float textY = _tileTeams.y + 100 * i + 25;
+            float textY = _tileTeams.y + 100 * i + 125;
             DrawText(text.c_str(), static_cast<int>(textX), static_cast<int>(textY), _fontSize, _teamsColor->operator[](_teams->at(i)));
-            DrawText(playerText.c_str(), static_cast<int>(textX), static_cast<int>(textY + 45), _fontSize - 15, WHITE);
-            DrawText(eggsText.c_str(), static_cast<int>(textX), static_cast<int>(textY + 70), _fontSize - 15, WHITE);
+            DrawText(playerText.c_str(), static_cast<int>(textX + 25), static_cast<int>(textY + 45), _fontSize - 12, WHITE);
+            DrawText(eggsText.c_str(), static_cast<int>(textX + 25), static_cast<int>(textY + 70), _fontSize - 12, WHITE);
         }
 
         DrawRectangleRec(_tileInventory, {255, 255, 255, 50});
@@ -154,7 +156,7 @@ void gui::Tile::displayContent()
         float itemWidth = _tileInventory.width / static_cast<float>(_items.size());
         for (int i = 0; i < static_cast<int>(_itemsText.size()); ++i) {
             Debug::InfoLog("[GUI] Drawing inventory item: " + _itemsText.at(i).first + " with quantity: " + std::to_string(_qty.at(i)));
-            std::string text = _itemsText.at(i).first + ": " + std::to_string(_qty.at(i) / 2);
+            std::string text = _itemsText.at(i).first + " : " + std::to_string(_qty.at(i) / 2);
             Vector2 textSize = MeasureTextEx(GetFontDefault(), text.c_str(), _fontSize, 1);
             float textX = _tileInventory.x + i * itemWidth + (itemWidth - textSize.x) / 2;
             float textY = _tileInventory.y + (_tileInventory.height - textSize.y) / 2;
@@ -191,6 +193,18 @@ std::vector<int> gui::Tile::getPlayersOnTile()
     return list;
 }
 
+int gui::Tile::getNbrPlayerOnTile(std::string team)
+{
+    int nbr = 0;
+    std::vector<int> playersIndice = getPlayersOnTile();
+
+    for (auto indice:playersIndice) {
+        if (_players->at(indice)->getTeam() == team)
+            ++nbr;
+    }
+    return nbr;
+}
+
 std::vector<int> gui::Tile::getEggOnTile()
 {
     std::vector<int> list;
@@ -205,4 +219,16 @@ std::vector<int> gui::Tile::getEggOnTile()
             list.push_back(i);
     }
     return list;
+}
+
+int gui::Tile::getNbrEggsOnTile(const std::string& team)
+{
+    int nbr = 0;
+    std::vector<int> eggsIndice = getEggOnTile();
+
+    for (auto indice:eggsIndice) {
+        if (_eggs->at(indice)->getTeam() == team)
+            ++nbr;
+    }
+    return nbr;
 }

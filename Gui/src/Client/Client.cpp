@@ -26,6 +26,8 @@ gui::Client::Client(std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> p
     : _socket(), _isActive(true), _teams(std::make_shared<std::vector<std::string>>()), _teamColors(std::make_shared<std::map<std::string, Color>>()),
       _models(models), _eggs(eggs), _map(map), _players(players)
 {
+    _teams->push_back("Undefined");
+    _teamColors->operator[]("Undefined") = WHITE;
     _display = display;
     _camera = camera;
     _camState = camState;
