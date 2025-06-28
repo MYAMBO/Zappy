@@ -234,7 +234,7 @@ void gui::Client::bct(std::vector<std::string> stringArray)
 
     if (coord.first >= 0 && coord.first <= _size.first && coord.second >= 0 && coord.first <= _size.second
         && quantity.size() == 7 && findTile(coord.first, coord.second) == -1) {
-        _map->emplace_back(std::make_shared<Tile>(coord, quantity, *_models, SCREEN_WIDTH, SCREEN_HEIGHT, _displayTeams));
+        _map->emplace_back(std::make_shared<Tile>(coord, quantity, _models, SCREEN_WIDTH, SCREEN_HEIGHT, _displayTeams));
         return;
     } else if (findTile(coord.first, coord.second) != -1) {
         auto &_tile = _map->at(findTile(coord.first, coord.second));

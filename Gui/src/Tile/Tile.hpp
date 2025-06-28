@@ -27,8 +27,9 @@
 namespace gui {
     class Tile {
         public:
-            Tile(std::pair<int, int> coord, std::vector<int> qty, std::vector<std::shared_ptr<Model>> model,
+            Tile(std::pair<int, int> coord, std::vector<int> qty, std::shared_ptr<std::vector<std::shared_ptr<Model>>> model,
                  int screenHeight, int screenWidth, std::shared_ptr<TeamsDisplay> displayTeams);
+      
             ~Tile();
 
             /**
@@ -93,7 +94,7 @@ namespace gui {
             std::vector<int> _qty;
             std::pair<int, int> _coord;
             std::shared_ptr<TeamsDisplay> _displayTeams;
-            std::vector<std::shared_ptr<Model>> _models;
+            std::shared_ptr<std::vector<std::shared_ptr<Model>>> _models;
             std::vector<std::vector<std::shared_ptr<gui::AItem>>> _items;
 
             /* Inventory part */

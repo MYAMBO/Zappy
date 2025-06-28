@@ -51,13 +51,13 @@ gui::Tile::~Tile()
 void gui::Tile::addItem(int qty, int type)
 {
     const std::unordered_map<int, std::function<std::shared_ptr<gui::AItem>()>> factoryMap = {
-        { FOOD,      [this]() { return std::make_shared<gui::Food>(this->_coord, 0.7, this->_models[FOOD]); } },
-        { LINEMATE,  [this]() { return std::make_shared<gui::Linemate>(this->_coord, 0.27, this->_models[LINEMATE]); } },
-        { DERAUMERE, [this]() { return std::make_shared<gui::Deraumere>(this->_coord, 0.3, this->_models[DERAUMERE]); } },
-        { SIBUR,     [this]() { return std::make_shared<gui::Sibur>(this->_coord, 0.07, this->_models[SIBUR]); } },
-        { MENDIANE,  [this]() { return std::make_shared<gui::Mendiane>(this->_coord, 0.025, this->_models[MENDIANE]); } },
-        { PHIRAS,    [this]() { return std::make_shared<gui::Phiras>(this->_coord, 0.04, this->_models[PHIRAS]); } },
-        { THYSTAME,  [this]() { return std::make_shared<gui::Thystame>(this->_coord, 0.4, this->_models[THYSTAME]); } }
+        { FOOD,      [this]() { return std::make_shared<gui::Food>(this->_coord, 0.7, this->_models->operator[](FOOD)); } },
+        { LINEMATE,  [this]() { return std::make_shared<gui::Linemate>(this->_coord, 0.27, this->_models->operator[](LINEMATE)); } },
+        { DERAUMERE, [this]() { return std::make_shared<gui::Deraumere>(this->_coord, 0.3, this->_models->operator[](DERAUMERE)); } },
+        { SIBUR,     [this]() { return std::make_shared<gui::Sibur>(this->_coord, 0.07, this->_models->operator[](SIBUR)); } },
+        { MENDIANE,  [this]() { return std::make_shared<gui::Mendiane>(this->_coord, 0.025, this->_models->operator[](MENDIANE)); } },
+        { PHIRAS,    [this]() { return std::make_shared<gui::Phiras>(this->_coord, 0.04, this->_models->operator[](PHIRAS)); } },
+        { THYSTAME,  [this]() { return std::make_shared<gui::Thystame>(this->_coord, 0.4, this->_models->operator[](THYSTAME)); } }
     };
 
     auto it = factoryMap.find(type);
