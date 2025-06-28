@@ -59,6 +59,9 @@ SERVER_SRC = 												\
 				Server/src/time_unit_protocol.c				\
 				Server/src/commands/command_sgt.c			\
 				Server/src/commands/command_sst.c			\
+				Server/src/commands/command_tna.c			\
+				Server/src/commands/command_connect_nbr.c	\
+				Server/src/commands/command_incantation.c	\
 				Server/src/commands/command_fork.c			\
 				Server/src/handle_fork_communication.c			\
 

@@ -33,6 +33,6 @@ char *player_new_connection(ai_stats_t *ai)
     if (!result)
         return NULL;
     snprintf(result, alloc + 1, "pnw #%d %d %d %d %d %s\n",
-             ai->id, ai->x, ai->y, direction, ai->level, ai->team_name);
+        ai->id, ai->x, ai->y, direction, ai->level, ai->team_name);
     return result;
 }

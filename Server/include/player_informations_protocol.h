@@ -16,7 +16,7 @@
     #include "player.h"
 
 char *end_of_game(ai_stats_t *ai);
-char *get_teams_name(server_t *server);
+char *get_team_names(server_t *server);
 char *get_player_level(ai_stats_t *ai);
 char *get_player_position(ai_stats_t *ai);
 char *get_player_inventory(ai_stats_t *ai, int x, int y);
