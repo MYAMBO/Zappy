@@ -342,7 +342,7 @@ bool gui::Player::getIsMoving() const
 void gui::Player::setColorTeam(std::shared_ptr<std::map<std::string, Color>> colorTeam)
 {
     _colorTeam = colorTeam;
-    _color = _colorTeam[_team];
+    _color = _colorTeam->operator[](_team);
 }
 
 void gui::Player::setLevel(int level)

@@ -46,8 +46,8 @@ namespace gui {
             std::shared_ptr<std::vector<std::shared_ptr<Model>>> getModels();
             std::shared_ptr<std::vector<std::shared_ptr<Player>>> getPlayers();
 
-            void setTeams(std::vector<std::string> teams);
-            void setTeamsColors(std::map<std::string, Color> teamColors);
+            void setTeams(std::shared_ptr<std::vector<std::string>> teams);
+            void setTeamsColors(std::shared_ptr<std::map<std::string, Color>> teamColors);
 
             std::unique_ptr<ui::Menu> _menu;
             std::unique_ptr<ui::Settings> _settings;
@@ -86,10 +86,10 @@ namespace gui {
 
             std::shared_ptr<int> _timeUnit;
             std::shared_ptr<Camera> _camera;
-            std::vector<std::string> _teams;
             std::shared_ptr<CamState> _camState;
             std::shared_ptr<SceneState> _sceneState;
-            std::map<std::string, Color> _teamColors;
+            std::shared_ptr<std::vector<std::string>> _teams;
+            std::shared_ptr<std::map<std::string, Color>> _teamColors;
             std::shared_ptr<std::vector<std::shared_ptr<Model>>> _models;
             std::shared_ptr<std::vector<std::shared_ptr<Egg>>> _eggs;
             std::shared_ptr<std::vector<std::shared_ptr<Tile>>> _map;
