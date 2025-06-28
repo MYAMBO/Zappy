@@ -37,7 +37,14 @@ gui::Client::Client(std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> p
 
 gui::Client::~Client()
 {
-    _thread.join();
+    if (_socket >= 0) {
+        close(_socket);
+        _socket = -1;
+    }
+
+    if (_thread.joinable()) {
+        _thread.join();
+    }
 }
 
 /************************************************************
