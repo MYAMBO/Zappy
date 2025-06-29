@@ -9,6 +9,7 @@
 #define ZAPPY_DISPLAY_HPP
 
     #include "Tile.hpp"
+    #include "TeamsDisplay.hpp"
 
     #include <vector>
     #include <memory>
@@ -48,6 +49,7 @@ namespace gui {
 
             void setTeams(std::shared_ptr<std::vector<std::string>> teams);
             void setTeamsColors(std::shared_ptr<std::map<std::string, Color>> teamColors);
+            void setDisplayTeams(std::shared_ptr<TeamsDisplay> displayTeams);
 
             std::unique_ptr<ui::Menu> _menu;
             std::unique_ptr<ui::Settings> _settings;
@@ -88,6 +90,7 @@ namespace gui {
             std::shared_ptr<Camera> _camera;
             std::shared_ptr<CamState> _camState;
             std::shared_ptr<SceneState> _sceneState;
+            std::shared_ptr<TeamsDisplay> _displayTeams;
             std::shared_ptr<std::vector<std::string>> _teams;
             std::shared_ptr<std::map<std::string, Color>> _teamColors;
             std::shared_ptr<std::vector<std::shared_ptr<Model>>> _models;

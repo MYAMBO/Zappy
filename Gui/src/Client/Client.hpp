@@ -11,6 +11,7 @@
     #include <thread>
 
     #include "Scene.hpp"
+    #include "TeamsDisplay.hpp"
 
 namespace gui {
     class Client {
@@ -75,6 +76,7 @@ namespace gui {
             std::pair<int, int> _size;
             std::shared_ptr<int> _timeUnit;
             std::shared_ptr<Display> _display;
+            std::shared_ptr<TeamsDisplay> _displayTeams;
             std::shared_ptr<std::vector<std::string>> _teams;
             std::shared_ptr<std::map<std::string, Color>> _teamColors;
             std::shared_ptr<std::vector<std::shared_ptr<Model>>> _models;

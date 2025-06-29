@@ -22,15 +22,14 @@
     #include "Mendiane.hpp"
     #include "Thystame.hpp"
     #include "Deraumere.hpp"
+    #include "TeamsDisplay.hpp"
 
 namespace gui {
     class Tile {
         public:
             Tile(std::pair<int, int> coord, std::vector<int> qty, std::shared_ptr<std::vector<std::shared_ptr<Model>>> model,
-                 std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players,
-                 std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs,
-                 std::shared_ptr<std::vector<std::string>> teams, int screenHeight, int screenWidth,
-                 std::shared_ptr<std::map<std::string , Color>> teamsColor);
+                 int screenHeight, int screenWidth, std::shared_ptr<TeamsDisplay> displayTeams);
+      
             ~Tile();
 
             /**
@@ -73,18 +72,6 @@ namespace gui {
             int getItem(int type) const;
 
             /**
-             * @brief Get all the players on a Tile.
-             * @return A vector with all position in list of players on this Tile
-             */
-            std::vector<int> getPlayersOnTile();
-
-            /**
-             * @brief Get all the Eggs on a Tile.
-             * @return A vector with all position in list of Eggs on this Tile
-             */
-            std::vector<int> getEggOnTile();
-
-            /**
              * @brief Get the coordinates of the tile.
              * @return A pair representing the coordinates of the tile.
              */
@@ -102,25 +89,19 @@ namespace gui {
             void displayContent();
 
         private:
-            int getNbrEggsOnTile(const std::string& team);
-            int getNbrPlayerOnTile(std::string team);
 
             bool _isSelected;
             std::vector<int> _qty;
             std::pair<int, int> _coord;
-            std::shared_ptr<std::vector<std::string>> _teams;
-            std::shared_ptr<std::map<std::string , Color>> _teamsColor;
+            std::shared_ptr<TeamsDisplay> _displayTeams;
             std::shared_ptr<std::vector<std::shared_ptr<Model>>> _models;
             std::vector<std::vector<std::shared_ptr<gui::AItem>>> _items;
-            std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> _eggs;
-            std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> _players;
 
             /* Inventory part */
             int _fontSize;
             std::vector<std::pair<std::string, Color>> _itemsText;
 
             Rectangle _tileInventory;
-            Rectangle _tileTeams;
     };
 };
 

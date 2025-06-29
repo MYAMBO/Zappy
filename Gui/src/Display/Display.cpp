@@ -19,7 +19,7 @@
 
 
 gui::Display::Display(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState, std::shared_ptr<SceneState> sceneState, std::shared_ptr<int> timeUnit)
-    : _camera(camera), _camState(camState), _sceneState(sceneState), _width(WIDTH), _height(HEIGHT)
+    : _camera(camera), _camState(camState), _sceneState(sceneState), _displayTeams(), _width(WIDTH), _height(HEIGHT)
 {
 
     _model = std::make_shared<Model>(LoadModel("assets/player/scene.glb"));
@@ -142,6 +142,8 @@ void gui::Display::handleInput()
             }
         }
     }
+    if (IsKeyPressed(KEY_P))
+        _displayTeams->toggleDisplay();
 }
 
 void gui::Display::teamsDisplay()
@@ -154,6 +156,9 @@ void gui::Display::teamsDisplay()
         DrawText(_teams->at(i).c_str(), 10, 10 + yOffset, 30, _teamColors->operator[](_teams->at(i).c_str()));
         yOffset += 30;
     }
+
+    if (_displayTeams && !_displayTeams->getStatus())
+        _displayTeams->display(std::pair<int, int>(-1, -1));
 }
 
 void gui::Display::render()
@@ -231,6 +236,11 @@ void gui::Display::setTeams(std::shared_ptr<std::vector<std::string>> teams)
 void gui::Display::setTeamsColors(std::shared_ptr<std::map<std::string, Color>> teamColors)
 {
     _teamColors = std::move(teamColors);
+}
+
+void gui::Display::setDisplayTeams(std::shared_ptr<TeamsDisplay> displayTeams)
+{
+    _displayTeams = std::move(displayTeams);
 }
 
 void gui::Display::addPlayer(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team)
