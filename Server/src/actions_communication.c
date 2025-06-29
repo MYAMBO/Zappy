@@ -51,6 +51,10 @@ static bool increment_ai_inventory(ai_stats_t *ai, map_t *map,
         return false;
     map->tiles[ai->y][ai->x].resources[i]--;
     server->current_res[i]--;
+    if (i == 0){
+        ai->life += 126;
+        return true;
+    }
     ai->inventory.resources[i]++;
     return true;
 }
