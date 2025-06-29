@@ -226,6 +226,9 @@ int gui::Player::handleUserInput(Camera camera)
                 _isSelected = false;
         }
     }
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && IsKeyDown(KEY_LEFT_SHIFT)) {
+        _isSelected = false;
+    }
     if (IsKeyPressed(KEY_ESCAPE))
         _isSelected = false;
     return 0;
