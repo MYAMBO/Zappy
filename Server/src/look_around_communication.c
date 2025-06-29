@@ -44,9 +44,8 @@ static void fill_tile_string(char *result, tile_context_t *ctx)
                 1000 - offset, "%s ", names[i]);
     }
     for (poll_handling_t *tmp = ctx->players; tmp; tmp = tmp->next) {
-        if (tmp->player && tmp->player->x
-            == ctx->x && tmp->player->y == ctx->y &&
-            strcmp(tmp->player->team_name, "GRAPHIC") != 0)
+        if (tmp->player && tmp->player->x == ctx->x && tmp->player->y ==
+            ctx->y && strcmp(tmp->player->team_name, "GRAPHIC") != 0)
             offset += snprintf(result + offset, 1000 - offset,
                 "player ");
     }

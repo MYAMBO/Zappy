@@ -90,3 +90,37 @@ char *end_of_game(ai_stats_t *ai)
     snprintf(result, alloc + 1, "seg %s\n", ai->team_name);
     return result;
 }
+
+static void fill_team_names_buffer(server_t *server, char *buffer, int size)
+{
+    char *ptr = buffer;
+    int written = 0;
+
+    for (int i = 0; server->team_names[i] != NULL; i++) {
+        if (strcmp(server->team_names[i]->name, "GRAPHIC") == 0)
+            continue;
+        written = snprintf(ptr, size - (ptr - buffer),
+            "tna %s\n", server->team_names[i]->name);
+        if (written < 0)
+            break;
+        ptr += written;
+    }
+}
+
+char *get_team_names(server_t *server)
+{
+    int total_size = 0;
+    char *result = NULL;
+
+    for (int i = 0; server->team_names[i] != NULL; i++) {
+        if (strcmp(server->team_names[i]->name, "GRAPHIC") == 0)
+            continue;
+        total_size += snprintf(NULL, 0,
+            "tna %s\n", server->team_names[i]->name);
+    }
+    result = my_malloc(total_size + 1);
+    if (!result)
+        return NULL;
+    fill_team_names_buffer(server, result, total_size + 1);
+    return result;
+}

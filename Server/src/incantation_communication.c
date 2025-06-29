@@ -55,19 +55,21 @@ static bool verif_players_stats(poll_handling_t *players,
     int count = 0;
 
     for (poll_handling_t *poll = players; poll != NULL; poll = poll->next){
-        if (!poll->player->is_alive)
-            continue;
         if (poll->player->level == lead->level &&
             poll->player->x == lead->x &&
-            poll->player->y == lead->y) { // same lvl, same x, same y
+            poll->player->y == lead->y)
             count++;
-            poll->player->in_incantation = true;
-        }
     }
     if (count < required_player_count(lead->level))
         return false;
     if (!has_required_rock(map, lead))
         return false;
+    for (poll_handling_t *poll = players; poll != NULL; poll = poll->next){
+        if (poll->player->level == lead->level &&
+            poll->player->x == lead->x &&
+            poll->player->y == lead->y)
+            poll->player->in_incantation = true;
+    }
     return true;
 }
 
@@ -77,10 +79,13 @@ char *start_incantation(ai_stats_t *lead, poll_handling_t *players, map_t *map)
         "Elevation underway\nCurrent level: %d\n", lead->level);
     char *result = my_malloc(alloc + 1);
 
+    // alloc == NULL ?
+
     if (!result)
-        return "ko\n";
+        return NULL;
     if (!verif_players_stats(players, lead, map))
         return "ko\n";
+
     snprintf(result, alloc + 1,
         "Elevation underway\nCurrent level: %d\n", lead->level);
     return result;

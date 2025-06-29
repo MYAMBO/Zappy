@@ -1,29 +1,26 @@
 /*
 ** EPITECH PROJECT, 2025
-** command_msz.c
+** Zappy
 ** File description:
-** command_msz.c
-** created and edited by antoiix.
-** All rights reserved
+** command_sgt
 */
 
-#include <unistd.h>
 #include "commands.h"
-#include "map_protocol.h"
 #include "utils.h"
+#include "time_unit_protocol.h"
+#include "unistd.h"
 
-int msz_command(server_t *server, poll_handling_t *node, char **args)
+int sgt_command(server_t *server, poll_handling_t *node, char **args)
 {
-    char *str;
+    char *str = NULL;
 
     if (array_len(args) != 1) {
         write(node->poll_fd.fd, "sbp\n", 4);
         return SUCCESS;
     }
-    str = get_map_size(server);
-    if (str == NULL)
+    str = time_unit_request(server);
+    if (!str)
         return FAILURE;
     write(node->poll_fd.fd, str, strlen(str));
-    my_free(str);
     return SUCCESS;
 }

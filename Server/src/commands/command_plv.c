@@ -16,7 +16,7 @@
 #include "utils.h"
 
 static int send_plv_command(server_t *server,
-                            poll_handling_t *node, char **args)
+    poll_handling_t *node, char **args)
 {
     poll_handling_t *tmp;
     long int id = 0;

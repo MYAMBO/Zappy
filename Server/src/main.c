@@ -53,39 +53,6 @@ map_t *init_map(int width, int height)
     return map;
 }
 
-//create one AI to test
-
-//ai_stats_t *create_test_ai(int id, const char *team_name, server_t *server)
-//{
-//    ai_stats_t *ai = malloc(sizeof(ai_stats_t));
-//
-//    if (!ai)
-//        return NULL;
-//    ai->connected = true;
-//    ai->fd = id + 3;
-//    ai->tmp_command = NULL;
-//    ai->id = id;
-//    ai->life = 126;
-//    ai->x = server->map_width - 1;
-//    ai->y = server->map_height - 1;
-//    ai->direction = SOUTH;
-//    ai->level = 1;
-//    ai->team_name = strdup(team_name);
-//    ai->nb_food = 3;
-//    ai->nb_linemate = 1;
-//    ai->nb_deraumere = 6;
-//    ai->nb_sibur = 5;
-//    ai->nb_mendiane = 8;
-//    ai->nb_phiras = 2;
-//    ai->nb_thystame = 3;
-//    ai->in_incantation = false;
-//    for (int i = 0; i < 7; i++)
-//        ai->inventory.resources[i] = rand() % 3;
-//
-//    return ai;
-//}
-
-
 int parse_arguments(int ac, char **av, server_t *server)
 {
     if (ac < 2)
@@ -142,14 +109,16 @@ static void show_usage(void)
 int main(int ac, char **av)
 {
     server_t server;
+    int failure = parse_arguments(ac, av, &server);
 
     signal(SIGINT, stop_server);
     logger_clear_log_file();
     logger_info("Server starting...", FILE_OUTPUT, true);
-    if (parse_arguments(ac, av, &server) == FAILURE ||
+    if (failure == FAILURE ||
         start_server(&server) == FAILURE) {
         free_garbage();
-        show_usage();
+        if (failure)
+            show_usage();
         return FAILURE;
     }
     free_garbage();

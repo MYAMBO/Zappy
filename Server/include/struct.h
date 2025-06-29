@@ -12,8 +12,8 @@
 
     #include "poll_handling.h"
     #include <stdbool.h>
-
-    #include "slot_handler.h"
+    #include <time.h>
+    #include "slot_struct.h"
 
 typedef enum ressources_index_s {
     FOOD,
@@ -43,6 +43,8 @@ typedef struct map_s {
 } map_t;
 
 typedef struct server_s {
+    clock_t base_time;
+    int tick;
     long port;
     int server_fd;
     poll_handling_t *poll_list;
@@ -71,9 +73,15 @@ typedef struct server_s {
     int current_res[7];
 } server_t;
 
-typedef struct entry_s {
+typedef struct entry_ai_s {
     char *command;
     int (*function)(server_t *server, poll_handling_t *node, char **args);
-} entry_t;
+    int time;
+} entry_ai_t;
+
+typedef struct entry_gui_s {
+    char *command;
+    int (*function)(server_t *server, poll_handling_t *node, char **args);
+} entry_gui_t;
 
 #endif //STRUCT_H

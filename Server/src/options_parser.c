@@ -116,17 +116,15 @@ static int show_current_team_name(server_t *server,
         return FAILURE;
     for (int j = 1; j < count + 1; j++) {
         server->team_names[j] = create_slot_table(server->client_per_slot,
-            av[back_nb + j - 1]);
+            av[back_nb + j - 1], server);
         if (!server->team_names[j])
             return FAILURE;
     }
-    server->team_names[0] = create_slot_table(1, "GRAPHIC");
+    server->team_names[0] = create_slot_table(1, "GRAPHIC", server);
     if (!server->team_names[0])
         return FAILURE;
     server->team_names[count + 1] = NULL;
     server->team_count = count;
-    for (int k = 0; server->team_names[k] != NULL; k++)
-        printf("%s\n", server->team_names[k]->name);
     return SUCCESS;
 }
 
