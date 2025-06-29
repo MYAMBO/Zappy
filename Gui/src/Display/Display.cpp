@@ -161,7 +161,7 @@ void gui::Display::render()
     if (_camera->position.y < 0.1f) {
         _camera->position.y = 0.1f;
     }
-    ClearBackground(BLACK);
+    ClearBackground({5, 5, 20, 255});
     BeginMode3D(*_camera);
     displayEntity();
     EndMode3D();
