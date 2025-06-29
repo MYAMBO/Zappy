@@ -28,6 +28,8 @@ def core(name, port, machine):
     ai = Ai(name, client)
     while True:
         ai.update_commands_queue()
+        if not ai._Ai__commands_queue:
+            ai.emergency_unfreeze()
         if not ai.send_command():
             return 84
         reply = None
