@@ -344,6 +344,7 @@ void gui::Client::ppo(std::vector<std::string> stringArray)
     _players->at(findPlayer(id))->setOrientation(static_cast<Orientation>(orientation));
     if (_players->at(findPlayer(id))->getPushed()) {
         _players->at(findPlayer(id))->setPosition({(float)posX, 1, (float)posY});
+        _players->at(findPlayer(id))->setPushed(false);
         return;
     }
     _players->at(findPlayer(id))->startMoveTo({(float)posX, 1, (float)posY});
