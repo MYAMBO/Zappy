@@ -11,9 +11,7 @@
     #include <string>
     #include <raylib.h>
 
-    #include "Type.hpp"
     #include "Scene.hpp"
-    #include "Button.hpp"
 
 namespace gui {
     namespace ui {

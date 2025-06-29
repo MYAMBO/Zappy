@@ -8,7 +8,6 @@
 #ifndef ZAPPY_SCENE_HPP
 #define ZAPPY_SCENE_HPP
 
-#include "Type.hpp"
 #include "Display.hpp"
 
 #include <vector>
@@ -50,19 +49,13 @@ namespace gui {
 
             bool _isOpen;
             
+            std::shared_ptr<int> _timeUnit;
             std::shared_ptr<Client> _client;
             std::shared_ptr<Display> _display;
-            
-
 
             std::shared_ptr<Camera> _camera;
             std::shared_ptr<CamState> _camState;
             std::shared_ptr<SceneState> _currentState;
-
-            /**
-             * @brief Safe model loader with error handling.
-             */
-            static std::shared_ptr<Model> safeModelLoader(const std::string& path);
     };
 
     class FailedLoadModel : public std::exception {

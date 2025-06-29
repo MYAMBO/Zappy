@@ -8,29 +8,17 @@
 #ifndef ZAPPY_CLIENT_HPP
     #define ZAPPY_CLIENT_HPP
 
-    #include <map>
-    #include <vector>
     #include <thread>
-    #include <memory>
-    #include <utility>
-    #include <iostream>
-    #include <iostream>
-    #include <functional>
-    #include <arpa/inet.h>
-    #include <sys/socket.h>
 
-    #include "Tile.hpp"
-    #include "AItem.hpp"
     #include "Scene.hpp"
-    #include "Error.hpp"
-    #include "Player.hpp"
-    #include "Display.hpp"
-    #include "AEntity.hpp"
+    #include "TeamsDisplay.hpp"
 
 namespace gui {
     class Client {
         public:
             Client(std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players, std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> map,
+                std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs, std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState, 
+                std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, std::shared_ptr<Display> display, std::shared_ptr<int> timeUnit);
                 std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs, std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState,
                 std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, std::shared_ptr<Display> display,
                 std::shared_ptr<std::string> hostname, std::shared_ptr<std::string> port);
@@ -38,16 +26,17 @@ namespace gui {
 
             void sendCommand(const std::string& command) const;
 
-            void setPlayers(std::shared_ptr<std::vector<std::shared_ptr<Player>>> players);
             void setMap(std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> map);
+            void setPlayers(std::shared_ptr<std::vector<std::shared_ptr<Player>>> players);
 
+            std::shared_ptr<std::vector<std::string>> getTeams();
             std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> getEggs();
-            std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> getPlayers();
             std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> getMap();
+            std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> getPlayers();
 
             void drawPlayers();
+        private:
             void connectToServer();
-    private:
             void receiveLoop();
 
             void msz(std::vector<std::string> stringArray); // map size
@@ -76,8 +65,9 @@ namespace gui {
             void sbp(const std::vector<std::string>& stringArray); // command parameter
 
             std::vector<std::string> splitString(const std::string &string, char delimiter);
-            std::shared_ptr<Model> safeModelLoader(const std::string& string);
             int findPlayer(int id);
+            int findEgg(int id);
+            int findTile(int x, int y);
 
             std::mutex _mutex;
             std::shared_ptr<Camera> _camera;
@@ -90,8 +80,11 @@ namespace gui {
 
             std::thread _thread;
             std::pair<int, int> _size;
-            std::vector<std::string> _teams;
+            std::shared_ptr<int> _timeUnit;
             std::shared_ptr<Display> _display;
+            std::shared_ptr<TeamsDisplay> _displayTeams;
+            std::shared_ptr<std::vector<std::string>> _teams;
+            std::shared_ptr<std::map<std::string, Color>> _teamColors;
             std::shared_ptr<std::vector<std::shared_ptr<Model>>> _models;
             std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> _eggs;
             std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> _map;

@@ -18,7 +18,7 @@ gui::ui::Inventory::Inventory(int screenWidth, int screenHeight)
     : _fontSize(30), _bounds({0, static_cast<float>(screenHeight) * 0.8f, static_cast<float>(screenWidth), static_cast<float>(screenHeight) / 5.0f})
 {
     _items = {
-        {"Food", {0, BROWN}},
+        {"Food", {10, BROWN}},
         {"Linemate", {0, YELLOW}},
         {"Deraumere", {0, GREEN}},
         {"Sibur", {0, RED}},
@@ -43,8 +43,10 @@ void gui::ui::Inventory::draw()
     DrawRectangleRec(_bounds, {255, 255, 255, 50});
     DrawRectangleLinesEx(_bounds, 2, BLACK);
     DrawText("Inventory", _bounds.x + 10, _bounds.y + 10, _fontSize, BLACK);
+
     float itemWidth = _bounds.width / static_cast<float>(_items.size());
     int index = 0;
+    
     for (const auto& item : _items) {
         std::string text = item.first + ": " + std::to_string(item.second.first);
         Vector2 textSize = MeasureTextEx(GetFontDefault(), text.c_str(), _fontSize, 1);
@@ -54,7 +56,6 @@ void gui::ui::Inventory::draw()
         index++;
     }
 }
-
 
 /************************************************************
 **                   >>>>   SETTERS   <<<<                 **

@@ -6,12 +6,12 @@
 */
 
 #include <thread>
-#include <chrono>
 
-#include "Menu.hpp"
 #include "Scene.hpp"
+#include "Menu.hpp"
 #include "Client.hpp"
 #include "Settings.hpp"
+#include "Logger.hpp"
 
 /************************************************************
 **         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
@@ -28,6 +28,9 @@ gui::Scene::Scene(const std::string& hostname, const std::string& port)
     std::shared_ptr<std::string> sharedPort = std::make_shared<std::string>(port);
     initWindow();
 
+    _timeUnit = std::make_shared<int>(100);
+    _display = std::make_unique<Display>(_camera, _camState, _currentState, _timeUnit);
+    _client = std::make_shared<gui::Client>(_display->getPlayers(), _display->getMap(), _display->getEggs(), _camera, _camState, _display->getModels(), _display, _timeUnit);
     _display = std::make_shared<Display>(_camera, _camState, _currentState, _client->connectToServer());
 
     _display->_menu->setHostname(sharedHostname);
@@ -52,22 +55,13 @@ void gui::Scene::initWindow()
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Zappy");
     SetTargetFPS(TARGET_FPS);
 
+    ToggleFullscreen();
+
     _camera->position = { -WIDTH, 10.0f, -HEIGHT };
     _camera->target = { WIDTH / 2, 0.0f, HEIGHT / 2 };
     _camera->up = { 0.0f, 1.0f, 0.0f };
     _camera->fovy = 45.0f;
     _camera->projection = CAMERA_PERSPECTIVE;
-}
-
-std::shared_ptr<Model> gui::Scene::safeModelLoader(const std::string& path)
-{
-    std::cout << path << std::endl;
-    std::shared_ptr<Model> model = std::make_shared<Model>(LoadModel(path.c_str()));
-
-    if (model->meshCount == 0 || model->meshes == nullptr)
-        throw gui::FailedLoadModel();
-
-    return model;
 }
 
 bool gui::Scene::isOpen() const

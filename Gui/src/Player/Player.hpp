@@ -12,18 +12,16 @@
     #include <mutex>
 
     #include "Type.hpp"
-    #include "Scene.hpp"
     #include "Button.hpp"
     #include "AEntity.hpp"
     #include "Inventory.hpp"
 
-    
 namespace gui {
     class Player : public AEntity {
         public:
             Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team,
-                float scale, int screenWidth, int screenHeight, Camera &camera, CamState &sceneState, int timeUnit,
-                std::shared_ptr<Model> model, Model deadModel, ModelAnimation *animations, int animCount);
+                float scale, int screenWidth, int screenHeight, Camera &camera, CamState &sceneState, std::shared_ptr<int> timeUnit,
+                std::shared_ptr<Model> model, Model deadModel, ModelAnimation *animations, int animCount, std::shared_ptr<Model> teamModel);
             ~Player();
 
             /**
@@ -92,7 +90,7 @@ namespace gui {
              * @param camera The Camera3D used for ray picking.
              * @return An integer indicating the result of the update (e.g., success or failure).
              */
-            int update(Camera camera);
+            [[nodiscard]] int update(Camera camera);
 
             /**
              * @brief Update the UI of the Player.
@@ -120,8 +118,6 @@ namespace gui {
              */
             void startMoveTo(Vector3 newPosition);
 
-            ui::Inventory getInventory();
-
             /**
              * @brief Check if the Player is selected.
              * This function checks if the Player is currently selected.
@@ -136,6 +132,19 @@ namespace gui {
              */
             bool getIsMoving() const;
 
+            /**
+             * @brief Set the selected state of the Player.
+             * This function sets whether the Player is currently selected.
+             * @param isSelected true if the Player is selected, false otherwise.
+             */
+            void setIncantation(bool incantation);
+
+            /**
+             * @brief Set the incantation ended state of the Player.
+             * This function sets whether the incantation has ended for the Player.
+             * @param incantationEnded true if the incantation has ended, false otherwise.
+             */
+            void setIncantationEnded(bool incantationEnded);
             
             /**
              * @brief Set the broadcasting state of the Player.
@@ -154,8 +163,9 @@ namespace gui {
              * @brief Handle user input for the Player.
              * This function processes user input to control the Player's actions, such as movement and broadcasting.
              * @param camera The Camera3D used for ray picking.
+             * @return An integer indicating the result of the user input handling (e.g., success or failure).
              */
-            void handleUserInput(Camera camera);
+            [[nodiscard]] int handleUserInput(Camera camera);
             
             /**
              * @brief set the dead state of the Player.
@@ -163,6 +173,49 @@ namespace gui {
              * @param isDead true if the Player is dead, false otherwise.
              */
             void setisDead(bool isDead);
+
+            /**
+             * @brief set the inventory of the Player.
+             * This function sets the quantity of a specific item in the Player's inventory.
+             * @param item The name of the item to set in the inventory.
+             * @param quantity The quantity of the item to set in the inventory.
+             */
+            void setInventory(const std::string item, int quantity);
+
+            /**
+             * @brief set the selected state of the Player.
+             * This function sets whether the Player is currently selected.
+             * @param selected true if the Player is selected, false otherwise.
+             */
+            void setSelected(bool selected);
+
+            /**
+             * @brief Set the color of the Player's team.
+             * This function retrieves the color associated with the Player's team.
+             * @param color The color to set for the Player's team.
+             */
+            void setColorTeam(std::shared_ptr<std::map<std::string, Color>> colorTeam);
+
+            /**
+             * @brief get _countBeforeExpire
+             * @return count fore death animation.
+             */
+            int getCountBeforeExpire();
+
+            /**
+             * @brief set the pushed state of the Player.
+             * This function sets whether the Player is currently pushed.
+             * @param isPushed true if the Player is pushed, false otherwise.
+             */
+            void setPushed(bool isPushed);
+
+            /**
+             * @brief Get the pushed state of the Player.
+             * This function retrieves whether the Player is currently pushed.
+             * @param isPushed true if the Player is pushed, false otherwise.
+             */
+            bool getPushed() const;
+      
         private:
             /**
              * @brief Animation of the broadcast.
@@ -170,13 +223,18 @@ namespace gui {
              */
             void broadcastAnimation();
 
+            /**
+             * @brief Animation of the incantation.
+             * This function handles the animation incantation for the Player.
+             */
+            void IncantationAnimation();
+
             enum class AnimState {
                 IDLE = 0,
                 WALKING = 1,
                 PICKING = 2,
                 BROADCASTING = 3,
                 DYING = 4
-                
             };
 
             /**
@@ -187,6 +245,8 @@ namespace gui {
             void setAnimationState(AnimState newState);
 
             std::shared_ptr<Model> _model;
+            std::shared_ptr<int> _timeUnit;
+
 
             int _id;
             int _level;
@@ -198,25 +258,41 @@ namespace gui {
             std::mutex _mutex;
             bool _isMoving;
             bool _isDead = false;
+            bool _isPushed = false;
             bool _isSelected = false;
+            bool _isIncantation = false;
             bool _isBroadcasting = false;
+            bool _isIncantationEnded = false;
             
             std::string _team;
-            
-            float _moveSpeed;
+
             float _broadcastTimer;
             float _animationSpeed;
             float _broadcastDuration = 0.5f;
 
+
+            float _IncantationTimer;
+            float _IncantationDuration = 2.0f;
+
             Vector3 _targetPosition;
             
             ui::Button _camButton;
-            ui::Inventory _inventory;
+            std::shared_ptr<ui::Inventory> _inventory;
 
             Model _deadModel; 
             Orientation _direction;
             AnimState _currentAnimState;
             ModelAnimation *_animations;
+
+            int _fontSize;
+            std::map<std::string, std::pair<int, Color>> _items;
+
+            Rectangle _bounds;
+
+            std::shared_ptr<Model> _teamModel;
+
+            std::shared_ptr<std::map<std::string, Color>> _colorTeam;
+            std::map<int, std::string> _playersNames;
     };
 }
 

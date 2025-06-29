@@ -6,26 +6,30 @@
 */
 
 #include "Menu.hpp"
-#include "Player.hpp"
+#include "Client.hpp"
 #include "Display.hpp"
 #include "Settings.hpp"
 
 #include "Logger.hpp"
 
+
 /************************************************************
 **         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
 ************************************************************/
 
+
+gui::Display::Display(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState, std::shared_ptr<SceneState> sceneState, std::shared_ptr<int> timeUnit)
+    : _camera(camera), _camState(camState), _sceneState(sceneState), _displayTeams(), _width(WIDTH), _height(HEIGHT)
 gui::Display::Display(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState, std::shared_ptr<SceneState> sceneState, std::function<void()> function)
     : _camera(camera), _camState(camState), _sceneState(sceneState), _width(WIDTH), _height(HEIGHT)
 {
 
-    _model = std::make_shared<Model>(LoadModel("assets/player/scene.gltf"));
+    _model = std::make_shared<Model>(LoadModel("assets/player/scene.glb"));
     _deadModel = LoadModel("assets/dead/scene.gltf");
-    _animations = LoadModelAnimations("assets/player/scene.gltf", &_animCount);
+    _animations = LoadModelAnimations("assets/player/scene.glb", &_animCount);
     _eggModel = std::make_shared<Model>(LoadModel("assets/egg/scene.gltf"));
 
-
+    _timeUnit = timeUnit;
     _models = std::make_shared<std::vector<std::shared_ptr<Model>>>();
     _models->emplace_back(std::make_shared<Model>(LoadModel("assets/food/scene.gltf")));
     _models->emplace_back(std::make_shared<Model>(LoadModel("assets/linemate/scene.gltf")));
@@ -54,16 +58,30 @@ gui::Display::~Display()
 **               >>>>   MEMBER FUNCTIONS   <<<<            **
 ************************************************************/
 
+
+void gui::Display::endGameUI()
+{
+    DrawRectangle(0, 0, 100, 50, LIGHTGRAY);
+    DrawText("Game Over", 0, 0, 40, RED);
+}
+
+void gui::Display::endGame()
+{
+
+}
+
 void gui::Display::displayEntity()
 {
-    for (auto& tile : *_map) {
-        tile->displayTile(_itemDisplay);
+    for (int i = 0; i < static_cast<int>(_map->size()); ++i) {
+        _map->operator[](i)->displayTile(_itemDisplay);
     }
-    for (auto& player : *_players) {
-        player->draw();
+    for (int i = 0; i < static_cast<int>(_players->size()); ++i) {
+        _players->operator[](i)->draw();
+        if (_players->operator[](i)->getCountBeforeExpire() == 0)
+            _players->erase(_players->begin() + i);
     }
-    for (auto& egg : *_eggs) {
-        egg->draw();
+    for (int i = 0; i < static_cast<int>(_eggs->size()); ++i) {
+        _eggs->operator[](i)->draw();
     }
 }
 
@@ -129,10 +147,25 @@ void gui::Display::handleInput()
     eventToggleDisplay();
     updateCamera();
 
+    for (auto& tile: *_map)
+        tile->handleUserInput(*_camera);
     for (auto& player : *_players) {
-        Debug::InfoLog("[GUI] Player " + std::to_string(player->getId()) + " is selected: " + std::to_string(player->getSelected()));
-        player->update(*_camera);
+        if (player->update(*_camera) == 1) {
+            for (auto& p : *_players) {
+                if (p->getId() != player->getId() && p->getSelected()) {
+                    player->setSelected(false);
+                }
+            }
+        }
     }
+    if (IsKeyPressed(KEY_P))
+        _displayTeams->toggleDisplay();
+}
+
+void gui::Display::teamsDisplay()
+{
+    if (_displayTeams && !_displayTeams->getStatus())
+        _displayTeams->display(std::pair<int, int>(-1, -1));
 }
 
 void gui::Display::render()
@@ -142,7 +175,7 @@ void gui::Display::render()
     if (_camera->position.y < 0.1f) {
         _camera->position.y = 0.1f;
     }
-    ClearBackground(BLACK);
+    ClearBackground({5, 5, 20, 255});
     BeginMode3D(*_camera);
     displayEntity();
     EndMode3D();
@@ -150,11 +183,23 @@ void gui::Display::render()
         player->drawUI();
         player->updateUI();
     }
+    for (auto& tile: *_map) {
+        tile->displayContent();
+    }
+    teamsDisplay();
+    if (_winner)
+        endGameUI();
     EndDrawing();
 }
 
 void gui::Display::eventToggleDisplay()
 {
+    if (IsKeyPressed(KEY_X)) {
+        _winner = true;
+        if (_displayTeams && _displayTeams->getStatus())
+            _displayTeams->disableIsTile();
+        _winnerTeam = "caca pipi";
+    }
     if (IsKeyPressed(KEY_ONE)) {
         _itemDisplay[gui::Tile::FOOD] = (_itemDisplay[gui::Tile::FOOD] == 0) ? 1 : 0;
     }
@@ -198,8 +243,30 @@ std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> gui::Display::getPlay
     return _players;
 }
 
+void gui::Display::setTeams(std::shared_ptr<std::vector<std::string>> teams)
+{
+    _teams = std::move(teams);
+}
+
+void gui::Display::setTeamsColors(std::shared_ptr<std::map<std::string, Color>> teamColors)
+{
+    _teamColors = std::move(teamColors);
+}
+
+void gui::Display::setDisplayTeams(std::shared_ptr<TeamsDisplay> displayTeams)
+{
+    _displayTeams = std::move(displayTeams);
+}
+
+void gui::Display::setWinner(const std::string& team)
+{
+    _winner = true;
+    _winnerTeam = team;
+}
+
+
 void gui::Display::addPlayer(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team)
 {
     _players->emplace_back(std::make_shared<gui::Player>(id, position, orientation, level, team, 0.35, SCREEN_WIDTH, SCREEN_HEIGHT,
-        *_camera, *_camState, TIME_UNIT, _model, _deadModel, _animations, _animCount));
+        *_camera, *_camState, _timeUnit, _model, _deadModel, _animations, _animCount, _models->at(4)));
 }

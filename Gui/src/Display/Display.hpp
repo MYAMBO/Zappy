@@ -8,20 +8,8 @@
 #ifndef ZAPPY_DISPLAY_HPP
 #define ZAPPY_DISPLAY_HPP
 
-    #include "Egg.hpp"
     #include "Tile.hpp"
-    #include "Food.hpp"
-    #include "Type.hpp"
-    #include "Sibur.hpp"
-    #include "AItem.hpp"
-    #include "Button.hpp"
-    #include "Logger.hpp"
-    #include "Phiras.hpp"
-    #include "Linemate.hpp"
-    #include "Mendiane.hpp"
-    #include "Thystame.hpp"
-    #include "Inventory.hpp"
-    #include "Deraumere.hpp"
+    #include "TeamsDisplay.hpp"
 
     #include <vector>
     #include <memory>
@@ -38,8 +26,9 @@ namespace gui {
     class Client;
     class Display {
         public:
+            Display(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState, std::shared_ptr<SceneState> sceneState, std::shared_ptr<int> timeUnit);
             Display(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState, std::shared_ptr<SceneState> sceneState, std::function<void()> function);
-            
+
             ~Display();
 
             /**
@@ -52,16 +41,27 @@ namespace gui {
              */
             void handleInput();
 
+            /**
+             * @brief Set the end game UI and display the winner.
+             * @param team The name of the winning team.
+             * This function sets the end game UI and displays the winning team.
+             */
+            void setWinner(const std::string& team);
+
             void addPlayer(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team);
 
-            std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> getMap();
-            std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> getEggs();
+            std::shared_ptr<std::vector<std::shared_ptr<Tile>>> getMap();
+            std::shared_ptr<std::vector<std::shared_ptr<Egg>>> getEggs();
             std::shared_ptr<std::vector<std::shared_ptr<Model>>> getModels();
-            std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> getPlayers();
+            std::shared_ptr<std::vector<std::shared_ptr<Player>>> getPlayers();
+
+            void setTeams(std::shared_ptr<std::vector<std::string>> teams);
+            void setTeamsColors(std::shared_ptr<std::map<std::string, Color>> teamColors);
+            void setDisplayTeams(std::shared_ptr<TeamsDisplay> displayTeams);
 
             std::unique_ptr<ui::Menu> _menu;
             std::unique_ptr<ui::Settings> _settings;
-            std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> _players;
+            std::shared_ptr<std::vector<std::shared_ptr<Player>>> _players;
 
             std::shared_ptr<Model> _model;
             std::shared_ptr<Model> _eggModel;
@@ -89,12 +89,33 @@ namespace gui {
              */
             void updateCamera();
 
+            /**
+             * @brief Display the teams in the UI.
+             */
+            void teamsDisplay();
+
+            /**
+             * @brief Display the end game UI.
+             */
+            void endGameUI();
+
+            /**
+             * @brief End the game and display.
+             */
+            void endGame();
+
+            bool _winner = false;
+            std::string _winnerTeam;
+            std::shared_ptr<int> _timeUnit;
             std::shared_ptr<Camera> _camera;
             std::shared_ptr<CamState> _camState;
             std::shared_ptr<SceneState> _sceneState;
+            std::shared_ptr<TeamsDisplay> _displayTeams;
+            std::shared_ptr<std::vector<std::string>> _teams;
+            std::shared_ptr<std::map<std::string, Color>> _teamColors;
             std::shared_ptr<std::vector<std::shared_ptr<Model>>> _models;
-            std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> _eggs;
-            std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> _map;
+            std::shared_ptr<std::vector<std::shared_ptr<Egg>>> _eggs;
+            std::shared_ptr<std::vector<std::shared_ptr<Tile>>> _map;
 
             std::vector<int> _itemDisplay;
             float _width;

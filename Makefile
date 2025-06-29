@@ -60,7 +60,8 @@ GUI_SRC = 												\
 				Gui/src/Display/Display.cpp				\
 				Gui/src/AEntity/AEntity.cpp				\
 				Gui/src/Settings/Settings.cpp			\
-				Gui/src/Inventory/Inventory.cpp
+				Gui/src/Inventory/Inventory.cpp			\
+				Gui/src/TeamsDisplay/TeamsDisplay.cpp
 
 TEST_SRC =
 
@@ -91,6 +92,7 @@ GUI_FLAGS = -lraylib -lpthread -lGL -I Debug 		\
 			-I Gui/src/Items/Food 					\
 			-I Gui/src/Items/Sibur 					\
 			-I Gui/src/Items/AItem 					\
+			-I Gui/src/TeamsDisplay 				\
 			-I Gui/src/Items/Phiras 				\
 			-I Gui/src/Items/Linemate 				\
 			-I Gui/src/Items/Mendiane 				\
