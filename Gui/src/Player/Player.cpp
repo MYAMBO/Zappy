@@ -341,6 +341,11 @@ int gui::Player::getCountBeforeExpire()
     return _countBeforeExpire;
 }
 
+bool gui::Player::getPushed() const
+{
+    return _isPushed;
+}
+
 /************************************************************
  **              >>>>   SETTERS FUNCTIONS   <<<<            **
  ************************************************************/
@@ -410,4 +415,9 @@ void gui::Player::setIncantationEnded(bool isIncantationEnded)
 void gui::Player::setSelected(bool selected)
 {
     _isSelected = selected;
+}
+
+void gui::Player::setPushed(bool isPushed)
+{
+    _isPushed = isPushed;
 }

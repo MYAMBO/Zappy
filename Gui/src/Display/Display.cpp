@@ -150,15 +150,6 @@ void gui::Display::handleInput()
 
 void gui::Display::teamsDisplay()
 {
-    int yOffset = 0;
-    if (_teams->empty()) {
-        return;
-    }
-    for (size_t i = 0; i < _teams->size(); i++) {
-        DrawText(_teams->at(i).c_str(), 10, 10 + yOffset, 30, _teamColors->operator[](_teams->at(i).c_str()));
-        yOffset += 30;
-    }
-
     if (_displayTeams && !_displayTeams->getStatus())
         _displayTeams->display(std::pair<int, int>(-1, -1));
 }

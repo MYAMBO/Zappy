@@ -201,6 +201,21 @@ namespace gui {
              * @return count fore death animation.
              */
             int getCountBeforeExpire();
+
+            /**
+             * @brief set the pushed state of the Player.
+             * This function sets whether the Player is currently pushed.
+             * @param isPushed true if the Player is pushed, false otherwise.
+             */
+            void setPushed(bool isPushed);
+
+            /**
+             * @brief Get the pushed state of the Player.
+             * This function retrieves whether the Player is currently pushed.
+             * @param isPushed true if the Player is pushed, false otherwise.
+             */
+            bool getPushed() const;
+      
         private:
             /**
              * @brief Animation of the broadcast.
@@ -243,6 +258,7 @@ namespace gui {
             std::mutex _mutex;
             bool _isMoving;
             bool _isDead = false;
+            bool _isPushed = false;
             bool _isSelected = false;
             bool _isIncantation = false;
             bool _isBroadcasting = false;
