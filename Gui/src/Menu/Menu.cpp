@@ -140,10 +140,3 @@ void gui::ui::Menu::drawMainMenu()
     DrawText(_serverId.c_str(), _serverIdBox.x + 10, _serverIdBox.y + 10, _inputFontSize, BLACK);
     EndDrawing();
 }
-
-void gui::ui::Menu::drawConnectingScreen()
-{
-    ClearBackground(_backgroundColor);
-    DrawText("Connecting to server...", 100, 50, _titleFontSize, WHITE);
-    DrawText(_serverId.c_str(), 100, 150, _inputFontSize, BLACK);
-}
