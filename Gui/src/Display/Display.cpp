@@ -56,6 +56,18 @@ gui::Display::~Display()
 **               >>>>   MEMBER FUNCTIONS   <<<<            **
 ************************************************************/
 
+
+void gui::Display::endGameUI()
+{
+    DrawRectangle(0, 0, 100, 50, LIGHTGRAY);
+    DrawText("Game Over", 0, 0, 40, RED);
+}
+
+void gui::Display::endGame()
+{
+
+}
+
 void gui::Display::displayEntity()
 {
     for (auto& tile : *_map) {
@@ -171,11 +183,19 @@ void gui::Display::render()
         tile->displayContent();
     }
     teamsDisplay();
+    if (_winner)
+        endGameUI();
     EndDrawing();
 }
 
 void gui::Display::eventToggleDisplay()
 {
+    if (IsKeyPressed(KEY_X)) {
+        _winner = true;
+        if (_displayTeams && _displayTeams->getStatus())
+            _displayTeams->disableIsTile();
+        _winnerTeam = "caca pipi";
+    }
     if (IsKeyPressed(KEY_ONE)) {
         _itemDisplay[gui::Tile::FOOD] = (_itemDisplay[gui::Tile::FOOD] == 0) ? 1 : 0;
     }
@@ -233,6 +253,13 @@ void gui::Display::setDisplayTeams(std::shared_ptr<TeamsDisplay> displayTeams)
 {
     _displayTeams = std::move(displayTeams);
 }
+
+void gui::Display::setWinner(const std::string& team)
+{
+    _winner = true;
+    _winnerTeam = team;
+}
+
 
 void gui::Display::addPlayer(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team)
 {
