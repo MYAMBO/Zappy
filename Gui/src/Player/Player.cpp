@@ -336,6 +336,10 @@ bool gui::Player::getIsMoving() const
     return _isMoving;
 }
 
+int gui::Player::getCountBeforeExpire()
+{
+    return _countBeforeExpire;
+}
 
 /************************************************************
  **              >>>>   SETTERS FUNCTIONS   <<<<            **

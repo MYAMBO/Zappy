@@ -195,6 +195,12 @@ namespace gui {
              * @param color The color to set for the Player's team.
              */
             void setColorTeam(std::shared_ptr<std::map<std::string, Color>> colorTeam);
+
+            /**
+             * @brief get _countBeforeExpire
+             * @return count fore death animation.
+             */
+            int getCountBeforeExpire();
         private:
             /**
              * @brief Animation of the broadcast.
