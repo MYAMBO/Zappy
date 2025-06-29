@@ -40,6 +40,13 @@ namespace gui {
              */
             void handleInput();
 
+            /**
+             * @brief Set the end game UI and display the winner.
+             * @param team The name of the winning team.
+             * This function sets the end game UI and displays the winning team.
+             */
+            void setWinner(const std::string& team);
+
             void addPlayer(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team);
 
             std::shared_ptr<std::vector<std::shared_ptr<Tile>>> getMap();
@@ -86,6 +93,18 @@ namespace gui {
              */
             void teamsDisplay();
 
+            /**
+             * @brief Display the end game UI.
+             */
+            void endGameUI();
+
+            /**
+             * @brief End the game and display.
+             */
+            void endGame();
+
+            bool _winner = false;
+            std::string _winnerTeam;
             std::shared_ptr<int> _timeUnit;
             std::shared_ptr<Camera> _camera;
             std::shared_ptr<CamState> _camState;

@@ -711,7 +711,8 @@ void gui::Client::sst(std::vector<std::string> stringArray)
 
     int time_unit = std::stoi(stringArray[1]);
 
-    std::cout << "in sst " << time_unit << std::endl;
+    _timeUnit = std::make_shared<int>(time_unit);
+    Debug::InfoLog("Time unit modified to: " + std::to_string(time_unit));
 }
 
 
@@ -724,7 +725,9 @@ void gui::Client::seg(std::vector<std::string> stringArray)
 
     std::string winner = stringArray[1];
 
+    _display->setWinner(winner);
     _isActive = false;
+    Debug::InfoLog("Game ended. Winner: " + winner);
 }
 
 
@@ -736,6 +739,7 @@ void gui::Client::smg(std::vector<std::string> stringArray)
         throw Error("Wrong number of parameter.");
 
     std::string message = stringArray[1];
+    Debug::InfoLog("Server message: " + message);
 }
 
 
@@ -745,6 +749,7 @@ void gui::Client::suc(const std::vector<std::string>& stringArray)
 {
     if (stringArray.size() != 1)
         throw Error("Wrong number of parameter.");
+    Debug::WarningLog("Received command: suc");
 }
 
 
@@ -754,6 +759,7 @@ void gui::Client::sbp(const std::vector<std::string>& stringArray)
 {
     if (stringArray.size() != 1)
         throw Error("Wrong number of parameter.");
+    Debug::WarningLog("Received command: sbp");
 }
 
 
