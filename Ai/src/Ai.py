@@ -36,6 +36,8 @@ class Ai:
         self.__is_guard = False
         self.__is_in_place = False
         self.__nb_guard_in_place = 0
+        self.__previous_message_guard_direction = 0
+        self.__has_already_send_start = False
         self.__time_by_command = {
             "Forward" : 7,
             "Right" : 7,
@@ -52,6 +54,15 @@ class Ai:
             self.__team_name : 0
         }
 
+    def get_status(self):
+        if self.__is_guard:
+            return "guard"
+        else:
+            return "pecno"
+
+    def get_command_queue(self):
+        return self.__commands_queue
+
     def __assign_leader(self):
         self.__mates_to_wait = len(self.__team_inventory)
         self.__ai_to_follow = self.__id
@@ -63,29 +74,18 @@ class Ai:
             else:
                 self.__commands_queue = ["Broadcast " + encrypt_message(self.__team_name, f"\"follow me !;{self.__id}${self.__follow_counter}\"")]
                 self.__follow_counter += 1
+        if self.__ai_to_follow == self.__id and not self.__commands_queue:
+            self.__set_command_queue_after_grouping()
 
     def __start_incantation(self):
-        self.__commands_queue = get_droping_items_commands(self.__inventory)
-        self.__commands_queue.insert(0, "Broadcast \"etttt c'est partieee !!!\"")
-        if self.__nb_guard_in_place >= 12:
+        if not self.__has_already_send_start:
+            self.__commands_queue.insert(0, "Broadcast " + encrypt_message(self.__team_name, "\"etttt c'est partieee !!!\""))
+            self.__has_already_send_start = True
+        if self.__nb_guard_in_place >= 4:
+            self.__commands_queue = get_droping_items_commands(self.__inventory)
             self.__is_ready = True
             self.__commands_queue.append("Incantation")
             self.__mates_to_wait = len(self.__team_inventory)
-        else:
-            self.__team_inventory = dict(sorted(self.__team_inventory.items()))
-            keys = list(self.__team_inventory.keys())
-            if self.__nb_guard_in_place < 4:
-                target = 4
-            else:
-                target = 8
-            i = 0
-            while i < target:
-                if self.__id == keys[i] and self.__ai_to_follow != keys[i]:
-                    self.__is_guard = True
-                if target >= 8 and i < (target / 2) and self.__is_guard:
-                    self.__is_guard = False
-                if self.__ai_to_follow == keys[i]:
-                    target += 1
 
     def __set_commands_queue_to_search_resources(self):
         if self.__view is None:
@@ -93,32 +93,66 @@ class Ai:
         tiles = get_visible_tiles_sorted_by_distance(list(range(len(self.__view))))
         self.__commands_queue = get_better_way_to_resources(tiles, self.__view, self.__needed_list)
         self.__commands_queue.append("Look")
-        
+
         if self.__commands_queue[0] == "Look":
             self.__commands_queue.insert(0, "Forward")
         else:
             self.__commands_queue.insert(0, "Broadcast " + encrypt_message(self.__team_name, f"\"j'ai ça :{self.__id};{get_inventory_string(self.__inventory)}\""))
 
+    def __set_guard_command_queue(self):
+        if self.__id is self.__ai_to_follow:
+            self.__set_command_queue_after_grouping()
+            return
+        keys = list(self.__team_inventory.keys())
+        keys.append(str(self.__id))
+        keys.sort()
+        was_empty = False
+        if not self.__commands_queue:
+            was_empty = True
+        print("\n\nI'm the guard " + str(self.__id) + "et c'est le tour du garde n°" + str(self.__nb_guard_in_place) + ", " + keys[self.__nb_guard_in_place])
+        if str(self.__id) == keys[self.__nb_guard_in_place] and not self.__is_in_place:
+            self.__is_in_place = True
+            if self.__previous_message_guard_direction == 1:
+                self.__commands_queue.append("Right")
+            elif self.__previous_message_guard_direction == 5:
+                self.__commands_queue.append("Left")
+            elif self.__previous_message_guard_direction == 7:
+                self.__commands_queue.append("Right")
+                self.__commands_queue.append("Right")
+            self.__commands_queue.append("Forward")
+            self.__commands_queue.append("Broadcast " + encrypt_message(self.__team_name, "guard in place " + str(self.__nb_guard_in_place)))
+            self.__commands_queue.extend(["Eject"] * 200)
+            if was_empty:
+                self.send_command()
+
+    def __set_command_queue_after_grouping(self):
+        keys = list(self.__team_inventory.keys())
+        keys.append(str(self.__id))
+        keys.sort()
+        stone_list = list(self.__inventory.keys())
+        stone_list.remove("food")
+        target = 4
+        i = 0
+        for key in keys:
+            if str(self.__id) == key and self.__id is not self.__ai_to_follow and i < target:
+                self.__is_guard = True
+                break
+            if str(self.__ai_to_follow) == key:
+                if self.__ai_to_follow == self.__id:
+                    self.__commands_queue = []
+                    self.__commands_queue.extend(["Take " + stone_list[-1]] * 200)
+                    break
+                target += 1
+            if str(self.__id) == key and not self.__is_guard:
+                self.__commands_queue = []
+                self.__commands_queue.extend(["Take " + stone_list[keys.index(str(self.__id)) - target]] * 200)
+                break
+            i += 1
+        if self.__is_guard:
+            self.__commands_queue = get_droping_items_commands(self.__inventory)
+            self.__set_guard_command_queue()
+
     def update_commands_queue(self):
-        if self.__nb_guard_in_place < 8 and self.__is_guard and not self.__is_in_place:
-            nb_guard = 0
-            if self.__nb_guard_in_place > 4:
-                nb_guard = 1
-            if self.__command_to_reply == "Look":
-                if self.__view[2].count("player") > nb_guard:
-                    self.__commands_queue.insert(0, "Right")
-                    self.__commands_queue.insert(1, "Look")
-                else:
-                    self.__commands_queue = ["Forward", "Broadcast guard in place", "Right", "Left"]
-                    self.__commands_queue.append(["Eject" * 100])
-                    self.__is_in_place = True
-            else:
-                self.__commands_queue.insert(0, "Look")
-
-        if not self.__is_guard and self.__is_in_place:
-            self.__commands_queue = ["Right", "Right", "Forward","Broadcast guard in place"]
-            self.__is_in_place = False
-
         if self.team_inventory_is_ready() and self.__ai_to_follow is None and len(self.__team_inventory) > 8:
             self.__assign_leader()
 
@@ -130,6 +164,10 @@ class Ai:
             self.__set_commands_queue_to_search_resources()
 
     def send_command(self):
+        if self.__nb_guard_in_place >= 4 and not self.__is_guard:
+            self.__commands_queue = get_droping_items_commands(self.__inventory)
+            if self.__id is self.__ai_to_follow:
+                self.__commands_queue.append("Incantation")
         if not self.__commands_queue:
             return True
         command = self.__commands_queue.pop(0)
@@ -194,10 +232,18 @@ class Ai:
                     if key != "food" and last_inventory[key] > value:
                         return
             self.__team_inventory[id] = new_inventory
-        if "\"etttt c'est partiiiiii !!!\"" in reply:
-            self.__commands_queue = get_droping_items_commands(self.__inventory)
+        elif "\"etttt c'est partieee !!!\"" in reply:
+            self.__has_already_send_start = True
+            if self.__nb_guard_in_place < 4:
+                self.__set_command_queue_after_grouping()
+            self.send_command()
         elif "guard in place" in reply:
-            self.__nb_guard_in_place += 1
+            replies = reply.split(' ')
+            self.__nb_guard_in_place = int(replies[-1]) + 1
+            self.__previous_message_guard_direction = int(replies[1][0])
+            self.__set_guard_command_queue()
+            if self.__nb_guard_in_place >= 4 and not self.__is_guard:
+                self.__commands_queue = get_droping_items_commands(self.__inventory)
 
     def handle_command(self):
         try:
@@ -209,7 +255,7 @@ class Ai:
             return None
         if reply == "":
             return None
-        logger.info("reply is: " + reply[:-1], Output.BOTH, True)
+        logger.info("\n\nreply is: " + str(decrypt_message(self.__team_name, reply[11:-1])) + "\n\n", Output.BOTH, True)
         if reply == "dead":
             self.__client.close()
             return None
@@ -256,6 +302,8 @@ class Ai:
         if reply == "ko\n":
             if command == "Incantation":
                 self.__commands_queue = ["Incantation"]
+            elif len(self.__commands_queue) > 1 and all(x == self.__commands_queue[0] for x in self.__commands_queue):
+                return True
             else:
                 self.__commands_queue = ["Left", "Forward"]
             return True
@@ -296,7 +344,7 @@ class Ai:
             if res in self.__needed_list and total_inventory[res] >= required:
                 self.__needed_list.remove(res)
         for value in self.__team_inventory.values():
-            if value["food"] < 25:
+            if value["food"] < 30:
                 return False
         return len(self.__needed_list) == 1
 
