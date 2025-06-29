@@ -36,11 +36,6 @@ namespace gui {
                 void drawMainMenu();
 
                 /**
-                 * @brief Draw the connecting screen.
-                 */
-                void drawConnectingScreen();
-
-                /**
                  * @brief Initialize menu UI elements.
                  */
                 void initMenuUI();
