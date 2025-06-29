@@ -58,14 +58,16 @@ gui::Display::~Display()
 
 void gui::Display::displayEntity()
 {
-    for (auto& tile : *_map) {
-        tile->displayTile(_itemDisplay);
+    for (int i = 0; i < static_cast<int>(_map->size()); ++i) {
+        _map->operator[](i)->displayTile(_itemDisplay);
     }
-    for (auto& player : *_players) {
-        player->draw();
+    for (int i = 0; i < static_cast<int>(_players->size()); ++i) {
+        _players->operator[](i)->draw();
+        if (_players->operator[](i)->getCountBeforeExpire() == 0)
+            _players->erase(_players->begin() + i);
     }
-    for (auto& egg : *_eggs) {
-        egg->draw();
+    for (int i = 0; i < static_cast<int>(_eggs->size()); ++i) {
+        _eggs->operator[](i)->draw();
     }
 }
 

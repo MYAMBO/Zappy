@@ -336,6 +336,11 @@ bool gui::Player::getIsMoving() const
     return _isMoving;
 }
 
+int gui::Player::getCountBeforeExpire()
+{
+    return _countBeforeExpire;
+}
+
 bool gui::Player::getPushed() const
 {
     return _isPushed;

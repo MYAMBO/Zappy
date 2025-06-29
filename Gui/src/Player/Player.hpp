@@ -197,6 +197,12 @@ namespace gui {
             void setColorTeam(std::shared_ptr<std::map<std::string, Color>> colorTeam);
 
             /**
+             * @brief get _countBeforeExpire
+             * @return count fore death animation.
+             */
+            int getCountBeforeExpire();
+
+            /**
              * @brief set the pushed state of the Player.
              * This function sets whether the Player is currently pushed.
              * @param isPushed true if the Player is pushed, false otherwise.
@@ -209,6 +215,7 @@ namespace gui {
              * @param isPushed true if the Player is pushed, false otherwise.
              */
             bool getPushed() const;
+      
         private:
             /**
              * @brief Animation of the broadcast.
