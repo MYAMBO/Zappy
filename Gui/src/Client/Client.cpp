@@ -422,7 +422,7 @@ void gui::Client::pex(std::vector<std::string> stringArray)
 
     std::string command;
 
-    for (int i = 0; i < _players->size() ; ++i) {
+    for (size_t i = 0; i < _players->size() ; ++i) {
         command = "ppo #" + std::to_string(_players->at(i)->getId()) + "\n";
         sendCommand(command);
     }
