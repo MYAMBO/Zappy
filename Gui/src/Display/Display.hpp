@@ -103,6 +103,21 @@ namespace gui {
              */
             void endGame();
 
+
+            void drawOverlay(Color color = Fade(BLACK, 0.8f));
+
+            float fadeInAnimation(float duration, bool reset);
+            Color glowEffect(Color baseColor, float speed, float intensity);
+            Rectangle drawCenteredPanel(int width, int height, Color bgColor);
+            std::string typingEffect(std::string fullText, float speed, bool reset);
+            void drawNotification(std::string message, float duration, Color bgColor, bool reset);
+            void drawSeparatorLine(Rectangle container, float yOffset, Color color, float thickness);
+            Vector2 drawCenteredText(std::string text, float y, float fontSize, Color color, Rectangle container);
+            bool drawButton(Rectangle bounds, std::string text, Color normalColor, Color hoverColor, Color textColor);
+            void drawPulsingText(std::string text, Rectangle container, float fontSize, Color color, float pulseSpeed, float pulseAmount);
+            void drawTextWithShadow(std::string text, Vector2 position, float fontSize, Color textColor, Color shadowColor,  Vector2 shadowOffset);
+
+
             bool _winner = false;
             std::string _winnerTeam;
             std::shared_ptr<int> _timeUnit;

@@ -57,10 +57,194 @@ gui::Display::~Display()
 ************************************************************/
 
 
+void gui::Display::drawOverlay(Color color)
+{
+    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), color);
+}
+
+Rectangle gui::Display::drawCenteredPanel(int width, int height, Color bgColor)
+{
+    int screenWidth = GetScreenWidth();
+    int screenHeight = GetScreenHeight();
+    int panelX = (screenWidth - width) / 2;
+    int panelY = (screenHeight - height) / 2;
+    
+    Rectangle panel = {(float)panelX, (float)panelY, (float)width, (float)height};
+    
+    DrawRectangleRounded(panel, 0.1f, 10, bgColor);
+    DrawRectangleRoundedLines(panel, 0.1f, 10, bgColor);
+    
+    return panel;
+}
+
+void gui::Display::drawTextWithShadow(std::string text, Vector2 position, float fontSize, Color textColor, Color shadowColor,  Vector2 shadowOffset)
+{
+    Vector2 shadowPos = {position.x + shadowOffset.x, position.y + shadowOffset.y};
+    DrawTextEx(GetFontDefault(), text.c_str(), shadowPos, fontSize, 2.0f, shadowColor);
+    DrawTextEx(GetFontDefault(), text.c_str(), position, fontSize, 2.0f, textColor);
+}
+
+void gui::Display::drawPulsingText(std::string text, Rectangle container, float fontSize, Color color, float pulseSpeed, float pulseAmount)
+{
+    static float pulseTimer = 0.0f;
+    pulseTimer += GetFrameTime();
+    float pulseScale = 1.0f + pulseAmount * sinf(pulseTimer * pulseSpeed);
+    
+    int textWidth = MeasureText(text.c_str(), (int)(fontSize * pulseScale));
+    float textX = container.x + (container.width - textWidth) / 2;
+    float textY = container.y + (container.height - fontSize * pulseScale) / 2;
+    
+    drawTextWithShadow(text, {textX, textY}, fontSize * pulseScale, color, BLACK, {2.0f, 2.0f});
+}
+
+Vector2 gui::Display::drawCenteredText(std::string text, float y, float fontSize, Color color, Rectangle container)
+{
+    int textWidth = MeasureText(text.c_str(), (int)fontSize);
+    float textX = container.x + (container.width - textWidth) / 2;
+    Vector2 position = {textX, y};
+    
+    DrawTextEx(GetFontDefault(), text.c_str(), position, fontSize, 1.0f, color);
+    return position;
+}
+
+void gui::Display::drawSeparatorLine(Rectangle container, float yOffset, Color color, float thickness)
+{
+    float lineY = container.y + yOffset;
+    float margin = 50.0f;
+    DrawLineEx({container.x + margin, lineY}, {container.x + container.width - margin, lineY}, thickness, color);
+}
+
+bool gui::Display::drawButton(Rectangle bounds, std::string text, Color normalColor, Color hoverColor, Color textColor)
+{
+    Vector2 mousePos = GetMousePosition();
+    bool isHovered = CheckCollisionPointRec(mousePos, bounds);
+    bool isClicked = false;
+    
+    Color buttonColor = isHovered ? hoverColor : normalColor;
+    DrawRectangleRounded(bounds, 0.1f, 10, buttonColor);
+    DrawRectangleRoundedLines(bounds, 0.1f, 10, WHITE);
+    
+    int textWidth = MeasureText(text.c_str(), 20);
+    float textX = bounds.x + (bounds.width - textWidth) / 2;
+    float textY = bounds.y + (bounds.height - 20) / 2;
+    
+    DrawText(text.c_str(), (int)textX, (int)textY, 20, textColor);
+    
+    if (isHovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        isClicked = true;
+    }
+    
+    return isClicked;
+}
+
+float gui::Display::fadeInAnimation(float duration, bool reset)
+{
+    static float timer = 0.0f;
+    if (reset) timer = 0.0f;
+    
+    timer += GetFrameTime();
+    return fminf(timer / duration, 1.0f);
+}
+
+Color gui::Display::glowEffect(Color baseColor, float speed, float intensity)
+{
+    static float glowTimer = 0.0f;
+    glowTimer += GetFrameTime();
+    
+    float glow = (1.0f + intensity * sinf(glowTimer * speed)) / (1.0f + intensity);
+    
+    return {
+        (unsigned char)(baseColor.r * glow),
+        (unsigned char)(baseColor.g * glow),
+        (unsigned char)(baseColor.b * glow),
+        baseColor.a
+    };
+}
+
+std::string gui::Display::typingEffect(std::string fullText, float speed, bool reset)
+{
+    static float timer = 0.0f;
+    static int currentLength = 0;
+    
+    if (reset) {
+        timer = 0.0f;
+        currentLength = 0;
+    }
+    
+    timer += GetFrameTime();
+    int targetLength = (int)(timer * speed);
+    int fullLength = (int)fullText.length();
+    
+    currentLength = fminf(targetLength, fullLength);
+    
+    return std::string(fullText, currentLength);
+}
+
+void gui::Display::drawNotification(std::string message, float duration, Color bgColor, bool reset)
+{
+    static float timer = 0.0f;
+    static bool show = true;
+    
+    if (reset) {
+        timer = 0.0f;
+        show = true;
+    }
+    
+    if (!show) return;
+    
+    timer += GetFrameTime();
+    if (timer > duration) {
+        show = false;
+        return;
+    }
+    
+    float alpha = 1.0f;
+    if (timer > duration - 1.0f) {
+        alpha = duration - timer;
+    }
+    
+    int width = 300;
+    int height = 60;
+    int x = GetScreenWidth() - width - 20;
+    int y = 20;
+    
+    bgColor.a = (unsigned char)(bgColor.a * alpha);
+    DrawRectangleRounded({(float)x, (float)y, (float)width, (float)height}, 0.1f, 10, bgColor);
+    
+    Color textColor = WHITE;
+    textColor.a = (unsigned char)(255 * alpha);
+    drawCenteredText(message, y + 20, 18, textColor, {(float)x, (float)y, (float)width, (float)height});
+}
+
+
 void gui::Display::endGameUI()
 {
-    DrawRectangle(0, 0, 100, 50, LIGHTGRAY);
-    DrawText("Game Over", 0, 0, 40, RED);
+    drawOverlay();
+
+    Rectangle panel = drawCenteredPanel(600, 400, DARKGRAY);   
+    Rectangle titleArea = {panel.x, panel.y + 20, panel.width, 80};
+
+    drawPulsingText("GAME OVER", titleArea, 48, RED, 0.5f, 0.1f);
+    drawSeparatorLine(panel, 140, LIGHTGRAY, 2.0f);
+    drawCenteredText("WINNER", panel.y + 180, 24, LIGHTGRAY, panel);
+    
+    Color teamColor = GOLD;
+    if (_teamColors && _teamColors->find(_winnerTeam) != _teamColors->end()) {
+        teamColor = _teamColors->at(_winnerTeam);
+    }
+    teamColor = glowEffect(teamColor, 0.5f, 0.2f);
+    drawTextWithShadow(_winnerTeam.c_str(), {panel.x + (panel.width - MeasureText(_winnerTeam.c_str(), 36)) / 2, panel.y + 220}, 36, teamColor, BLACK, {2.0f, 2.0f});
+    drawCenteredText("Press ESC to main menu", panel.y + panel.height - 55, 18, LIGHTGRAY, panel);
+
+    if (IsKeyPressed(KEY_SPACE)) {
+        _winner = false;
+        _winnerTeam = "";
+    }
+    if (IsKeyPressed(KEY_ESCAPE)) {
+        *_sceneState = SceneState::MENU;
+        _winner = false;
+        _winnerTeam = "";
+    }
 }
 
 void gui::Display::endGame()
