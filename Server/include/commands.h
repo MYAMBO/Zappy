@@ -50,7 +50,7 @@ static entry_ai_t const commands_ai_list[] = {
     {"Take", take_command, 7},
     {"Set", drop_command, 7},
     {"Connect_nbr", connect_nbr_command, 0},
-    {"Incantation", incantation_command, 300},
+    // {"Incantation", incantation_command, 300},
     {"Fork", fork_command, 42},
     {NULL, NULL, 0}
 };

@@ -38,7 +38,7 @@ ai_stats_t *init_new_player(int fd, int x, int y, char *team_name)
     new_tmp->fd = fd;
     new_tmp->direction = (rand() % 4) * 2;
     new_tmp->id = get_unique_connection_id();
-    new_tmp->in_incantation = false;
+    new_tmp->in_incantation = -1;
     new_tmp->level = 1;
     new_tmp->tmp_command = NULL;
     new_tmp->team_name = my_malloc(sizeof(char) * (strlen(team_name) + 1));
