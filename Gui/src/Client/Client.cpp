@@ -28,8 +28,6 @@ gui::Client::Client(std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> p
       _displayTeams(), _teams(std::make_shared<std::vector<std::string>>()), _teamColors(std::make_shared<std::map<std::string, Color>>()), _models(std::move(models)),
       _eggs(std::move(eggs)), _map(std::move(map)), _players(std::move(players))
 {
-    _teams->push_back("Undefined");
-    _teamColors->operator[]("Undefined") = WHITE;
     _displayTeams = std::make_shared<TeamsDisplay>(_teams, _teamColors, _eggs, _players);
     _display = display;
     _display->setTeams(_teams);
@@ -630,7 +628,7 @@ void gui::Client::enw(std::vector<std::string> stringArray)
     playerIndice = findPlayer(eggId);
 
     if (playerId == -1)
-        _eggs->emplace_back(std::make_shared<gui::Egg>(eggId, std::make_pair(posX, posY), _display->_eggModel, "Undefined"));
+        _eggs->emplace_back(std::make_shared<gui::Egg>(eggId, std::make_pair(posX, posY), _display->_eggModel, ""));
     else
         _eggs->emplace_back(std::make_shared<gui::Egg>(eggId, std::make_pair(posX, posY), _display->_eggModel, _players->at(playerIndice)->getTeam()));
     if (_eggs->empty())
