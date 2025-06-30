@@ -19,7 +19,7 @@
 
 
 gui::Player::Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team,
-        float scale, int screenWidth, int screenHeight, Camera &camera, CamState &sceneState, std::shared_ptr<int> timeUnit,
+        float scale, int screenWidth, int screenHeight, std::shared_ptr<Camera> camera, std::shared_ptr<CamState> sceneState, std::shared_ptr<int> timeUnit,
         std::shared_ptr<Model> model, Model deadModel, ModelAnimation *animations, int animCount, std::shared_ptr<Model> teamModel)
     : AEntity({(float)position.first, 1.0f, (float)position.second}, scale, WHITE), 
     _model(model), _id(id), _level(level), _animCount(animCount), _currentAnim(2), _animFrameCounter(0), _isMoving(false), _isSelected(false), _team(std::move(team)), _animationSpeed(1.0f),
@@ -210,10 +210,10 @@ void gui::Player::updateUI()
     }
 }
 
-int gui::Player::handleUserInput(Camera camera)
+int gui::Player::handleUserInput(std::shared_ptr<Camera> camera)
 {
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !IsKeyDown(KEY_LEFT_SHIFT)) {
-        Ray ray = GetMouseRay(GetMousePosition(), camera);
+        Ray ray = GetMouseRay(GetMousePosition(), *camera);
         BoundingBox box = {
             { _position.x - 0.5f, _position.y - 0.5f, _position.z - 0.5f},
             { _position.x + 0.5f, _position.y + 0.5f, _position.z + 0.5f}
@@ -238,7 +238,7 @@ int gui::Player::handleUserInput(Camera camera)
     return 0;
 }
 
-int gui::Player::update(Camera camera)
+int gui::Player::update(std::shared_ptr<Camera> camera)
 {
     updateMovementAndAnimation();
     if (handleUserInput(camera) == 1)
@@ -246,14 +246,14 @@ int gui::Player::update(Camera camera)
     return 0;
 }
 
-void gui::Player::HandleCamButton(Camera &camera, CamState &sceneState)
+void gui::Player::HandleCamButton(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> sceneState)
 {
-    camera = { { _position.x - 2, _position.y + 2, _position.z - 2 },
+    camera = std::make_shared<Camera>(Camera{ { _position.x - 2, _position.y + 2, _position.z - 2 },
         { _position.x, _position.y, _position.z },
         { 0.0f, 1.0f, 0.0f },
         45.0f,
-        0 };
-    sceneState = CamState::PLAYER;
+        0 });
+    sceneState = std::make_shared<CamState>(CamState::PLAYER);
 }
 
 void gui::Player::broadcastAnimation()
