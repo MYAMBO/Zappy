@@ -7,9 +7,12 @@
 
 #include "eject_communication.h"
 #include <unistd.h>
+
+#include "egg_protocol.h"
 #include "get_signal_direction.h"
 #include "look_around_communication.h"
 #include "slot_handler.h"
+#include "utils.h"
 
 static void eject_east(ai_stats_t *ai, ai_stats_t *target,
                        map_t *map, server_t *server)
@@ -106,12 +109,20 @@ char *eject_player(ai_stats_t *ai, poll_handling_t *players,
     bool ejected = false;
     ai_stats_t *current = NULL;
     slot_t *next = NULL;
+    char *str;
 
     for (int i = 0; server->team_names[i] != NULL; i++) {
         for (slot_t *slot = server->team_names[i]->slots; slot != NULL; slot = next) {
             next = slot->next;
             if (slot->id_user == -1 && slot->x == ai->x && slot->y == ai->y)
+            {
                 remove_slot(&server->team_names[i]->slots, slot->id_slot);
+                str = death_of_an_egg(slot);
+                if (!str)
+                    return NULL;
+                send_message_graphic(server, str);
+                my_free(str);
+            }
         }
     }
     for (poll_handling_t *poll = players; poll != NULL; poll = poll->next) {

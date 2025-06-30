@@ -93,6 +93,8 @@ int incantation_command(server_t *server, poll_handling_t *node, char **args)
 int end_incantation_command(server_t *server, poll_handling_t *node, char **args)
 {
     char *str = NULL;
+    char *msg = NULL;
+    bool status = strcmp(str, "ko\n") == 0 ? false : true;
 
     (void)node;
     (void)args;
@@ -100,6 +102,12 @@ int end_incantation_command(server_t *server, poll_handling_t *node, char **args
     printf("lala1\n");
     if (!str)
         return FAILURE;
+    msg = end_incantation_protocol(server->incantation_list, status);
+    if (!msg)
+        return FAILURE;
+    if (send_message_graphic(server, msg) == FAILURE)
+        return FAILURE;
+    my_free(msg);
     printf("lala2\n");
     printf("%s", str);
     for (poll_handling_t *poll = server->poll_list; poll != NULL; poll = poll->next) {
@@ -118,5 +126,6 @@ int end_incantation_command(server_t *server, poll_handling_t *node, char **args
             write(poll->player->fd, str, strlen(str));
         }
     }
+    my_free(str);
     return SUCCESS;
 }

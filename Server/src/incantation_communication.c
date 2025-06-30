@@ -18,7 +18,6 @@ static int get_incantation_id(void)
 
 static bool has_required_rock(map_t *map, ai_stats_t *lead)
 {
-    return true;
     int requirements[7][6] = {
             {1, 0, 0, 0, 0, 0},
             {1, 1, 1, 0, 0, 0},
@@ -39,7 +38,6 @@ static bool has_required_rock(map_t *map, ai_stats_t *lead)
 
 static bool has_required_rock_end(map_t *map, int x, int y, int level)
 {
-    return true;
     int requirements[7][6] = {
         {1, 0, 0, 0, 0, 0},
         {1, 1, 1, 0, 0, 0},
@@ -136,7 +134,6 @@ static int verif_players_stats_end(server_t *server,
         if (poll->player->in_incantation == server->incantation_list[0].incantation_nb)
             poll->player->in_incantation = -1;
     }
-
     return SUCCESS;
 }
 
@@ -165,8 +162,6 @@ char *end_incantation(server_t *server, map_t *map)
     int val = verif_players_stats_end(server, map);
     if (val == 1)
         return "ko\n";
-    if (val == 84)
-        return NULL;
     snprintf(result, alloc + 1,
         "Elevation underway\nCurrent level: %d\n", server->incantation_list[0].level_base);
     return result;
