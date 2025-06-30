@@ -20,6 +20,8 @@ int init_server_fields(server_t *server, long port)
     server->poll_list = NULL;
     server->poll_count = 0;
     server->tick = 0;
+    server->regenerate_time = -1;
+    server->finished = false;
     if (server->server_fd == -1)
         return FAILURE;
     return SUCCESS;

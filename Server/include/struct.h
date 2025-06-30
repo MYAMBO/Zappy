@@ -71,6 +71,8 @@ typedef struct server_s {
     int phiras_value;
     int thystame_value;
     int current_res[7];
+    int regenerate_time;
+    bool finished;
 } server_t;
 
 typedef struct entry_ai_s {

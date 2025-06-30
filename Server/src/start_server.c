@@ -9,11 +9,16 @@
 
 #include <stdio.h>
 #include <time.h>
+#include <unistd.h>
+
 #include "command_exec_handler.h"
 #include "server.h"
 #include "garbage.h"
+#include "generate_ressources.h"
+#include "player_informations_protocol.h"
 #include "slot_handler.h"
 #include "time_handler.h"
+#include "utils.h"
 
 int call_poll(server_t *server)
 {
@@ -29,9 +34,49 @@ int call_poll(server_t *server)
 
 static int exec_time_exec_handler(server_t *server)
 {
+    poll_handling_t *next = NULL;
+
     increase_tick(server);
+    if (server->regenerate_time == -1 || server->regenerate_time + 20000 <= server->tick)
+    {
+        printf("Here on %d\n", server->tick);
+        server->regenerate_time = server->tick;
+        generate_all_ressources(server);
+        printf("---------------------------\n");
+    }
     for (poll_handling_t *node = server->poll_list; node != NULL;
-        node = node->next) {
+        node = next) {
+        next = node->next;
+        if (node->player && (strcmp(node->player->team_name, "GRAPHIC") == 0 || node->player->connected == false))
+            continue;
+        if (node->player && node->player->last_life == -1)
+        {
+            node->player->last_life = server->tick;
+            continue;
+        }
+        if (node->player && node->player->last_life + 1000 < server->tick)
+        {
+            node->player->life--;
+            node->player->last_life = server->tick;
+            continue;
+        }
+        if (node->player && node->player->life <= 0)
+        {
+            write(node->player->fd, "dead\n", strlen("dead\n"));
+            slot_table_t *table = NULL;
+            for (int i = 0; server->team_names[0]; i++)
+            {
+                if (strcmp(server->team_names[i]->name, node->player->team_name) == 0)
+                    table = server->team_names[i];
+            }
+            if (table == NULL)
+                return FAILURE;
+            if (disconnect_player(&table, node->player->id) == FAILURE)
+                return FAILURE;
+            close(node->player->fd);
+            remove_node_poll_handling(&server->poll_list, node->player->fd);
+            continue;
+        }
         command_exec_queue(node, server->tick);
         if (launch_command_exec(node, server->tick, server) == FAILURE)
             return FAILURE;
@@ -39,12 +84,48 @@ static int exec_time_exec_handler(server_t *server)
     return SUCCESS;
 }
 
+static int win_condition(server_t *server)
+{
+    int count = 0;
+
+    for (int i = 0; server->team_names[i]; i++)
+    {
+        count = 0;
+        for (slot_t *slot = server->team_names[i]->slots; slot != NULL; slot = slot->next)
+        {
+            poll_handling_t *node = search_player_node(slot->id_user, server);
+            if (node == NULL)
+                continue;
+            if (node->player->level == 8)
+                count++;
+        }
+        if (count >= 6)
+        {
+            char *msg = end_of_game(server->team_names[i]->name);
+            if (msg == NULL)
+                return FAILURE;
+            if (send_message_graphic(server, msg) == FAILURE)
+                return FAILURE;
+            return 1;
+        }
+    }
+    return SUCCESS;
+}
+
 int start_server(server_t *server)
 {
     int poll_val;
+    int win_val = 0;
 
     server->base_time = clock();
     while (*is_running() == 1) {
+        if (win_val == 1)
+            continue;
+        win_val = win_condition(server);
+        if (win_val == FAILURE)
+            return FAILURE;
+        if (win_val == 1)
+            continue;
         if (exec_time_exec_handler(server) == FAILURE)
             return FAILURE;
         if (server->team_names[0]->nb_slots == 0 &&
