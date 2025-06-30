@@ -56,15 +56,6 @@ class Ai:
             self.__team_name : 0
         }
 
-    def get_status(self):
-        if self.__is_guard:
-            return "guard"
-        else:
-            return "pecno"
-
-    def get_command_queue(self):
-        return self.__commands_queue
-
     def __assign_leader(self):
         self.__mates_to_wait = len(self.__team_inventory)
         self.__ai_to_follow = self.__id
@@ -115,7 +106,8 @@ class Ai:
         was_empty = False
         if not self.__commands_queue:
             was_empty = True
-        print("\n\nI'm the guard " + str(self.__id) + "et c'est le tour du garde n°" + str(self.__nb_guard_in_place) + ", " + keys[self.__nb_guard_in_place])
+        if str(self.__ai_to_follow) == keys[self.__nb_guard_in_place]:
+            self.__nb_guard_in_place += 1
         if str(self.__id) == keys[self.__nb_guard_in_place] and not self.__is_in_place:
             self.__is_in_place = True
             if self.__previous_message_guard_direction == 1:
@@ -127,7 +119,7 @@ class Ai:
                 self.__commands_queue.append("Right")
             self.__commands_queue.append("Forward")
             self.__commands_queue.append("Broadcast " + encrypt_message(self.__team_name, "guard in place " + str(self.__nb_guard_in_place)))
-            self.__commands_queue.extend(["Eject"] * 200)
+            self.__commands_queue.append("Eject")
             if was_empty:
                 self.send_command()
 
@@ -146,12 +138,12 @@ class Ai:
             if str(self.__ai_to_follow) == key:
                 if self.__ai_to_follow == self.__id:
                     self.__commands_queue = []
-                    self.__commands_queue.extend(["Take " + stone_list[-1]] * 200)
+                    self.__commands_queue.append("Take " + stone_list[-1])
                     break
                 target += 1
             if str(self.__id) == key and not self.__is_guard:
                 self.__commands_queue = []
-                self.__commands_queue.extend(["Take " + stone_list[keys.index(str(self.__id)) - target]] * 200)
+                self.__commands_queue.append("Take " + stone_list[keys.index(str(self.__id)) - target])
                 break
             i += 1
         if self.__is_guard:
@@ -260,7 +252,6 @@ class Ai:
             return None
         if reply == "":
             return None
-        logger.info("\n\nreply is: " + str(decrypt_message(self.__team_name, reply[11:-1])) + "\n\n", Output.BOTH, True)
         if reply == "dead":
             self.__client.close()
             return None
@@ -293,12 +284,17 @@ class Ai:
                 return False
             return True
         if reply == "ok\n":
-            if command.startswith("Take "):
+            if not self.__is_guard and self.__command_to_reply.startswith("Take ") and not self.__commands_queue and self.__ai_to_follow is not None:
+                self.add_object_to_inventory(command.split(' ', 1)[1])
+                self.__set_command_queue_after_grouping()
+            elif command.startswith("Take "):
                 self.add_object_to_inventory(command.split(' ', 1)[1])
                 if len(self.__team_inventory) < 9 and self.__unused_slots == 0 and self.__inventory['food'] > 10:
                     self.__commands_queue.append("Fork")
             elif command.startswith("Set "):
                 self.set_down_object_from_inventory(command.split(' ', 1)[1])
+            elif self.__is_guard and self.__command_to_reply == "Eject" and not self.__commands_queue:
+                self.__commands_queue.append("Eject")
             return True
         if try_inventory(reply, self):
             return True
@@ -307,10 +303,11 @@ class Ai:
         if reply == "ko\n":
             if command == "Incantation":
                 self.__commands_queue = ["Incantation"]
-            elif len(self.__commands_queue) > 1 and all(x == self.__commands_queue[0] for x in self.__commands_queue):
+            elif not self.__is_guard and self.__command_to_reply.startswith("Take ") and self.__ai_to_follow is not None:
                 return True
             else:
-                self.__commands_queue = ["Left", "Forward"]
+                if not self.__has_already_send_start:
+                    self.__commands_queue = ["Left", "Forward"]
             return True
         return try_view(reply, self) or try_connect(reply, self)
 
@@ -374,6 +371,12 @@ class Ai:
         
     def emergency_unfreeze(self):
         if not self.__commands_queue:
-            self.__commands_queue = ["Look"]
+            if self.__has_already_send_start:
+                self.__set_command_queue_after_grouping()
+            else:
+                self.__commands_queue = ["Look"]
             return True
         return False
+
+    def is_a_guard(self):
+        return self.__is_guard
