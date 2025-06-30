@@ -187,7 +187,10 @@ class Ai:
         return True
 
     def handle_follow(self, reply):
-        id, count = reply[:-1].split(';', 1)[1].rsplit('$', 1)
+        try:
+            id, count = reply[:-1].split(';', 1)[1].rsplit('$', 1)
+        except:
+            return
         if int(count) != self.__follow_counter:
             logger.info("an enemy try to usurp our commander !", Output.BOTH)
             return
@@ -196,7 +199,10 @@ class Ai:
             self.__ai_to_follow = id
         if self.__commands_queue != [] and self.__commands_queue != None:
             return
-        self.__commands_queue = follow_message(int(reply.split(',', 1)[0].split("message ")[1]))
+        try:
+            self.__commands_queue = follow_message(int(reply.split(',', 1)[0].split("message ")[1]))
+        except:
+            return
         if self.__commands_queue:
             self.__commands_queue.append("Look")
         else:
@@ -204,7 +210,10 @@ class Ai:
             self.__commands_queue = ["Broadcast " + encrypt_message(self.__team_name, "\"" + str(self.__id) + ";en position !\"")]
 
     def __handle_mate_inventory(self, reply):
-        id, inventory = reply.split(':', 1)[1].rsplit(';', 1)
+        try:
+            id, inventory = reply.split(':', 1)[1].rsplit(';', 1)
+        except:
+            return
         try:
             new_inventory = handle_inventory_string(inventory.strip()[:-1])
         except:
@@ -220,7 +229,10 @@ class Ai:
         if "follow me !;" in reply and self.__is_ready == False:
             self.handle_follow(reply)
         elif ";en position !" in reply and self.__id == self.__ai_to_follow:
-            id = reply.split(';', 1)[0].split('\"', 1)[1]
+            try:
+                id = reply.split(';', 1)[0].split('\"', 1)[1]
+            except:
+                return
             if id in self.__ready_id:
                 return
             self.__mates_to_wait -= 1
@@ -233,7 +245,10 @@ class Ai:
                 self.__set_command_queue_after_grouping()
             self.send_command()
         elif "guard in place" in reply:
-            replies = reply.split(' ')
+            try:
+                replies = reply.split(' ')
+            except:
+                return
             self.__nb_guard_in_place = int(replies[-1]) + 1
             self.__previous_message_guard_direction = int(replies[1][0])
             self.__set_guard_command_queue()
@@ -258,18 +273,31 @@ class Ai:
 
     def __handle_ok(self, command):
         if not self.__is_guard and self.__command_to_reply.startswith("Take ") and not self.__commands_queue and self.__ai_to_follow is not None:
-            self.add_object_to_inventory(command.split(' ', 1)[1])
+            try:
+                self.add_object_to_inventory(command.split(' ', 1)[1])
+            except:
+                return
             self.__set_command_queue_after_grouping()
         elif command.startswith("Take "):
-            self.add_object_to_inventory(command.split(' ', 1)[1])
+            try:
+                self.add_object_to_inventory(command.split(' ', 1)[1])
+            except:
+                return
             if len(self.__team_inventory) < 9 and self.__unused_slots == 0 and self.__inventory['food'] > 10:
                 self.__commands_queue.append("Fork")
         elif command.startswith("Set "):
-            self.set_down_object_from_inventory(command.split(' ', 1)[1])
+            try:
+                self.set_down_object_from_inventory(command.split(' ', 1)[1])
+            except:
+                return
         elif self.__is_guard and self.__command_to_reply == "Eject" and not self.__commands_queue:
             self.__commands_queue.append("Eject")
 
     def handle_reply(self, reply):
+        try:
+            reply.startswith("")
+        except:
+            return False
         if reply == None:
             return False
         if reply.startswith("Current level:"):

@@ -29,7 +29,8 @@ def handle_inventory_string(string):
 
 def try_view(reply, ai):
     try:
-        ai.set_view(handle_look_string(reply))
+        view = handle_look_string(reply)
+        ai.set_view(view)
     except:
         return False
     logger.info("I see this: " + json.dumps(ai.get_view()), Output.BOTH, True)
