@@ -149,6 +149,9 @@ int start_server(server_t *server)
 
     server->base_time = clock();
     while (*is_running() == 1) {
+        if (server->team_names[0]->nb_slots == 0 &&
+            add_slot(server->team_names[0], (int[2]){-1, -1}, -1, server) == FAILURE)
+            return FAILURE;
         if (win_val == 1)
             continue;
         win_val = win_condition(server);
@@ -157,9 +160,6 @@ int start_server(server_t *server)
         if (win_val == 1)
             continue;
         if (exec_time_exec_handler(server) == FAILURE)
-            return FAILURE;
-        if (server->team_names[0]->nb_slots == 0 &&
-            add_slot(server->team_names[0], (int[2]){-1, -1}, -1, server) == FAILURE)
             return FAILURE;
         poll_val = call_poll(server);
         if (poll_val == -1)

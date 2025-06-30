@@ -84,9 +84,9 @@ static int send_slot_remaining_massages(server_t *server,
         if (send_message_graphic(server, str) == FAILURE)
             return FAILURE;
         my_free(str);
+        if (send_map_size_message(server, node) == FAILURE)
+            return FAILURE;
     }
-    if (send_map_size_message(server, node) == FAILURE)
-        return FAILURE;
     return SUCCESS;
 }
 
