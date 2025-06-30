@@ -18,6 +18,7 @@
 #include "split_string.h"
 #include "graphic_connect.h"
 #include "player_connection_protocol.h"
+#include "send_init_graphic.h"
 #include "slot_handler.h"
 #include "technical_protocol.h"
 #include "utils.h"
@@ -93,8 +94,11 @@ static int send_slot_remaining_massages(server_t *server,
     str = my_malloc((j + 1) * sizeof(char));
     if (str == NULL)
         return FAILURE;
-    sprintf(str, "%d\n", server->team_names[i]->slots_remaining);
-    write(node->poll_fd.fd, str, j);
+    if (strcmp(node->player->team_name, "GRAPHIC") != 0)
+    {
+        sprintf(str, "%d\n", server->team_names[i]->slots_remaining);
+        write(node->poll_fd.fd, str, j);
+    }
     my_free(str);
     if (strcmp(node->player->team_name, "GRAPHIC") == 0){
         if (send_slot_remaining_massages_part_one(node, str) == FAILURE)

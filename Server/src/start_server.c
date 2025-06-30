@@ -39,11 +39,9 @@ int incantation_check(server_t *server)
 {
     incantation_list_t *next = NULL;
 
-    for (incantation_list_t *tmp = server->incantation_list; tmp; tmp = next)
-    {
+    for (incantation_list_t *tmp = server->incantation_list; tmp; tmp = next) {
         next = tmp->next;
-        if (server->tick >= tmp->tick_end)
-        {
+        if (server->tick >= tmp->tick_end) {
             printf("entered with %d and %d\n", server->tick, tmp->tick_end);
             if (end_incantation_command(server, NULL, NULL) == FAILURE)
                 return FAILURE;
@@ -57,34 +55,29 @@ static int exec_time_exec_handler(server_t *server)
 {
     poll_handling_t *next = NULL;
 
-    if (server->regenerate_time == -1 || server->regenerate_time + 20000 <= server->tick)
-    {
-        // printf("Here on %d\n", server->tick);
+    if (server->regenerate_time == -1 || server->regenerate_time + 20000 <=
+        server->tick) {
         server->regenerate_time = server->tick;
         generate_all_ressources(server);
-        // printf("---------------------------\n");
     }
     if (increase_tick(server) == false)
         return SUCCESS;
-    // printf("tick : %d\n", server->tick);
     if (incantation_check(server) == FAILURE)
         return FAILURE;
     for (poll_handling_t *node = server->poll_list; node != NULL;
         node = next) {
         next = node->next;
-        if (node->player && (strcmp(node->player->team_name, "GRAPHIC") == 0 || node->player->connected == false))
+        if (node->player && (strcmp(node->player->team_name, "GRAPHIC") == 0
+            || node->player->connected == false))
             continue;
-        if (node->player && node->player->last_life == -1)
-        {
+        if (node->player && node->player->last_life == -1) {
             node->player->last_life = server->tick;
         }
-        if (node->player && node->player->last_life + 1000 < server->tick)
-        {
+        if (node->player && node->player->last_life + 1000 < server->tick) {
             node->player->life--;
             node->player->last_life = server->tick;
         }
-        if (node->player && node->player->life <= 0)
-        {
+        if (node->player && node->player->life <= 0) {
             write(node->player->fd, "dead\n", strlen("dead\n"));
             char *str = player_death(node->player);
             if (str == NULL)
@@ -92,9 +85,9 @@ static int exec_time_exec_handler(server_t *server)
             if (send_message_graphic(server, str) == FAILURE)
                 return FAILURE;
             slot_table_t *table = NULL;
-            for (int i = 0; server->team_names[i]; i++)
-            {
-                if (strcmp(server->team_names[i]->name, node->player->team_name) == 0)
+            for (int i = 0; server->team_names[i]; i++) {
+                if (strcmp(server->team_names[i]->name,
+                    node->player->team_name) == 0)
                     table = server->team_names[i];
             }
             if (table == NULL)
@@ -103,10 +96,8 @@ static int exec_time_exec_handler(server_t *server)
                 return FAILURE;
             close(node->player->fd);
             remove_node_poll_handling(&server->poll_list, node->player->fd);
-            // printf("Here on fd %d\n", node->poll_fd.fd);
             continue;
         }
-        // printf("%d fd\n", node->poll_fd.fd);
         command_exec_queue(node, server->tick);
         if (launch_command_exec(node, server->tick, server) == FAILURE)
             return FAILURE;
@@ -137,6 +128,11 @@ static int win_condition(server_t *server)
         }
     }
     return SUCCESS;
+}
+
+static int loop_start_server(server_t *server)
+{
+
 }
 
 int start_server(server_t *server)
