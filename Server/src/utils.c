@@ -35,8 +35,7 @@ int send_message_graphic(server_t *server, char *message)
         return FAILURE;
     for (poll_handling_t *tmp = server->poll_list;
         tmp != NULL; tmp = tmp->next) {
-        if (tmp->player == NULL || tmp->player->team_name == NULL ||
-            !tmp->player->connected)
+        if (tmp->player == NULL || tmp->player->team_name == NULL)
             continue;
         if (strcmp(tmp->player->team_name, "GRAPHIC") == 0) {
             write(tmp->poll_fd.fd, message, strlen(message));
