@@ -182,7 +182,7 @@ class Ai:
             self.__client.close()
             return False
         logger.info(str(self.__id) + ": command: \"" + command + "\" has been send", Output.BOTH)
-        logger.info(f"other commands to do after: {", ".join(self.__commands_queue)}", Output.BOTH)
+        logger.info(f"other commands to do after: {', '.join(self.__commands_queue)}", Output.BOTH)
         self.__command_to_reply = command
         return True
 
