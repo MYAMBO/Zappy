@@ -64,6 +64,7 @@ jobs:
           pip install -U pip
           apt-get install -y patchelf
           pip install pytest nuitka pytest-cov
+          pip install cryptography
 
           echo "Running make..."
           make
