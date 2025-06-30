@@ -12,13 +12,12 @@
     #include <raylib.h>
 
     #include "Scene.hpp"
-    #include "Button.hpp"
 
 namespace gui {
     namespace ui {
         class Menu {
             public:
-                Menu(SceneState &sceneState, int screenWidth, int screenHeight);
+                Menu(std::shared_ptr<SceneState> sceneState);
                 ~Menu();
 
                 /**
@@ -37,14 +36,46 @@ namespace gui {
                 void drawMainMenu();
 
                 /**
+                * @brief Draw the text area.
+                */
+                void drawTextBox(int errorNb, bool active, Rectangle box, int height, const std::string& name, const std::string& errorStr);
+
+                /**
                  * @brief Draw the connecting screen.
                  */
                 void drawConnectingScreen();
 
                 /**
+
                  * @brief Initialize menu UI elements.
                  */
                 void initMenuUI();
+
+                /**
+                 *
+                 * @brief Setter for Hostname
+                 */
+                void setHostname(std::shared_ptr<std::string> name);
+
+                /**
+                 *
+                 * @brief Setter for Port
+                 */
+                void setPort(std::shared_ptr<std::string> name);
+
+                void setFunction(std::function<void()> function);
+
+                /**
+                 *
+                 * @brief Getter for Hostname
+                 */
+                std::shared_ptr<std::string> getHostname();
+
+                /**
+                 *
+                 * @brief Getter for Port
+                 */
+                std::shared_ptr<std::string> getPort();
 
             private:
                 /**
@@ -62,22 +93,27 @@ namespace gui {
                  */
                 void settingClicked();
 
-                SceneState &_sceneState;
+                std::function<void()> _connectionFunction;
+                std::shared_ptr<SceneState> _sceneState;
                 int _frameCounter;
-                bool _serverIdActive;
-                std::string _serverId;
+                bool _hostnameActive;
+                bool _portActive;
+                std::shared_ptr<std::string> _hostname;
+                std::shared_ptr<std::string> _port;
 
                 Button _playButton;
                 Button _exitButton;
                 Button _settingButton;
 
-                Rectangle _serverIdBox;
+                Rectangle _hostnameBox;
+                Rectangle _portBox;
 
                 Color _inputBoxColor;
                 Color _backgroundColor;
                 Color _inputBoxActiveColor;
 
-                int _errorInput;
+                int _hostnameError;
+                int _portError;
                 int _screenWidth;
                 int _screenHeight;
                 int _titleFontSize;

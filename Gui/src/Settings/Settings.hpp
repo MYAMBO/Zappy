@@ -12,13 +12,12 @@
     #include <string>
 
     #include "Scene.hpp"
-    #include "Button.hpp"
 
 namespace gui {
     namespace ui {
         class Settings {
             public:
-                Settings(SceneState &sceneSate, int screenWidth, int screenHeight);
+                Settings(std::shared_ptr<SceneState> sceneState);
                 ~Settings();
 
                 /**
@@ -56,7 +55,7 @@ namespace gui {
                  */
                 void initCameraControls();
 
-                SceneState &_sceneState;
+                std::shared_ptr<SceneState> _sceneState;
                 Button _backButton;
                 
                 int _screenWidth;

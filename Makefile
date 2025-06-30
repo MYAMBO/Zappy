@@ -77,14 +77,20 @@ GUI_SRC = 												\
 				Gui/src/Items/Linemate/Linemate.cpp		\
 				Gui/src/Items/Deraumere/Deraumere.cpp	\
 														\
+				Gui/src/Egg/Egg.cpp						\
 				Gui/src/Tile/Tile.cpp					\
 				Gui/src/Menu/Menu.cpp					\
+				Gui/src/Error/Error.cpp 				\
 				Gui/src/Scene/Scene.cpp					\
+				Gui/src/Client/Client.cpp 				\
 				Gui/src/Button/Button.cpp 				\
 				Gui/src/Player/Player.cpp				\
+				Gui/src/Sockets/Sockets.cpp				\
+				Gui/src/Display/Display.cpp				\
 				Gui/src/AEntity/AEntity.cpp				\
 				Gui/src/Settings/Settings.cpp			\
-				Gui/src/Inventory/Inventory.cpp
+				Gui/src/Inventory/Inventory.cpp			\
+				Gui/src/TeamsDisplay/TeamsDisplay.cpp
 
 TEST_SRC =
 
@@ -98,24 +104,31 @@ SERVER_NAME = zappy_server
 SERVER_FLAGS = -I Server/include -I Debug -lm
 GUI_FLAGS = -lraylib -lpthread -lGL -I Debug 		\
         											\
+			-I Gui/src/Egg 							\
+			-I Gui/include 							\
 			-I Gui/src/Tile			 				\
 			-I Gui/src/Menu 						\
 			-I Gui/src/Items 						\
 			-I Gui/src/Scene						\
+			-I Gui/src/Error 						\
 			-I Gui/src/Player 						\
 			-I Gui/src/Button 						\
+			-I Gui/src/Client 						\
+			-I Gui/src/Sockets 						\
+			-I Gui/src/Display 						\
 			-I Gui/src/AEntity 						\
 			-I Gui/src/Settings						\
 			-I Gui/src/Inventory 					\
 			-I Gui/src/Items/Food 					\
 			-I Gui/src/Items/Sibur 					\
 			-I Gui/src/Items/AItem 					\
+			-I Gui/src/TeamsDisplay 				\
 			-I Gui/src/Items/Phiras 				\
 			-I Gui/src/Items/Linemate 				\
 			-I Gui/src/Items/Mendiane 				\
 			-I Gui/src/Items/Thystame 				\
 			-I Gui/include/interfaces				\
-			-I Gui/src/Items/Deraumere
+			-I Gui/src/Items/Deraumere				\
 
 ALL_FLAGS = $(SERVER_FLAGS) $(GUI_FLAGS)
 CFLAGS = -Werror -Wall -Wextra -Iinclude

@@ -8,177 +8,92 @@
 #ifndef ZAPPY_CLIENT_HPP
     #define ZAPPY_CLIENT_HPP
 
-    #include <arpa/inet.h>
-    #include <sys/socket.h>
-    #include <iostream>
-    #include "AEntity.hpp"
-    #include "AItem.hpp"
-    #include "Player.hpp"
-    #include "Tile.hpp"
-    #include <vector>
-    #include <iostream>
-    #include <memory>
-    #include <map>
+    #include <thread>
+
+    #include "Scene.hpp"
+    #include "Sockets.hpp"
+    #include "TeamsDisplay.hpp"
 
 namespace gui {
     class Client {
         public:
-            static Client &getInstance();
-
-            void connect();
-
-            void sendCommand(std::string command) const;
-
-            void setPlayers(std::vector<std::shared_ptr<Player>> players);
-            void setItems(std::vector<std::shared_ptr<AItem>> items);
-
-            [[nodiscard]] std::pair<int, int> msz() const; // map size
-
-        private:
-            Client();
+            Client(std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players, std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> map,
+                   std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs, const std::shared_ptr<Camera>& camera, const std::shared_ptr<CamState>& camState,
+                   std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, const std::shared_ptr<Display>& display, const std::shared_ptr<int>& timeUnit,
+                   std::shared_ptr<std::string> hostname, std::shared_ptr<std::string> port);
             ~Client();
-            Client(const Client&) = delete;
-            Client& operator=(const Client &) = delete;
 
+            void sendCommand(const std::string& command);
 
-            void catchCommand();
+            void setMap(std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> map);
+            void setPlayers(std::shared_ptr<std::vector<std::shared_ptr<Player>>> players);
 
-            void interpretCommand(std::string string);
+            std::shared_ptr<std::vector<std::string>> getTeams();
+            std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> getEggs();
+            std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> getMap();
+            std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> getPlayers();
 
-            void bct(const std::string& string); // content of a tile
-            void tna(std::string string); // name of all the teams
-            void pnw(const std::string &string); // connection of a new player
-            void ppo(std::string string); // player’s position
-            void plv(std::string string); // player’s level
-            void pin(std::string string); // player’s inventory
-            void pex(std::string string); // expulsion
-            void pbc(std::string string); // broadcast
-            void pic(std::string string); // start of an incantation
-            void pie(std::string string); // end of an incantation
-            void pfk(std::string string); // egg laying by the player
-            void pdr(std::string string); // resource dropping
-            void pgt(std::string string); // resource collecting
-            void pdi(const std::string& string); // death of a player
-            void enw(std::string string); // an egg was laid by a player
-            void ebo(std::string string); // player connection for an egg
-            void edi(std::string string); // death of an egg
-            void sgt(std::string string); // time unit request
-            void sst(std::string string); // time unit modification
-            void seg(std::string string); // end of game
-            void smg(std::string string); // message from the server
-            void suc(std::string string); // unknown command
-            void sbp(std::string string); // command parameter
+            void drawPlayers();
+            void newServerConnection();
+        private:
+            void connectToServer();
+            void receiveLoop();
 
-            static std::vector<std::string> splitString(const std::string &string);
+            void msz(std::vector<std::string> stringArray); // map size
+            void bct(std::vector<std::string> stringArray); // content of a tile
+            void tna(std::vector<std::string> stringArray); // name of all the teams
+            void pnw(std::vector<std::string> stringArray); // connection of a new player
+            void ppo(std::vector<std::string> stringArray); // player’s position
+            void plv(std::vector<std::string> stringArray); // player’s level
+            void pin(std::vector<std::string> stringArray); // player’s inventory
+            void pex(std::vector<std::string> stringArray); // expulsion
+            void pbc(std::vector<std::string> stringArray); // broadcast
+            void pic(std::vector<std::string> stringArray); // start of an incantation
+            void pie(std::vector<std::string> stringArray); // end of an incantation
+            void pfk(std::vector<std::string> stringArray); // egg laying by the player
+            void pdr(std::vector<std::string> stringArray); // resource dropping
+            void pgt(std::vector<std::string> stringArray); // resource collecting
+            void pdi(std::vector<std::string> stringArray); // death of a player
+            void enw(std::vector<std::string> stringArray); // an egg was laid by a player
+            void ebo(std::vector<std::string> stringArray); // player connection for an egg
+            void edi(std::vector<std::string> stringArray); // death of an egg
+            void sgt(std::vector<std::string> stringArray); // time unit request
+            void sst(std::vector<std::string> stringArray); // time unit modification
+            void seg(std::vector<std::string> stringArray); // end of game
+            void smg(std::vector<std::string> stringArray); // message from the server
+            void suc(const std::vector<std::string>& stringArray); // unknown command
+            void sbp(const std::vector<std::string>& stringArray); // command parameter
+
+            std::vector<std::string> splitString(const std::string &string, char delimiter);
             int findPlayer(int id);
+            int findEgg(int id);
+            int findTile(int x, int y);
+
+            std::shared_ptr<Camera> _camera;
+            std::shared_ptr<CamState> _camState;
 
 
-            int _socket;
-            sockaddr_in _serverAddr;
-            std::vector<std::shared_ptr<gui::Player>> _Players;
-            std::vector<std::shared_ptr<gui::Tile>> _Map;
-    };
+            std::string _previousPort;
+            std::string _previousHostname;
+            std::shared_ptr<std::string> _hostname;
+            std::shared_ptr<std::string> _port;
+            Socket _socket;
 
-    class WrongPlayerValue : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Player's value are wrong.";
-        };
-    };
+            bool _isActive;
 
-    class WrongTileValue : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "There is a wrong value for creating Tile.";
-        };
-    };
-
-    class WrongMapSize : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Value for Map size is invalid.";
-        };
-    };
-
-    class WrongTeamName : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Value for team name is invalid.";
-        };
-    };
-
-    class WrongPlayerId : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "No player with this Id.";
-        };
-    };
-
-    class PlayerIdAlreadyUsed : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "This Id is already used by an other player.";
-        };
-    };
-
-    class InvalidNumberOfParameter : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Command with the wrong number of argument.";
-        };
-    };
-
-    class UnexpectedArgumentError : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Received an unexpected argument.";
-        };
-    };
-
-    class WrongPlayerLevel : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Player's level can't have negative value";
-        };
-    };
-
-    class WrongInventoryValue : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Player's inventory can't have negative value";
-        };
-    };
-
-    class InvalidPlayerPosition : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Player's position out of map";
-        };
-    };
-
-    class InvalidIncantationLevel : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Incantation level is invalid";
-        };
-    };
-
-    class WrongResourceNumber : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Resources can't have negative value";
-        };
+            std::thread _thread;
+            std::pair<int, int> _size;
+            std::shared_ptr<int> _timeUnit;
+            std::shared_ptr<Display> _display;
+            std::shared_ptr<TeamsDisplay> _displayTeams;
+            std::shared_ptr<std::vector<std::string>> _teams;
+            std::shared_ptr<std::map<std::string, Color>> _teamColors;
+            std::shared_ptr<std::vector<std::shared_ptr<Model>>> _models;
+            std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> _eggs;
+            std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> _map;
+            std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> _players;
     };
 }
 
-inline void SendCommand(const std::string& command)
-{
-    gui::Client::getInstance().sendCommand(command);
-}
-
-inline std::pair<int, int> Msz()
-{
-    return gui::Client::getInstance().msz();
-}
 
 #endif //ZAPPY_CLIENT_HPP
