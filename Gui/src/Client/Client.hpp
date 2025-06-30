@@ -8,6 +8,7 @@
 #ifndef ZAPPY_CLIENT_HPP
     #define ZAPPY_CLIENT_HPP
 
+    #include <mutex>
     #include <thread>
 
     #include "Scene.hpp"
@@ -33,7 +34,6 @@ namespace gui {
             std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> getMap();
             std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> getPlayers();
 
-            void drawPlayers();
             void newServerConnection();
         private:
             void connectToServer();
@@ -69,6 +69,7 @@ namespace gui {
             int findEgg(int id);
             int findTile(int x, int y);
 
+            std::mutex _mutex;
             std::shared_ptr<Camera> _camera;
             std::shared_ptr<CamState> _camState;
 
@@ -96,4 +97,4 @@ namespace gui {
 }
 
 
-#endif //ZAPPY_CLIENT_HPP
+#endif

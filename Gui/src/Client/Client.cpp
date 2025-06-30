@@ -23,7 +23,7 @@ gui::Client::Client(std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> p
         std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs, const std::shared_ptr<Camera>& camera, const std::shared_ptr<CamState>& camState,
         std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, const std::shared_ptr<Display>& display, const std::shared_ptr<int>& timeUnit,
         std::shared_ptr<std::string> hostname = std::make_shared<std::string>("localhost"), std::shared_ptr<std::string> port = std::make_shared<std::string>("12345"))
-    : _camera(camera), _camState(camState), _previousPort(port->c_str()), _previousHostname(hostname->c_str()),_hostname(std::move(hostname)), _port(std::move(port)),
+    : _mutex(), _camera(camera), _camState(camState), _previousPort(port->c_str()), _previousHostname(hostname->c_str()),_hostname(std::move(hostname)), _port(std::move(port)),
       _socket(), _isActive(), _thread(), _size(), _timeUnit(timeUnit), _display(display),
       _displayTeams(), _teams(std::make_shared<std::vector<std::string>>()), _teamColors(std::make_shared<std::map<std::string, Color>>()), _models(std::move(models)),
       _eggs(std::move(eggs)), _map(std::move(map)), _players(std::move(players))
@@ -201,6 +201,8 @@ void gui::Client::msz(std::vector<std::string> stringArray)
     if (size.first < 1 || size.second < 1)
         throw Error("Can't have 0 or less map size");
 
+    std::lock_guard<std::mutex> lock(_mutex);
+
     _size = size;
 }
 
@@ -219,6 +221,8 @@ void gui::Client::bct(std::vector<std::string> stringArray)
 
     for (int i = 3; i <= 9 && i < (int)stringArray.size(); ++i)
         quantity.push_back(std::stoi(stringArray[i]));
+
+    std::lock_guard<std::mutex> lock(_mutex);
 
     if (coord.first >= 0 && coord.first <= _size.first && coord.second >= 0 && coord.first <= _size.second
         && quantity.size() == 7 && findTile(coord.first, coord.second) == -1) {
@@ -266,6 +270,9 @@ void gui::Client::tna(std::vector<std::string> stringArray)
         {255, 105, 180, 255}, {255, 0, 0, 255}, {0, 0, 255, 255},
         {0, 128, 0, 255}, {128, 128, 0, 255}, {128, 128, 128, 255}
     };
+
+    std::lock_guard<std::mutex> lock(_mutex);
+
     _teams->push_back(team_name);
     if (_teams->size() > colors.size()) {
         _teamColors->operator[](team_name) = {255, 255, 255, 255};
@@ -293,14 +300,14 @@ void gui::Client::pnw(std::vector<std::string> stringArray)
     if (findPlayer(id) != -1)
         throw Error("This Id is already used by an other player.");
 
+    std::lock_guard<std::mutex> lock(_mutex);
+
     if (id >= 0 && x >= 0 && x < _size.first && y >= 0 && y < _size.second &&
         orientation > 0 && orientation < 5 && level > 0 && level < 9) {
         _display->addPlayer(id, position, static_cast<Orientation>(orientation), level, team_name);
-        auto player = _players->at(findPlayer(id)); {
-        if (player->getId() == id) {
+        auto player = _players->at(findPlayer(id));
+        if (player->getId() == id)
             player->setColorTeam(_teamColors);
-        }
-        }
     } else
         throw Error("Player's value are wrong.");
     if (_players->empty())
@@ -328,6 +335,8 @@ void gui::Client::ppo(std::vector<std::string> stringArray)
 
     if (orientation <= 0 || orientation >= 5)
         throw Error("Player's value are wrong.");
+    
+    std::lock_guard<std::mutex> lock(_mutex);
 
     _players->at(findPlayer(id))->setOrientation(static_cast<Orientation>(orientation));
     if (_players->at(findPlayer(id))->getPushed()) {
@@ -354,6 +363,8 @@ void gui::Client::plv(std::vector<std::string> stringArray)
 
     if (level < 0)
         throw Error("Player's level can't have negative value");
+
+    std::lock_guard<std::mutex> lock(_mutex);
 
     _players->at(findPlayer(id))->setLevel(level);
 }
@@ -390,6 +401,8 @@ void gui::Client::pin(std::vector<std::string> stringArray)
         if (elt.second < 0)
             throw Error("Player's inventory can't have negative value");
 
+    std::lock_guard<std::mutex> lock(_mutex);
+
     Debug::InfoLog("[GUI] Set inventory for player ID: " + std::to_string(id) + "\n");
     for (auto & item : inventory) {
         _players->at(findPlayer(id))->setInventory(item.first, item.second);
@@ -411,6 +424,8 @@ void gui::Client::pex(std::vector<std::string> stringArray)
         return;
 
     std::string command;
+
+    std::lock_guard<std::mutex> lock(_mutex);
 
     for (size_t i = 0; i < _players->size() ; ++i) {
         if (_players->at(i)->getPosition().x == _players->at(findPlayer(id))->getPosition().x &&
@@ -439,6 +454,8 @@ void gui::Client::pbc(std::vector<std::string> stringArray)
 
     if (findPlayer(id) == -1)
         return;
+    
+    std::lock_guard<std::mutex> lock(_mutex);
 
     _players->at(findPlayer(id))->setBroadcasting(true);
 }
@@ -470,6 +487,8 @@ void gui::Client::pic(std::vector<std::string> stringArray)
     if (posX < 0 || posX >= _size.first || posY < 0 || posY >= _size.second)
         throw Error("Player's position out of map");
 
+    std::lock_guard<std::mutex> lock(_mutex);
+
     for (int i = 4; i < (int)stringArray.size(); i++){
         id = std::stoi(stringArray[i].substr(1));
         if (id && findPlayer(id) == -1)
@@ -498,6 +517,8 @@ void gui::Client::pie(std::vector<std::string> stringArray)
         throw Error("Player's position out of map");
     if (result < 0 || result > 8)
         throw Error("Incantation result is invalid");
+
+    std::lock_guard<std::mutex> lock(_mutex);
 
     for (size_t i = 0; i < _players->size(); ++i) {
         auto &player = _players->at(i);
@@ -543,6 +564,8 @@ void gui::Client::pdr(std::vector<std::string> stringArray)
     if (nbResources < 0)
         throw Error("Resources can't have negative value");
 
+    std::lock_guard<std::mutex> lock(_mutex);
+
     auto &player = _players->at(findPlayer(id));
     auto position = player->getPosition();
     size_t index = position.x * _size.first + position.y;
@@ -575,6 +598,8 @@ void gui::Client::pgt(std::vector<std::string> stringArray)
     if (nbResources < 0)
         throw Error("Resources can't have negative value");
 
+    std::lock_guard<std::mutex> lock(_mutex);
+
     auto &player = _players->at(findPlayer(id));
     auto position = player->getPosition();
     size_t index = position.x * _size.first + position.y;
@@ -597,6 +622,8 @@ void gui::Client::pdi(std::vector<std::string> stringArray)
 
     if (indice == -1)
         return;
+
+    std::lock_guard<std::mutex> lock(_mutex);
 
     if (id > 0) {
         _players->at(indice)->setisDead(true);
@@ -625,6 +652,8 @@ void gui::Client::enw(std::vector<std::string> stringArray)
     if (posX < 0 || posX >= _size.first || posY < 0 || posY >= _size.second)
         throw Error("Player's position out of map");
 
+    std::lock_guard<std::mutex> lock(_mutex);
+
     playerIndice = findPlayer(eggId);
 
     if (playerId == -1)
@@ -648,6 +677,8 @@ void gui::Client::ebo(std::vector<std::string> stringArray)
 
     id = std::stoi(stringArray[1].substr(1));
 
+    std::lock_guard<std::mutex> lock(_mutex);
+
     int indice = findEgg(id);
 
     if (indice != -1)
@@ -668,6 +699,8 @@ void gui::Client::edi(std::vector<std::string> stringArray)
 
     id = std::stoi(stringArray[1].substr(1));
 
+    std::lock_guard<std::mutex> lock(_mutex);
+
     int indice = findEgg(id);
 
     if (indice != -1)
@@ -686,6 +719,8 @@ void gui::Client::sgt(std::vector<std::string> stringArray)
 
     int time_unit = std::stoi(stringArray[1]);
 
+    std::lock_guard<std::mutex> lock(_mutex);
+
     _timeUnit = std::make_shared<int>(time_unit);
     Debug::InfoLog("Time unit set to: " + std::to_string(time_unit));
 }
@@ -700,6 +735,8 @@ void gui::Client::sst(std::vector<std::string> stringArray)
 
     int time_unit = std::stoi(stringArray[1]);
 
+    std::lock_guard<std::mutex> lock(_mutex);
+
     _timeUnit = std::make_shared<int>(time_unit);
     Debug::InfoLog("Time unit modified to: " + std::to_string(time_unit));
 }
@@ -713,6 +750,8 @@ void gui::Client::seg(std::vector<std::string> stringArray)
         throw Error("Wrong number of parameter.");
 
     std::string winner = stringArray[1];
+
+    std::lock_guard<std::mutex> lock(_mutex);
 
     _display->setWinner(winner);
     _isActive = false;
