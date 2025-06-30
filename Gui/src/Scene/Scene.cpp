@@ -32,10 +32,9 @@ gui::Scene::Scene(const std::string& hostname, const std::string& port)
     _client = std::make_shared<gui::Client>(_display->getPlayers(), _display->getMap(), _display->getEggs(), _camera, _camState, _display->getModels(), _display, _timeUnit, sharedHostname, sharedPort);
     _display->_menu->setHostname(sharedHostname);
     _display->_menu->setPort(sharedPort);
-    _display->setFunction([this]() {_client->newServerConnection();});
+    _display->setFunction([this]() {_client->connectToServer();});
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    _client->sendCommand("sgt");
 }
 
 gui::Scene::~Scene()

@@ -31,6 +31,13 @@ namespace gui {
             int _fd;
             bool _connected;
     };
+
+    class HostnameError : public std::exception
+    {};
+
+    class PortError : public std::exception
+    {};
 };
+
 
 #endif

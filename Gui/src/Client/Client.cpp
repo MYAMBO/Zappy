@@ -38,7 +38,6 @@ gui::Client::Client(std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> p
     _camera = camera;
     _camState = camState;
     _timeUnit = timeUnit;
-    connectToServer();
 }
 
 gui::Client::~Client()
@@ -151,6 +150,11 @@ void gui::Client::receiveLoop()
 
 void gui::Client::connectToServer()
 {
+    if (_socket.getFd() <= 0 && _previousHostname == _hostname->c_str() && _previousPort == _port->c_str())
+        return;
+    if (_socket.getFd() <= 0 && (_previousHostname != _hostname->c_str() || _previousPort != _port->c_str()))
+        disconnectFromServer();
+
     _socket.connect(this->_hostname->c_str(), this->_port->c_str());
 
     _thread = std::thread(&gui::Client::receiveLoop, this);
@@ -163,23 +167,19 @@ void gui::Client::connectToServer()
     sendCommand("sgt\n");
 }
 
-void gui::Client::newServerConnection()
+void gui::Client::disconnectFromServer()
 {
-    if (_previousHostname == _hostname->c_str() && _previousPort == _port->c_str())
-        return;
-    else {
-        _socket.close();
+    _socket.close();
+    if (_thread.joinable())
         _thread.join();
-        _players->clear();
-        _eggs->clear();
-        _map->clear();
-        _teams->clear();
-        _teamColors->clear();
+    _players->clear();
+    _eggs->clear();
+    _map->clear();
+    _teams->clear();
+    _teamColors->clear();
 
-        _previousHostname = _hostname->c_str();
-        _previousPort = _port->c_str();
-        connectToServer();
-    }
+    _previousHostname = _hostname->c_str();
+    _previousPort = _port->c_str();
 }
 
 /************************************************************

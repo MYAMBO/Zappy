@@ -6,6 +6,7 @@
 */
 
 #include "Menu.hpp"
+#include "Sockets.hpp"
 
 #include <utility>
 #include "Logger.hpp"
@@ -49,18 +50,24 @@ void gui::ui::Menu::initMenuUI()
 void gui::ui::Menu::playClicked()
 {
     if (_hostname->empty())
-        _hostnameError = 60;
+        _hostnameError = 120;
 
     if (_port->empty())
-        _portError = 60;
+        _portError = 120;
 
     if (!_hostname->empty() && !_port->empty()) {
-        *_sceneState = SceneState::GAME;
-        _hostnameActive = false;
-        _portActive = false;
-        _connectionFunction();
-        Debug::InfoLog("[GUI] Play button clicked, connecting to server with Hostname: " + *_hostname);
-        Debug::InfoLog("[GUI] Play button clicked, connecting to server with Port: " + *_port);
+        try {
+            _connectionFunction();
+            *_sceneState = SceneState::GAME;
+            _hostnameActive = false;
+            _portActive = false;
+            Debug::InfoLog("[GUI] Play button clicked, connecting to server with Hostname: " + *_hostname);
+            Debug::InfoLog("[GUI] Play button clicked, connecting to server with Port: " + *_port);
+        } catch (gui::HostnameError&) {
+            _hostnameError = 120;
+        } catch (gui::PortError&) {
+            _portError = 120;
+        }
     }
 }
 
@@ -155,6 +162,8 @@ void gui::ui::Menu::handleTextInput()
 
 void gui::ui::Menu::drawMainMenu()
 {
+    _hostnameError--;
+    _portError--;
     BeginDrawing();
     ClearBackground(_backgroundColor);
     DrawText("Zappy", static_cast<float>(_screenWidth) / 2 - 70, static_cast<float>(_screenHeight / 10), _titleFontSize, WHITE);

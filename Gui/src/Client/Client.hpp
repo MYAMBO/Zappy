@@ -34,9 +34,9 @@ namespace gui {
             std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> getPlayers();
 
             void drawPlayers();
-            void newServerConnection();
-        private:
             void connectToServer();
+        private:
+            void disconnectFromServer();
             void receiveLoop();
 
             void msz(std::vector<std::string> stringArray); // map size

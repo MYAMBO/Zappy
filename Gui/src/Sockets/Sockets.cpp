@@ -6,6 +6,7 @@
 */
 
 #include "Sockets.hpp"
+#include "Logger.hpp"
 
 gui::Socket::Socket()
     : _fd(-1), _connected(false)
@@ -23,26 +24,32 @@ void gui::Socket::connect(const std::string& hostname, const std::string& port)
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
 
+    Debug::WarningLog("Try Connection");
     int status = getaddrinfo(hostname.c_str(), port.c_str(), &hints, &res);
     if (status != 0) {
-        throw std::runtime_error(gai_strerror(status));
+        Debug::WarningLog(gai_strerror(status));
+        throw gui::HostnameError();
     }
 
     _fd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+    Debug::WarningLog("fd value : " + std::to_string(_fd));
     if (_fd < 0) {
         freeaddrinfo(res);
-        throw std::runtime_error("Socket creation failed");
+        Debug::WarningLog("Socket creation failed");
+        throw gui::PortError();
     }
 
     if (::connect(_fd, res->ai_addr, res->ai_addrlen) < 0) {
         freeaddrinfo(res);
         ::close(_fd);
         _fd = -1;
-        throw std::runtime_error("Connection failed");
+        Debug::WarningLog("connection failed");
+        throw gui::PortError();
     }
 
     freeaddrinfo(res);
     _connected = true;
+    Debug::WarningLog("connection succesful");
 }
 
 void gui::Socket::send(const std::string& data)
