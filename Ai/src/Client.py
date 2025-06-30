@@ -49,7 +49,10 @@ class Client:
             reply = self.__sock.recv(4096).decode()
         except socket.error as e:
             raise ClientError("Socket error: " + e.strerror)
-        all_replies = reply.split('\n')
+        try:
+            all_replies = reply.split('\n')
+        except:
+            return None
         for i in range(len(all_replies) - 1):
             self.__reply_buffer.append(all_replies[i] + "\n")
         if self.__reply_buffer:
