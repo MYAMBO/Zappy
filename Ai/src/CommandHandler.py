@@ -73,6 +73,8 @@ def manage_trantorian_turn(dir1, dir2, command_list, i):
 
 
 def handle_eject_command(eject_command, command_list):
+    if not command_list:
+        return command_list
     try:
         tile = int(eject_command.split(' ')[1])
     except:
