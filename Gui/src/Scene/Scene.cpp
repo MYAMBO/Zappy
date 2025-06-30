@@ -93,8 +93,6 @@ void gui::Scene::handleStateLogic()
 
 void gui::Scene::update()
 {
-    if (_display->getPlayers()->empty())
-        Debug::DebugLog("Players empty");
     if (!_isOpen) {
         return;
     }
