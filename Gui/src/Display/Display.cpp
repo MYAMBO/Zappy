@@ -312,7 +312,6 @@ void gui::Display::updateCamera()
         else if (camState == CamState::PLAYER) {
             for (size_t i = 0; i < _players->size(); ++i) {
                 if (_players->at(i)->getSelected() && !_players->at(i)->getIsMoving()) {
-                    Debug::WarningLog("In orbital setter");
                     UpdateCamera(_camera.get(), CAMERA_ORBITAL);
                 }
             }
