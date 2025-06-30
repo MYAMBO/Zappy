@@ -66,6 +66,7 @@ SERVER_SRC = 												\
 				Server/src/handle_fork_communication.c			\
 				Server/src/egg_protocol.c					\
 				Server/src/incantation_list.c	\
+				Server/src/send_init_graphic.c	\
 
 GUI_SRC = 												\
 				Gui/src/main.cpp 						\
