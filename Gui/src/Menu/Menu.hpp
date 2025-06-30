@@ -46,6 +46,7 @@ namespace gui {
                 void drawConnectingScreen();
 
                 /**
+
                  * @brief Initialize menu UI elements.
                  */
                 void initMenuUI();
