@@ -151,27 +151,7 @@ void gui::Client::receiveLoop()
 
 void gui::Client::connectToServer()
 {
-    addrinfo hints{}, *res;
-    hints.ai_family = AF_INET; // IPV4
-    hints.ai_socktype = SOCK_STREAM; // TCP socket
-
-    int status = getaddrinfo(this->_hostname->c_str(), this->_port->c_str(), &hints, &res);
-    if (status != 0)
-        throw Error(gai_strerror(status));
-
-    _socket = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-    if (_socket < 0) {
-        freeaddrinfo(res);
-        throw Error("Socket creation failed.\n");
-    }
-
-    if (connect(_socket, res->ai_addr, res->ai_addrlen) < 0) {
-        freeaddrinfo(res);
-        close(_socket);
-        throw  Error("Connection failed.\n");
-    }
-
-    freeaddrinfo(res);
+    _socket.connect(this->_hostname->c_str(), this->_port->c_str());
 
     _thread = std::thread(&gui::Client::receiveLoop, this);
 
@@ -188,7 +168,7 @@ void gui::Client::newServerConnection()
     if (_previousHostname == _hostname->c_str() && _previousPort == _port->c_str())
         return;
     else {
-        close(_socket);
+        _socket.close();
         _thread.join();
         _players->clear();
         _eggs->clear();

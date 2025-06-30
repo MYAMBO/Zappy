@@ -77,11 +77,7 @@ namespace gui {
             std::string _previousHostname;
             std::shared_ptr<std::string> _hostname;
             std::shared_ptr<std::string> _port;
-            int _socket;
             Socket _socket;
-            std::mutex _mutex;
-            std::shared_ptr<Camera> _camera;
-            std::shared_ptr<CamState> _camState;
 
             bool _isActive;
 
