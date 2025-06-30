@@ -16,6 +16,7 @@
     #include <stdbool.h>
 
 char *start_incantation(ai_stats_t *lead,
-    poll_handling_t *players, map_t *map);
+    server_t *server, map_t *map);
+char *end_incantation(server_t *server, map_t *map);
 
 #endif //ZAPPY_INCANTATION_COMMUNICATION_H

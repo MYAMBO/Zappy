@@ -19,5 +19,6 @@ int add_slot(slot_table_t *slot_table, int xy[2], int id_user, server_t *server)
 slot_table_t *create_slot_table(int nb_slots, char *name, server_t *server);
 int connect_player(slot_table_t *slot_table, ai_stats_t *user);
 int disconnect_player(slot_table_t **slot_table, int id_user);
+void remove_slot(slot_t **slot_table, int id_slot);
 
 #endif //SLOT_HANDLER_H

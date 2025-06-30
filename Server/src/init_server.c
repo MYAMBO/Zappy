@@ -18,8 +18,11 @@ int init_server_fields(server_t *server, long port)
     server->port = port;
     server->server_fd = socket(AF_INET, SOCK_STREAM, 0);
     server->poll_list = NULL;
+    server->incantation_list = NULL;
     server->poll_count = 0;
     server->tick = 0;
+    server->regenerate_time = -1;
+    server->finished = false;
     if (server->server_fd == -1)
         return FAILURE;
     return SUCCESS;

@@ -64,12 +64,25 @@ void pop_command_exec(command_exec_t **head)
 void command_exec_queue(poll_handling_t *node, int actual_tick)
 {
     command_exec_t *tmp;
+    command_exec_t *next;
 
     if (!node || !node->player || !node->player->command_exec_list)
         return;
     tmp = node->player->command_exec_list;
+    while (node->player->in_incantation != -1 && strcmp(tmp->args[0], "Incantation") == 0 && tmp->time_to_exec == 300 && tmp)
+    {
+        next = tmp->next;
+        pop_command_exec(&node->player->command_exec_list);
+        tmp = next;
+    }
+    if (tmp == NULL)
+        return;
     if (tmp->tick_launch == -1)
         tmp->tick_launch = actual_tick + tmp->time_to_exec * 1000;
+    if (node->player->in_incantation != -1)
+    {
+        tmp->tick_launch++;
+    }
 }
 
 int launch_command_exec(poll_handling_t *node, int actual_tick,

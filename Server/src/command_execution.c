@@ -10,13 +10,17 @@
 #include <unistd.h>
 #include "commands.h"
 #include "command_exec_handler.h"
+#include "egg_protocol.h"
 #include "garbage.h"
 #include "handle_connection.h"
 #include "logger.h"
 #include "server.h"
 #include "split_string.h"
 #include "graphic_connect.h"
+#include "player_connection_protocol.h"
 #include "slot_handler.h"
+#include "technical_protocol.h"
+#include "utils.h"
 
 static int send_map_size_message(server_t *server,
                                  poll_handling_t *node)
@@ -51,6 +55,38 @@ static int send_slot_remaining_massages(server_t *server,
     sprintf(str, "%d\n", server->team_names[i]->slots_remaining);
     write(node->poll_fd.fd, str, j);
     my_free(str);
+    if (strcmp(node->player->team_name, "GRAPHIC") == 0){
+        str = get_server_message("Welcome to Zappy !");
+        if (str == NULL)
+            return FAILURE;
+        write(node->poll_fd.fd, str, strlen(str));
+        my_free(str);
+    }
+    else
+    {
+        str = player_new_connection(node->player);
+        if (str == NULL)
+            return FAILURE;
+        if (send_message_graphic(server, str) == FAILURE)
+            return FAILURE;
+        my_free(str);
+        slot_t *slot = NULL;
+        for (int i = 0; server->team_names[i] != NULL; i++)
+        {
+            if (strcmp(server->team_names[i]->name, node->player->team_name) == 0)
+            {
+                for (slot = server->team_names[i]->slots; slot && slot->id_user != node->player->id; slot = slot->next);
+            }
+        }
+        if (!slot)
+            return FAILURE;
+        str = get_connection_from_egg(slot);
+        if (str == NULL)
+            return FAILURE;
+        if (send_message_graphic(server, str) == FAILURE)
+            return FAILURE;
+        my_free(str);
+    }
     if (send_map_size_message(server, node) == FAILURE)
         return FAILURE;
     return SUCCESS;
@@ -97,6 +133,16 @@ static int execute_command_loop(server_t *server,
     for (int i = 0; commands_ai_list[i].command != NULL; i++) {
         if (strcmp(args[0], commands_ai_list[i].command) != 0)
             continue;
+        if (strcmp(args[0], "Fork") == 0)
+        {
+            char *str;
+
+            str = player_laying_egg(node->player);
+            if (!str)
+                return FAILURE;
+            send_message_graphic(server, str);
+            my_free(str);
+        }
         if (add_command_exec(&node->player->command_exec_list,
             args, commands_ai_list[i].time) == FAILURE)
             return FAILURE;

@@ -35,14 +35,8 @@ typedef struct ai_stats_s {
     int y;
     int direction; //N, S, E, W
     int level;
+    int last_life;
     char *team_name;
-    int nb_food;
-    int nb_linemate;
-    int nb_deraumere;
-    int nb_sibur;
-    int nb_mendiane;
-    int nb_phiras;
-    int nb_thystame;
     int in_incantation;
     bool is_alive;
     ressources_t inventory;
