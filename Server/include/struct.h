@@ -42,8 +42,19 @@ typedef struct map_s {
     ressources_t **tiles;
 } map_t;
 
+typedef struct incantation_list_s
+{
+    int incantation_nb;
+    int tick_end;
+    int x;
+    int y;
+    int level_base;
+    struct incantation_list_s *next;
+} incantation_list_t;
+
 typedef struct server_s {
     clock_t base_time;
+    incantation_list_t *incantation_list;
     int tick;
     long port;
     int server_fd;

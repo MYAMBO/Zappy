@@ -36,6 +36,7 @@ int take_command(server_t *server, poll_handling_t *node, char **args);
 int drop_command(server_t *server, poll_handling_t *node, char **args);
 int connect_nbr_command(server_t *server, poll_handling_t *node, char **args);
 int incantation_command(server_t *server, poll_handling_t *node, char **args);
+int end_incantation_command(server_t *server, poll_handling_t *node, char **args);
 int fork_command(server_t *server, poll_handling_t *node, char **args);
 
 static entry_ai_t const commands_ai_list[] = {
@@ -50,7 +51,7 @@ static entry_ai_t const commands_ai_list[] = {
     {"Take", take_command, 7},
     {"Set", drop_command, 7},
     {"Connect_nbr", connect_nbr_command, 0},
-    // {"Incantation", incantation_command, 300},
+    {"Incantation", incantation_command, 0},
     {"Fork", fork_command, 42},
     {NULL, NULL, 0}
 };

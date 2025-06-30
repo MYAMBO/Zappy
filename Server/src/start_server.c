@@ -11,10 +11,12 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "commands.h"
 #include "command_exec_handler.h"
 #include "server.h"
 #include "garbage.h"
 #include "generate_ressources.h"
+#include "incantation_list.h"
 #include "player_informations_protocol.h"
 #include "slot_handler.h"
 #include "time_handler.h"
@@ -32,18 +34,40 @@ int call_poll(server_t *server)
     return poll_val;
 }
 
+int incantation_check(server_t *server)
+{
+    incantation_list_t *next = NULL;
+
+    for (incantation_list_t *tmp = server->incantation_list; tmp; tmp = next)
+    {
+        next = tmp->next;
+        if (server->tick >= tmp->tick_end)
+        {
+            printf("entered with %d and %d\n", server->tick, tmp->tick_end);
+            if (end_incantation_command(server, NULL, NULL) == FAILURE)
+                return FAILURE;
+            pop_incantation(&server->incantation_list);
+        }
+    }
+    return SUCCESS;
+}
+
 static int exec_time_exec_handler(server_t *server)
 {
     poll_handling_t *next = NULL;
 
-    increase_tick(server);
     if (server->regenerate_time == -1 || server->regenerate_time + 20000 <= server->tick)
     {
-        printf("Here on %d\n", server->tick);
+        // printf("Here on %d\n", server->tick);
         server->regenerate_time = server->tick;
         generate_all_ressources(server);
-        printf("---------------------------\n");
+        // printf("---------------------------\n");
     }
+    if (increase_tick(server) == false)
+        return SUCCESS;
+    // printf("tick : %d\n", server->tick);
+    if (incantation_check(server) == FAILURE)
+        return FAILURE;
     for (poll_handling_t *node = server->poll_list; node != NULL;
         node = next) {
         next = node->next;
@@ -52,19 +76,17 @@ static int exec_time_exec_handler(server_t *server)
         if (node->player && node->player->last_life == -1)
         {
             node->player->last_life = server->tick;
-            continue;
         }
         if (node->player && node->player->last_life + 1000 < server->tick)
         {
             node->player->life--;
             node->player->last_life = server->tick;
-            continue;
         }
         if (node->player && node->player->life <= 0)
         {
             write(node->player->fd, "dead\n", strlen("dead\n"));
             slot_table_t *table = NULL;
-            for (int i = 0; server->team_names[0]; i++)
+            for (int i = 0; server->team_names[i]; i++)
             {
                 if (strcmp(server->team_names[i]->name, node->player->team_name) == 0)
                     table = server->team_names[i];
@@ -75,8 +97,10 @@ static int exec_time_exec_handler(server_t *server)
                 return FAILURE;
             close(node->player->fd);
             remove_node_poll_handling(&server->poll_list, node->player->fd);
+            // printf("Here on fd %d\n", node->poll_fd.fd);
             continue;
         }
+        // printf("%d fd\n", node->poll_fd.fd);
         command_exec_queue(node, server->tick);
         if (launch_command_exec(node, server->tick, server) == FAILURE)
             return FAILURE;
