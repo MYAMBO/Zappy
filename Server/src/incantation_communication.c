@@ -52,6 +52,7 @@ static bool has_required_rock_end(map_t *map, int x, int y, int level)
     for (int i = 0; i < 6; i++) {
         if (tile.resources[i + 1] < requirements[level - 1][i])
             return false;
+        tile.resources[i + 1] -= requirements[level - 1][i];
     }
     return true;
 }
