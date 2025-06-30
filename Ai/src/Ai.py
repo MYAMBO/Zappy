@@ -5,41 +5,40 @@
 ## Ai
 ##
 
-import time
 import uuid
-from Client import ClientError
 from Logger import logger, Output
 from Message import follow_message
-from getWay import get_better_way_to_resources
+from Client import ClientError, Client
+from getWay import get_better_way_to_ressources
 from SortTiles import get_visible_tiles_sorted_by_distance
 from encrypt_message import encrypt_message, decrypt_message
 from CommandHandler import handle_inventory_string, try_inventory, try_view, try_connect, handle_eject_command, get_droping_items_commands, get_inventory_string
 
 class Ai:
-    def __init__(self, team_name, client):
+    def __init__(self, team_name: str, client: Client):
         self.__view = None
         self.__ready_id = []
         self.__map_size = None
         self.__client = client
         self.__unused_slots = 0
         self.__is_ready = False
+        self.__is_guard = False
         self.__id = uuid.uuid4()
         self.__mates_to_wait = 0
         self.__follow_counter = 0
+        self.__is_in_place = False
         self.__ai_to_follow = None
         self.__team_inventory = {}
         self.__time_for_food = 126
+        self.__nb_guard_in_place = 0
         self.__team_name = team_name
         self.__command_to_reply = None
         self.__send_inventory_counter = 5
-        self.__commands_queue = [team_name, "Look", "Inventory"]
-        self.__needed_list = ["food", "sibur", "phiras", "thystame", "mendiane", "linemate", "deraumere"]
-        self.__inventory = {"sibur" : 0, "phiras" : 0, "thystame" : 0, "mendiane" : 0, "linemate" : 0, "deraumere" : 0}
-        self.__is_guard = False
-        self.__is_in_place = False
-        self.__nb_guard_in_place = 0
-        self.__previous_message_guard_direction = 0
         self.__has_already_send_start = False
+        self.__previous_message_guard_direction = 0
+        self.__commands_queue = [team_name, "Look"]
+        self.__needed_list = ["food", "sibur", "phiras", "thystame", "mendiane", "linemate", "deraumere"]
+        self.__inventory = {"food" : 10, "sibur" : 0, "phiras" : 0, "thystame" : 0, "mendiane" : 0, "linemate" : 0, "deraumere" : 0}
         self.__time_by_command = {
             "Forward" : 7,
             "Right" : 7,
@@ -80,11 +79,11 @@ class Ai:
             self.__commands_queue.append("Incantation")
             self.__mates_to_wait = len(self.__team_inventory)
 
-    def __set_commands_queue_to_search_resources(self):
+    def __set_commands_queue_to_search_ressources(self):
         if self.__view is None:
             return
         tiles = get_visible_tiles_sorted_by_distance(list(range(len(self.__view))))
-        self.__commands_queue = get_better_way_to_resources(tiles, self.__view, self.__needed_list)
+        self.__commands_queue = get_better_way_to_ressources(tiles, self.__view, self.__needed_list)
         self.__commands_queue.append("Look")
 
         if self.__commands_queue[0] == "Look":
@@ -159,7 +158,7 @@ class Ai:
             return
 
         if not self.__commands_queue and self.__is_ready == False:
-            self.__set_commands_queue_to_search_resources()
+            self.__set_commands_queue_to_search_ressources()
 
     def send_command(self):
         if self.__nb_guard_in_place >= 4 and not self.__is_guard:
@@ -169,8 +168,10 @@ class Ai:
         if not self.__commands_queue:
             return True
         command = self.__commands_queue.pop(0)
-        start = command.split(' ', 1)[0]
-        self.__time_for_food -= self.__time_by_command[start]
+        try:
+            self.__time_for_food -= self.__time_by_command[command.split(' ')[0]]
+        except:
+            return True
         if self.__time_for_food < 0:
             self.__time_for_food += 126
             self.__inventory["food"] -= 1
@@ -186,49 +187,46 @@ class Ai:
         return True
 
     def handle_follow(self, reply):
-        _, count_and_id = reply.strip()[:-1].rsplit(';', 1)
-        id, count = count_and_id.strip().rsplit('$', 1)
+        id, count = reply[:-1].split(';', 1)[1].rsplit('$', 1)
         if int(count) != self.__follow_counter:
             logger.info("an enemy try to usurp our commander !", Output.BOTH)
             return
         self.__follow_counter += 1
-        if self.__ai_to_follow == self.__id and str(self.__id) < id:
-            self.__ai_to_follow = id
-        elif self.__ai_to_follow is None:
+        if (self.__ai_to_follow == self.__id and str(self.__id) < id) or self.__ai_to_follow is None:
             self.__ai_to_follow = id
         if self.__commands_queue != [] and self.__commands_queue != None:
             return
-        start, _ = reply.rsplit(',', 1)
-        self.__commands_queue = follow_message(int(start.split("message ")[1]))
+        self.__commands_queue = follow_message(int(reply.split(',', 1)[0].split("message ")[1]))
         if self.__commands_queue:
             self.__commands_queue.append("Look")
         else:
             self.__is_ready = True
             self.__commands_queue = ["Broadcast " + encrypt_message(self.__team_name, "\"" + str(self.__id) + ";en position !\"")]
 
-    def handle_message(self, reply):
+    def __handle_mate_inventory(self, reply):
+        id, inventory = reply.split(':', 1)[1].rsplit(';', 1)
+        try:
+            new_inventory = handle_inventory_string(inventory.strip()[:-1])
+        except:
+            return
+        last_inventory = self.__team_inventory.get(id)
+        if last_inventory != None:
+            for key, value in new_inventory.items():
+                if key != "food" and last_inventory[key] > value:
+                    return
+        self.__team_inventory[id] = new_inventory
+
+    def __handle_message(self, reply):
         if "follow me !;" in reply and self.__is_ready == False:
             self.handle_follow(reply)
         elif ";en position !" in reply and self.__id == self.__ai_to_follow:
-            start, _ = reply.rsplit(';', 1)
-            _, id = start.rsplit('\"', 1)
+            id = reply.split(';', 1)[0].split('\"', 1)[1]
             if id in self.__ready_id:
                 return
             self.__mates_to_wait -= 1
             self.__ready_id.append(id)
         elif "j'ai ça :" in reply:
-            _, info = reply.rsplit(":", 1)
-            id, inventory = info.rsplit(";", 1)
-            try:
-                new_inventory = handle_inventory_string(inventory.strip()[:-1])
-            except:
-                return
-            last_inventory = self.__team_inventory.get(id)
-            if last_inventory != None:
-                for key, value in new_inventory.items():
-                    if key != "food" and last_inventory[key] > value:
-                        return
-            self.__team_inventory[id] = new_inventory
+            self.__handle_mate_inventory(reply)
         elif "\"etttt c'est partieee !!!\"" in reply:
             self.__has_already_send_start = True
             if self.__nb_guard_in_place < 4:
@@ -248,29 +246,46 @@ class Ai:
         except ClientError as e:
             logger.warning(e.message)
             return None
-        if not reply:
+        if self.__command_to_reply == self.__team_name:
+            if (reply == "ko\n"):
+                return None
+        if not reply or reply == "":
             return None
-        if reply == "":
-            return None
-        if reply == "dead":
+        if reply == "dead" or (self.__command_to_reply == self.__team_name and reply == "ko\n"):
             self.__client.close()
-            return None
-        if self.__command_to_reply == self.__team_name and reply == "ko\n":
             return None
         return reply
 
+    def __handle_ok(self, command):
+        if not self.__is_guard and self.__command_to_reply.startswith("Take ") and not self.__commands_queue and self.__ai_to_follow is not None:
+            self.add_object_to_inventory(command.split(' ', 1)[1])
+            self.__set_command_queue_after_grouping()
+        elif command.startswith("Take "):
+            self.add_object_to_inventory(command.split(' ', 1)[1])
+            if len(self.__team_inventory) < 9 and self.__unused_slots == 0 and self.__inventory['food'] > 10:
+                self.__commands_queue.append("Fork")
+        elif command.startswith("Set "):
+            self.set_down_object_from_inventory(command.split(' ', 1)[1])
+        elif self.__is_guard and self.__command_to_reply == "Eject" and not self.__commands_queue:
+            self.__commands_queue.append("Eject")
+
     def handle_reply(self, reply):
+        if reply == None:
+            return False
         if reply.startswith("Current level:"):
             return True
         if reply.startswith("eject: "):
             handle_eject_command(reply, self.__commands_queue)
             return False
         if reply.startswith("message "):
-            start, message = reply.rsplit(", ", 1)
+            try:
+                start, message = reply.rsplit(", ", 1)
+            except:
+                return False
             decrypted_message = decrypt_message(self.__team_name, message)
             if decrypted_message is None:
                 return False
-            self.handle_message(start + ", " + decrypted_message)
+            self.__handle_message(start + ", " + decrypted_message)
             return False
         command = self.__command_to_reply
         if command == self.__team_name:
@@ -279,22 +294,15 @@ class Ai:
                 self.__map_size = [int(x), int(y)]
                 logger.info("map size is : " + str(self.__map_size), Output.BOTH)
             except:
-                self.__unused_slots = int(reply[:-1])
+                try:
+                    self.__unused_slots = int(reply[:-1])
+                except:
+                    return False
                 logger.info("unused slots number is : " + str(self.__unused_slots), Output.BOTH)
                 return False
             return True
         if reply == "ok\n":
-            if not self.__is_guard and self.__command_to_reply.startswith("Take ") and not self.__commands_queue and self.__ai_to_follow is not None:
-                self.add_object_to_inventory(command.split(' ', 1)[1])
-                self.__set_command_queue_after_grouping()
-            elif command.startswith("Take "):
-                self.add_object_to_inventory(command.split(' ', 1)[1])
-                if len(self.__team_inventory) < 9 and self.__unused_slots == 0 and self.__inventory['food'] > 10:
-                    self.__commands_queue.append("Fork")
-            elif command.startswith("Set "):
-                self.set_down_object_from_inventory(command.split(' ', 1)[1])
-            elif self.__is_guard and self.__command_to_reply == "Eject" and not self.__commands_queue:
-                self.__commands_queue.append("Eject")
+            self.__handle_ok(command)
             return True
         if try_inventory(reply, self):
             return True
@@ -335,18 +343,11 @@ class Ai:
                 total_inventory[resource] += value.get(resource, 0)
         for resource in required:
             total_inventory[resource] += self.__inventory.get(resource, 0)
-
-        inventory_status = ", ".join(
-            f"{res} : {total_inventory[res]}/{required[res]}"
-            for res in required
-        )
-        logger.info(f"global inventory : {inventory_status}", Output.BOTH)
-
         for res, required in required.items():
             if res in self.__needed_list and total_inventory[res] >= required:
                 self.__needed_list.remove(res)
         for value in self.__team_inventory.values():
-            if value["food"] < 30:
+            if value["food"] < 32:
                 return False
         return len(self.__needed_list) == 1
 
@@ -356,18 +357,13 @@ class Ai:
     def get_inventory(self):
         return self.__inventory
 
-    def add_object_to_inventory(self, object):
-        try:
-            self.__inventory[object] += 1
-        except:
-            return
+    def add_object_to_inventory(self, obj):
+        if obj in self.__inventory:
+            self.__inventory[obj] += 1
 
-    def set_down_object_from_inventory(self, object):
-        try:
-            if self.__inventory[object] > 0:
-                self.__inventory[object] -= 1
-        except:
-            return
+    def set_down_object_from_inventory(self, obj):
+        if obj in self.__inventory and self.__inventory[obj] > 0:
+            self.__inventory[obj] -= 1
         
     def emergency_unfreeze(self):
         if not self.__commands_queue:
