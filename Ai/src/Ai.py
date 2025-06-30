@@ -6,16 +6,16 @@
 ##
 
 import uuid
+from Client import ClientError
 from Logger import logger, Output
 from Message import follow_message
-from Client import ClientError, Client
 from getWay import get_better_way_to_ressources
 from SortTiles import get_visible_tiles_sorted_by_distance
 from encrypt_message import encrypt_message, decrypt_message
 from CommandHandler import handle_inventory_string, try_inventory, try_view, try_connect, handle_eject_command, get_droping_items_commands, get_inventory_string
 
 class Ai:
-    def __init__(self, team_name: str, client: Client):
+    def __init__(self, team_name, client):
         self.__view = None
         self.__ready_id = []
         self.__map_size = None
