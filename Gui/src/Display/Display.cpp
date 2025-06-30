@@ -376,11 +376,9 @@ void gui::Display::render()
 
 void gui::Display::eventToggleDisplay()
 {
-    if (IsKeyPressed(KEY_X)) {
-        _winner = true;
-        if (_displayTeams && _displayTeams->getStatus())
-            _displayTeams->disableIsTile();
-        _winnerTeam = "caca pipi";
+    if (IsKeyPressed(KEY_B)) {
+        for (size_t i = 0; i < _players->size(); ++i)
+            _players->at(i)->setCanBroadcasting(!_players->at(i)->getCanBroadcasting());
     }
     if (IsKeyPressed(KEY_ONE)) {
         _itemDisplay[gui::Tile::FOOD] = (_itemDisplay[gui::Tile::FOOD] == 0) ? 1 : 0;

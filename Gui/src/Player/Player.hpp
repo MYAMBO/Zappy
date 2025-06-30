@@ -214,6 +214,20 @@ namespace gui {
              * @param isPushed true if the Player is pushed, false otherwise.
              */
             bool getPushed() const;
+
+            /**
+             * @brief Get the broadcasting state of the Player.
+             * This function retrieves whether the Player is currently broadcasting.
+             * @return true if the Player is broadcasting, false otherwise.
+             */
+            bool getCanBroadcasting() const;
+
+            /**
+             * @brief Set the broadcasting state of the Player.
+             * This function sets whether the Player can broadcast.
+             * @param canBroadcasting true if the Player can broadcast, false otherwise.
+             */
+            void setCanBroadcasting(bool canBroadcasting);
       
         private:
             /**
@@ -259,6 +273,7 @@ namespace gui {
             bool _isPushed = false;
             bool _isSelected = false;
             bool _isIncantation = false;
+            bool _canBroadcasting = true;
             bool _isBroadcasting = false;
             bool _isIncantationEnded = false;
             

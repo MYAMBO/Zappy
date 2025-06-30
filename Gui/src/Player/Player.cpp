@@ -117,6 +117,35 @@ void gui::Player::startMoveTo(Vector3 newPosition)
     }
 }
 
+void gui::Player::updateMovementAndAnimation()
+{
+    if (_isMoving) {
+        Vector3 direction = Vector3Subtract(_targetPosition, _position);
+        float distance = Vector3Length(direction);
+        if (distance > 0.1f) {
+            direction = Vector3Normalize(direction);
+            float baseSpeed = 0.02f;
+            float baseTimeUnit = 10.0f;
+            float speed = baseSpeed * (static_cast<float>(*_timeUnit) / baseTimeUnit);
+            
+            _position = Vector3Add(_position, Vector3Scale(direction, speed));
+        } else {
+            _position = _targetPosition;
+            stopMoving();
+        }
+    }
+    
+    if (_animCount > 0 && _currentAnim < _animCount) {
+        float animSpeed = static_cast<float>(*_timeUnit) / 10.0f;
+        _animFrameCounter += animSpeed;
+        
+        if (_animFrameCounter >= _animations[_currentAnim].frameCount) {
+            _animFrameCounter = 0;
+        }
+        UpdateModelAnimation(*_model, _animations[_currentAnim], static_cast<int>(_animFrameCounter));
+    }
+}
+
 void gui::Player::stopMoving()
 {
     _isMoving = false;
@@ -181,28 +210,6 @@ void gui::Player::updateUI()
     }
 }
 
-void gui::Player::updateMovementAndAnimation()
-{
-    if (_isMoving) {
-        Vector3 direction = Vector3Subtract(_targetPosition, _position);
-        float distance = Vector3Length(direction);
-        if (distance > 0.1f) {
-            direction = Vector3Normalize(direction);
-            _position = Vector3Add(_position, Vector3Scale(direction, (1.0f/static_cast<float>(*_timeUnit) * 2)));
-        } else {
-            _position = _targetPosition;
-            stopMoving();
-        }
-    }
-    if (_animCount > 0 && _currentAnim < _animCount) {
-        _animFrameCounter++;
-        if (_animFrameCounter >= _animations[_currentAnim].frameCount) {
-            _animFrameCounter = 0;
-        }
-        UpdateModelAnimation(*_model, _animations[_currentAnim], _animFrameCounter);
-    }
-}
-
 int gui::Player::handleUserInput(Camera camera)
 {
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !IsKeyDown(KEY_LEFT_SHIFT)) {
@@ -251,7 +258,7 @@ void gui::Player::HandleCamButton(Camera &camera, CamState &sceneState)
 
 void gui::Player::broadcastAnimation()
 {
-    if (!_isBroadcasting)
+    if (!_isBroadcasting || !_canBroadcasting)
         return;
     _broadcastTimer += GetFrameTime();
     float t = _broadcastTimer / _broadcastDuration;
@@ -343,6 +350,11 @@ bool gui::Player::getPushed() const
     return _isPushed;
 }
 
+bool gui::Player::getCanBroadcasting() const
+{
+    return _canBroadcasting;
+}
+
 /************************************************************
  **              >>>>   SETTERS FUNCTIONS   <<<<            **
  ************************************************************/
@@ -417,4 +429,9 @@ void gui::Player::setSelected(bool selected)
 void gui::Player::setPushed(bool isPushed)
 {
     _isPushed = isPushed;
+}
+
+void gui::Player::setCanBroadcasting(bool canBroadcasting)
+{
+    _canBroadcasting = canBroadcasting;
 }
