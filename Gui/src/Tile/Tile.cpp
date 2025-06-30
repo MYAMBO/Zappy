@@ -18,9 +18,11 @@
 
 
 gui::Tile::Tile(std::pair<int, int> coord, std::vector<int> qty, std::shared_ptr<std::vector<std::shared_ptr<Model>>> model, int screenWidth, int screenHeight, std::shared_ptr<TeamsDisplay> displayTeams)
-    : _isSelected(false), _qty(std::vector<int>()), _coord(std::move(coord)), _displayTeams(displayTeams), _models(std::move(model)), _items(7),
+    : _isSelected(false), _qty(), _coord(std::move(coord)), _displayTeams(displayTeams), _models(std::move(model)), _items(7),
       _fontSize(30), _tileInventory({0, static_cast<float>(screenHeight) * 0.8f, static_cast<float>(screenWidth), static_cast<float>(screenHeight) / 5.0f})
 {
+    _qty = std::vector<int> ({0,0,0,0,0,0,0});
+
     addItem(qty[FOOD], FOOD);
     addItem(qty[LINEMATE], LINEMATE);
     addItem(qty[DERAUMERE], DERAUMERE);
