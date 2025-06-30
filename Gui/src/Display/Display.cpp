@@ -50,6 +50,13 @@ gui::Display::Display(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> 
 
 gui::Display::~Display()
 {
+    for (size_t i = 0; i < _models->size(); ++i) {
+        UnloadModel(*_models->operator[](i));
+    }
+    UnloadModel(*_model);
+    UnloadModel(_deadModel);
+    UnloadModel(*_eggModel);
+    UnloadModelAnimations(_animations, _animCount);
 }
 
 /************************************************************
@@ -336,7 +343,7 @@ void gui::Display::handleInput()
         if (_players->at(i)->update(_camera) == 1)
             for (size_t j = 0; j < _players->size(); ++j)
                 if (i != j && _players->at(j)->getSelected())
-                    _players->at(j)->setSelected(false);
+                    _players->at(j)->setSelected(false);    
     if (IsKeyPressed(KEY_P))
         _displayTeams->toggleDisplay();
 }
@@ -449,6 +456,7 @@ void gui::Display::setWinner(const std::string& team)
 
 void gui::Display::addPlayer(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team)
 {
+    std::lock_guard<std::mutex> lock(playersMutex);
     _players->emplace_back(std::make_shared<gui::Player>(id, position, orientation, level, team, 0.35, SCREEN_WIDTH, SCREEN_HEIGHT,
         _camera, _camState, _timeUnit, _model, _deadModel, _animations, _animCount, _models->at(4)));
 }

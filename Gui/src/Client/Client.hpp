@@ -8,6 +8,7 @@
 #ifndef ZAPPY_CLIENT_HPP
     #define ZAPPY_CLIENT_HPP
 
+    #include <mutex>
     #include <thread>
 
     #include "Scene.hpp"
@@ -71,7 +72,6 @@ namespace gui {
              * @return A shared pointer to a vector of shared pointers to Model objects representing the players.
              */
             std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> getPlayers();
-
 
         private:
             /**
@@ -285,4 +285,4 @@ namespace gui {
 }
 
 
-#endif //ZAPPY_CLIENT_HPP
+#endif
