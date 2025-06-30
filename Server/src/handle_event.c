@@ -30,7 +30,8 @@ static int handle_read_error(ssize_t bytes_read, server_t *server,
     if (bytes_read < 0) {
         perror("read failed");
         remove_node_poll_handling(&server->poll_list, node->poll_fd.fd);
-        close(node->poll_fd.fd);
+        if (node->player && node->player->connected)
+            close(node->poll_fd.fd);
         server->poll_count--;
         return FAILURE;
     }
