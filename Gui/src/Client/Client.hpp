@@ -33,6 +33,7 @@ namespace gui {
             std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> getPlayers();
 
             void drawPlayers();
+            void newServerConnection();
         private:
             void connectToServer();
             void receiveLoop();
@@ -70,6 +71,9 @@ namespace gui {
             std::shared_ptr<Camera> _camera;
             std::shared_ptr<CamState> _camState;
 
+
+            std::string _previousPort;
+            std::string _previousHostname;
             std::shared_ptr<std::string> _hostname;
             std::shared_ptr<std::string> _port;
             int _socket;

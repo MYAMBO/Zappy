@@ -17,7 +17,7 @@ namespace gui {
     namespace ui {
         class Menu {
             public:
-                Menu(std::shared_ptr<SceneState> sceneState, std::function<void()> func);
+                Menu(std::shared_ptr<SceneState> sceneState);
                 ~Menu();
 
                 /**
@@ -61,6 +61,8 @@ namespace gui {
                  * @brief Setter for Port
                  */
                 void setPort(std::shared_ptr<std::string> name);
+
+                void setFunction(std::function<void()> function);
 
                 /**
                  *

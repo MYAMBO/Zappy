@@ -57,6 +57,7 @@ namespace gui {
             void setTeams(std::shared_ptr<std::vector<std::string>> teams);
             void setTeamsColors(std::shared_ptr<std::map<std::string, Color>> teamColors);
             void setDisplayTeams(std::shared_ptr<TeamsDisplay> displayTeams);
+            void setFunction(std::function<void()> function);
 
             std::unique_ptr<ui::Menu> _menu;
             std::unique_ptr<ui::Settings> _settings;
@@ -119,6 +120,7 @@ namespace gui {
             std::vector<int> _itemDisplay;
             float _width;
             float _height;
+            std::function<void()> _function;
     };
 };
 

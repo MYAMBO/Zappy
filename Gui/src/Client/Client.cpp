@@ -24,7 +24,7 @@ gui::Client::Client(std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> p
         std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs, const std::shared_ptr<Camera>& camera, const std::shared_ptr<CamState>& camState,
         std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, const std::shared_ptr<Display>& display, const std::shared_ptr<int>& timeUnit,
         std::shared_ptr<std::string> hostname = std::make_shared<std::string>("localhost"), std::shared_ptr<std::string> port = std::make_shared<std::string>("12345"))
-    : _camera(camera), _camState(camState), _hostname(std::move(hostname)), _port(std::move(port)),
+    : _camera(camera), _camState(camState), _previousPort(port->c_str()), _previousHostname(hostname->c_str()),_hostname(std::move(hostname)), _port(std::move(port)),
       _socket(), _isActive(), _thread(), _size(), _timeUnit(timeUnit), _display(display),
       _displayTeams(), _teams(std::make_shared<std::vector<std::string>>()), _teamColors(std::make_shared<std::map<std::string, Color>>()), _models(std::move(models)),
       _eggs(std::move(eggs)), _map(std::move(map)), _players(std::move(players))
@@ -191,6 +191,25 @@ void gui::Client::connectToServer()
     sendCommand("mct\n");
     sendCommand("tna\n");
     sendCommand("sgt\n");
+}
+
+void gui::Client::newServerConnection()
+{
+    if (_previousHostname == _hostname->c_str() && _previousPort == _port->c_str())
+        return;
+    else {
+        close(_socket);
+        _thread.join();
+        _players->clear();
+        _eggs->clear();
+        _map->clear();
+        _teams->clear();
+        _teamColors->clear();
+
+        _previousHostname = _hostname->c_str();
+        _previousPort = _port->c_str();
+        connectToServer();
+    }
 }
 
 /************************************************************

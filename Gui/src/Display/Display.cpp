@@ -6,13 +6,12 @@
 */
 
 #include "Menu.hpp"
-#include "Client.hpp"
 #include "Display.hpp"
+#include "Settings.hpp"
+#include "Logger.hpp"
 
 #include <utility>
-#include "Settings.hpp"
 
-#include "Logger.hpp"
 
 
 /************************************************************
@@ -43,7 +42,7 @@ gui::Display::Display(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> 
     _players = std::make_shared<std::vector<std::shared_ptr<gui::Player>>>();
     _itemDisplay = {1, 1, 1, 1, 1, 1, 1};
 
-    _menu = std::make_unique<gui::ui::Menu>(_sceneState, [](){std::cout << "Hello, World!" << std::endl;});
+    _menu = std::make_unique<gui::ui::Menu>(_sceneState);
     _settings = std::make_unique<gui::ui::Settings>(_sceneState);
     _menu->initMenuUI();
     _settings->initSettingsUI();
@@ -169,13 +168,6 @@ void gui::Display::teamsDisplay()
 
 void gui::Display::render()
 {
-    Debug::WarningLog("Displayng here:");
-    if (_players->empty())
-        Debug::WarningLog("No Player");
-    if (_eggs->empty())
-        Debug::WarningLog("No Egg");
-    if (_map->empty())
-        Debug::WarningLog("No Map");
     BeginDrawing();
 
     if (_camera->position.y < 0.1f) {
@@ -262,6 +254,11 @@ void gui::Display::setTeamsColors(std::shared_ptr<std::map<std::string, Color>> 
 void gui::Display::setDisplayTeams(std::shared_ptr<TeamsDisplay> displayTeams)
 {
     _displayTeams = std::move(displayTeams);
+}
+
+void gui::Display::setFunction(std::function<void ()> function)
+{
+    _menu->setFunction(function);
 }
 
 void gui::Display::setWinner(const std::string& team)

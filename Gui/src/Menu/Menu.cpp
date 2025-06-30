@@ -10,8 +10,8 @@
 #include <utility>
 #include "Logger.hpp"
 
-gui::ui::Menu::Menu(std::shared_ptr<SceneState> SceneState, std::function<void()> function)
-    :   _connectionFunction(std::move(function)), _sceneState(std::move(SceneState)),
+gui::ui::Menu::Menu(std::shared_ptr<SceneState> SceneState)
+    :   _connectionFunction(), _sceneState(std::move(SceneState)),
         _playButton([this]() { playClicked(); }, Rectangle{static_cast<float>(SCREEN_WIDTH) / 2 - 100, static_cast<float>(SCREEN_HEIGHT) / 2.6f - 200, 200.0f, 100.0f}, "Play"),
         _exitButton([this]() { closeWindow(); }, Rectangle{static_cast<float>(SCREEN_WIDTH) / 2 - 100, static_cast<float>(SCREEN_HEIGHT) / 1.5f - 200, 200.0f, 100.0f}, "Exit"),
         _settingButton([this]() { settingClicked(); }, Rectangle{static_cast<float>(SCREEN_WIDTH) / 2 - 100, static_cast<float>(SCREEN_HEIGHT) / 1.9f - 200, 200.0f, 100.0f}, "Settings"),
@@ -58,6 +58,7 @@ void gui::ui::Menu::playClicked()
         *_sceneState = SceneState::GAME;
         _hostnameActive = false;
         _portActive = false;
+        _connectionFunction();
         Debug::InfoLog("[GUI] Play button clicked, connecting to server with Hostname: " + *_hostname);
         Debug::InfoLog("[GUI] Play button clicked, connecting to server with Port: " + *_port);
     }
@@ -212,6 +213,11 @@ void gui::ui::Menu::setHostname(std::shared_ptr<std::string> name)
 void gui::ui::Menu::setPort(std::shared_ptr<std::string> name)
 {
     this->_port = std::move(name);
+}
+
+void gui::ui::Menu::setFunction(std::function<void ()> function)
+{
+    _connectionFunction = function;
 }
 
 std::shared_ptr<std::string> gui::ui::Menu::getHostname()

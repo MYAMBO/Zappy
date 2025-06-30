@@ -6,7 +6,6 @@
 */
 
 #include "Scene.hpp"
-#include "Client.hpp"
 #include "Logger.hpp"
 
 int strcmp(const std::string& string1, const std::string& string2)
