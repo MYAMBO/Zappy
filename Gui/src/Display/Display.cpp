@@ -328,10 +328,11 @@ void gui::Display::handleInput()
 {
     eventToggleDisplay();
     updateCamera();
-
+    
     for (auto& tile: *_map)
-        tile->handleUserInput(*_camera);
+    tile->handleUserInput(*_camera);
     for (auto& player : *_players) {
+        std::lock_guard<std::mutex> lock(playersMutex);
         if (player->update(*_camera) == 1) {
             for (auto& p : *_players) {
                 if (p->getId() != player->getId() && p->getSelected()) {
@@ -452,6 +453,7 @@ void gui::Display::setWinner(const std::string& team)
 
 void gui::Display::addPlayer(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team)
 {
+    std::lock_guard<std::mutex> lock(playersMutex);
     _players->emplace_back(std::make_shared<gui::Player>(id, position, orientation, level, team, 0.35, SCREEN_WIDTH, SCREEN_HEIGHT,
         *_camera, *_camState, _timeUnit, _model, _deadModel, _animations, _animCount, _models->at(4)));
 }

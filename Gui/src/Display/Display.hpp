@@ -123,6 +123,7 @@ namespace gui {
             std::string _winnerTeam;
             std::shared_ptr<int> _timeUnit;
             std::shared_ptr<Camera> _camera;
+            mutable std::mutex playersMutex;
             std::shared_ptr<CamState> _camState;
             std::shared_ptr<SceneState> _sceneState;
             std::shared_ptr<TeamsDisplay> _displayTeams;
