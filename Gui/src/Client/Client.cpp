@@ -94,7 +94,7 @@ void gui::Client::receiveLoop()
         loopCountSelect++;
         for (size_t i = 0; i < _players->size(); ++i) {
             if (_players->at(i)->getSelected() && loopCountSelect >= 60) {
-                sendCommand("pin " + std::to_string(_players->at(i)->getId()) + "\n");
+                sendCommand("pin #" + std::to_string(_players->at(i)->getId()) + "\n");
                 loopCountSelect = 0;
             }
         }
