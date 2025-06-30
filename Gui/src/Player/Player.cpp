@@ -271,8 +271,6 @@ void gui::Player::broadcastAnimation()
 
 void gui::Player::IncantationAnimation()
 {
-    if (!_isIncantation && !_isIncantationEnded)
-        return;
     if (_isIncantationEnded) {
         _IncantationTimer += GetFrameTime();
         float t = _IncantationTimer / _IncantationDuration;
@@ -287,17 +285,20 @@ void gui::Player::IncantationAnimation()
         DrawCube(pos, scale, scale, scale, color);
         return;
     }
-    _IncantationTimer += GetFrameTime();
-    float t = _IncantationTimer / _IncantationDuration;
-    if (t > 1.0f) {
-        _isIncantation = false;
+    if (_isIncantation) {
+        _IncantationTimer += GetFrameTime();
+        float t = _IncantationTimer / _IncantationDuration;
+        if (t > 1.0f) {
+            _isIncantation = false;
+            return;
+        }
+        float scale = Lerp(0.5f, 9.0f, t);
+        float alpha = Lerp(0.8f, 0.0f, t);
+        Color color = { 75, 0, 130, static_cast<unsigned char>(alpha * 255) };
+        Vector3 pos = getPosition();
+        DrawCube(pos, scale, scale, scale, color);
         return;
     }
-    float scale = Lerp(0.5f, 9.0f, t);
-    float alpha = Lerp(0.8f, 0.0f, t);
-    Color color = { 75, 0, 130, static_cast<unsigned char>(alpha * 255) };
-    Vector3 pos = getPosition();
-    DrawCube(pos, scale, scale, scale, color);
 }
 
 

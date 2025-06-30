@@ -33,11 +33,9 @@ void gui::TeamsDisplay::display(std::pair<int, int> coord)
         DrawText("On Map :", static_cast<int>(_tileTeams.x + 25), static_cast<int>(_tileTeams.y + 30), 50, WHITE);
 
     for (int i = 0; i < static_cast<int>(_teams->size()); ++i) {
-        Debug::InfoLog("[GUI] Drawing Team : " + _teams->at(i));
-
         std::string text;
-        if (_teams->at(i).size() > 15)
-            text = _teams->at(i).substr(0, 15) + "... : ";
+        if (_teams->at(i).size() > 5)
+            text = _teams->at(i).substr(0, 5) + "... : ";
         else
             text = _teams->at(i) + " : ";
 
