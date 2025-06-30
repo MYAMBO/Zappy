@@ -7,7 +7,7 @@
 
 #include "inventory_communication.h"
 
-int div_round_down(int value)
+static int div_round_down(int value)
 {
     return value / 126;
 }
