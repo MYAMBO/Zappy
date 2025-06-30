@@ -14,7 +14,6 @@
 #include "commands.h"
 #include "command_exec_handler.h"
 #include "server.h"
-#include "garbage.h"
 #include "generate_ressources.h"
 #include "incantation_list.h"
 #include "player_informations_protocol.h"
@@ -130,10 +129,10 @@ static int win_condition(server_t *server)
     return SUCCESS;
 }
 
-static int loop_start_server(server_t *server)
+/*static int loop_start_server(server_t *server)
 {
 
-}
+}*/
 
 int start_server(server_t *server)
 {
