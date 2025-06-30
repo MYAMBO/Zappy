@@ -12,7 +12,8 @@
 
     #include "struct.h"
 
-int add_incantation(incantation_list_t **head, int incantation_nb, int tick_actual, int xy_lev[3]);
 void pop_incantation(incantation_list_t **head);
+int add_incantation(incantation_list_t **head,
+    int incantation_nb, int tick_actual, int xy_lev[3]);
 
 #endif //INCANTATION_LIST_H

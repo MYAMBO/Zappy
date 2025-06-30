@@ -139,6 +139,6 @@ void gui::ui::Settings::drawSettings()
 
 void gui::ui::Settings::backButtonClicked()
 {
-    _sceneState = std::make_shared<SceneState>(SceneState::MENU);
+    *_sceneState = SceneState::MENU;
     Debug::InfoLog("[GUI] Back button clicked in settings");
 }

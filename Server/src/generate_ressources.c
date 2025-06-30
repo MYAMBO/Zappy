@@ -17,7 +17,6 @@ static void generate_ressource(server_t *server, map_t *map, int max, int i)
     int generation = max - server->current_res[i];
 
     while (generation > 0) {
-        printf("Generations\n");
         x = rand() % width;
         y = rand() % height;
         map->tiles[y][x].resources[i]++;

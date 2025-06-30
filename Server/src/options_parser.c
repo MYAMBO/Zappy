@@ -49,7 +49,7 @@ static int parse_width(char **av, server_t *server)
     if (found_x != 1 || av[nb_x + 1] == NULL)
         return FAILURE;
     width = atoi(av[nb_x + 1]);
-    if (width <= 0)
+    if (width < 10 || width > 42)
         return FAILURE;
     server->map_width = width;
     return SUCCESS;
@@ -70,7 +70,7 @@ static int parse_height(char **av, server_t *server)
     if (found_y != 1 || av[nb_y + 1] == NULL)
         return FAILURE;
     height = atoi(av[nb_y + 1]);
-    if (height <= 0)
+    if (height < 10 || height > 42)
         return FAILURE;
     server->map_height = height;
     return SUCCESS;
