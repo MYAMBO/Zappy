@@ -7,11 +7,15 @@
 
 #include "inventory_communication.h"
 
+int div_round_down(int value) {
+    return value / 126;
+}
+
 char *inventory_communication(ai_stats_t *ai)
 {
     int alloc = snprintf(NULL, 0,
                     "[food %d, linemate %d, deraumere %d, sibur %d,"
-                    " mendiane %d, phiras %d, thystame %d]\n", ai->life,
+                    " mendiane %d, phiras %d, thystame %d]\n", div_round_down(ai->life),
                     ai->inventory.resources[1], ai->inventory.resources[2],
                     ai->inventory.resources[3], ai->inventory.resources[4],
                     ai->inventory.resources[5], ai->inventory.resources[6]);
@@ -21,7 +25,7 @@ char *inventory_communication(ai_stats_t *ai)
         return NULL;
     snprintf(result, alloc + 1,
         "[food %d, linemate %d, deraumere %d, sibur %d,"
-        " mendiane %d, phiras %d, thystame %d]\n", ai->life,
+        " mendiane %d, phiras %d, thystame %d]\n", div_round_down(ai->life),
         ai->inventory.resources[1], ai->inventory.resources[2],
         ai->inventory.resources[3], ai->inventory.resources[4],
         ai->inventory.resources[5], ai->inventory.resources[6]);

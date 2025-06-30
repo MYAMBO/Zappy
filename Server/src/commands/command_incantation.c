@@ -89,12 +89,23 @@ int end_incantation_command(server_t *server,
     poll_handling_t *node, char **args)
 {
     char *str = NULL;
+    char *msg = NULL;
+    bool status = false;
 
     (void)node;
     (void)args;
     str = end_incantation(server, server->map);
     if (!str)
         return FAILURE;
+    status = strcmp(str, "ko\n") == 0 ? false : true;
+    msg = end_incantation_protocol(server->incantation_list, status);
+    if (!msg)
+        return FAILURE;
+    if (send_message_graphic(server, msg) == FAILURE)
+        return FAILURE;
+    my_free(msg);
+    printf("lala2\n");
+    printf("%s", str);
     for (poll_handling_t *poll = server->poll_list; poll != NULL; poll = poll->next) {
         if (!poll->player || strcmp(poll->player->team_name, "GRAPHIC") == 0)
             continue;
