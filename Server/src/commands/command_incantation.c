@@ -94,7 +94,7 @@ int end_incantation_command(server_t *server, poll_handling_t *node, char **args
 {
     char *str = NULL;
     char *msg = NULL;
-    bool status = strcmp(str, "ko\n") == 0 ? false : true;
+    bool status = false;
 
     (void)node;
     (void)args;
@@ -102,6 +102,7 @@ int end_incantation_command(server_t *server, poll_handling_t *node, char **args
     printf("lala1\n");
     if (!str)
         return FAILURE;
+    status = strcmp(str, "ko\n") == 0 ? false : true;
     msg = end_incantation_protocol(server->incantation_list, status);
     if (!msg)
         return FAILURE;
