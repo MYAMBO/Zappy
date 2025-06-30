@@ -259,6 +259,7 @@ namespace gui {
              */
             std::vector<std::string> splitString(const std::string &string, char delimiter);
 
+            std::mutex _mutex;
             std::shared_ptr<Camera> _camera;
             std::shared_ptr<CamState> _camState;
 

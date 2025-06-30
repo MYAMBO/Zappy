@@ -180,6 +180,12 @@ void gui::Player::drawUI()
 {
     if (_isSelected) {
         _inventory->draw();
+        std::string text;
+        if (_team.size() > 15)
+            text = _team.substr(0, 15) + "... : ";
+        else
+            text = _team + " : ";
+
         DrawText(("Team name: " + _team).c_str(), static_cast<float>(SCREEN_WIDTH) / 5.0f, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam->operator[](_team));
         DrawText(("Player ID: " + std::to_string(_id)).c_str(), static_cast<float>(SCREEN_WIDTH) / 2.8, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam->operator[](_team));
         int falseId = _id;
