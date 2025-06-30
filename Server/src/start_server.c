@@ -134,7 +134,7 @@ static int loop_iteration(server_t *server, int *poll_val, int *win_val)
     if (*poll_val == 0)
         return SUCCESS;
     if (handle_event(server) == FAILURE)
-        return FAILURE;
+        return SUCCESS;
     return SUCCESS;
 }
 

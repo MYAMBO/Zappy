@@ -8,6 +8,7 @@
 #include "commands.h"
 #include "utils.h"
 #include "actions_communication.h"
+#include "send_init_graphic.h"
 #include "unistd.h"
 
 int take_command(server_t *server, poll_handling_t *node, char **args)
@@ -22,5 +23,7 @@ int take_command(server_t *server, poll_handling_t *node, char **args)
     if (!str)
         return FAILURE;
     write(node->poll_fd.fd, str, strlen(str));
+    if (send_info_user(server, node) == FAILURE)
+        return FAILURE;
     return SUCCESS;
 }

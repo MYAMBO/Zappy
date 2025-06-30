@@ -9,6 +9,8 @@
 
 #include "time_exec_handler.h"
 
+#include "send_init_graphic.h"
+
 static int disconnect_from_slot(server_t *server, poll_handling_t *node)
 {
     slot_table_t *table = NULL;
@@ -47,7 +49,7 @@ static int dead_handling(server_t *server, poll_handling_t *node)
 
 static int decrement_time(server_t *server, poll_handling_t *node)
 {
-    if (node->player && (strcmp(node->player->team_name, "GRAPHIC") == 0
+    if (!node->player || (strcmp(node->player->team_name, "GRAPHIC") == 0
             || node->player->connected == false))
         return 1;
     if (node->player && node->player->last_life == -1)
