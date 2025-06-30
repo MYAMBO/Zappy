@@ -34,8 +34,8 @@ void gui::TeamsDisplay::display(std::pair<int, int> coord)
 
     for (int i = 0; i < static_cast<int>(_teams->size()); ++i) {
         std::string text;
-        if (_teams->at(i).size() > 5)
-            text = _teams->at(i).substr(0, 5) + "... : ";
+        if (_teams->at(i).size() > 15)
+            text = _teams->at(i).substr(0, 15) + "... : ";
         else
             text = _teams->at(i) + " : ";
 

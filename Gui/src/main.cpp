@@ -8,11 +8,6 @@
 #include "Scene.hpp"
 #include "Logger.hpp"
 
-int strcmp(const std::string& string1, const std::string& string2)
-{
-    return (string1 == string2);
-}
-
 int main(int argc, char **argv)
 {
     Debug::ClearLogFile();
