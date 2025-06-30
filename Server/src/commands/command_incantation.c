@@ -14,6 +14,7 @@
 #include "unistd.h"
 #include <stdbool.h>
 #include <string.h>
+#include "send_init_graphic.h"
 
 static int count_incant(server_t *server, int id, poll_handling_t *node)
 {
@@ -123,6 +124,8 @@ int end_incantation_command(server_t *server, poll_handling_t *node,
         return FAILURE;
     my_free(msg);
     end_incantation_command_suite(server, str);
+    if (send_info_user(server, node) == FAILURE)
+        return FAILURE;
     my_free(str);
     return SUCCESS;
 }
