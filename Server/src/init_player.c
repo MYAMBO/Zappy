@@ -17,7 +17,7 @@
 
 void init_resources(ai_stats_t *new_tmp)
 {
-    new_tmp->life = 126000000;
+    new_tmp->life = 1260;
     new_tmp->last_life = -1;
     new_tmp->nb_command_exec = 0;
     new_tmp->command_exec_list = NULL;

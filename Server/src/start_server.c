@@ -21,6 +21,7 @@
 #include "slot_handler.h"
 #include "time_handler.h"
 #include "utils.h"
+#include "actions_protocol.h"
 
 int call_poll(server_t *server)
 {
@@ -85,6 +86,11 @@ static int exec_time_exec_handler(server_t *server)
         if (node->player && node->player->life <= 0)
         {
             write(node->player->fd, "dead\n", strlen("dead\n"));
+            char *str = player_death(node->player);
+            if (str == NULL)
+                return FAILURE;
+            if (send_message_graphic(server, str) == FAILURE)
+                return FAILURE;
             slot_table_t *table = NULL;
             for (int i = 0; server->team_names[i]; i++)
             {

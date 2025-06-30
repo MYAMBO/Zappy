@@ -14,15 +14,15 @@ char *start_incantation_protocol(ai_stats_t *lead, ai_stats_t *rest[])
     char *result = NULL;
     int offset = 0;
 
-    for (int i = 0; rest[i] != NULL; i++)
-        alloc += snprintf(NULL, 0, "#%d", rest[i]->id);
+    for (int i = 0; rest != NULL && rest[i] != NULL; i++)
+        alloc += snprintf(NULL, 0, " #%d", rest[i]->id);
     alloc += snprintf(NULL, 0, "\n");
     result = my_malloc(alloc + 1);
     if (!result)
         return NULL;
     offset += sprintf(result + offset, "pic %d %d %d #%d", lead->x,
         lead->y, lead->level, lead->id);
-    for (int i = 0; rest[i] != NULL; i++)
+    for (int i = 0; rest != NULL && rest[i] != NULL; i++)
         offset += sprintf(result + offset, " #%d", rest[i]->id);
     sprintf(result + offset, "\n");
     return result;

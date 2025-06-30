@@ -8,6 +8,7 @@
 #include "commands.h"
 #include "utils.h"
 #include "actions_communication.h"
+#include "actions_protocol.h"
 #include "unistd.h"
 
 int drop_command(server_t *server, poll_handling_t *node, char **args)

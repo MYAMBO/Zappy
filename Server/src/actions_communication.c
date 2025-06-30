@@ -9,7 +9,9 @@
 
 #include <unistd.h>
 
+#include "actions_protocol.h"
 #include "get_signal_direction.h"
+#include "utils.h"
 
 /* just to avoid 'unused variable'
  *
@@ -36,12 +38,6 @@ char *player_plays_broadcast(ai_stats_t *ai, char *text, server_t *server)
         write(tmp->poll_fd.fd, str, strlen(str));
     }
     return "ok\n";
-}
-
-char *death_of_player(ai_stats_t *ai)
-{
-    ai->is_alive = false;
-    return "dead\n";
 }
 
 static bool increment_ai_inventory(ai_stats_t *ai, map_t *map,
@@ -96,6 +92,7 @@ static int get_ressources_index(char *item)
 char *can_player_takes_items(ai_stats_t *ai, map_t *map,
     char *item, server_t *server)
 {
+    char *str;
     int i = 0;
 
     i = get_ressources_index(item);
@@ -103,12 +100,16 @@ char *can_player_takes_items(ai_stats_t *ai, map_t *map,
         return "ko\n";
     if (!increment_ai_inventory(ai, map, i, server))
         return "ko\n";
+    str = player_ressources_collecting(ai, i);
+    if (send_message_graphic(server, str) == FAILURE)
+        return NULL;
     return "ok\n";
 }
 
 char *can_player_drops_items(ai_stats_t *ai, map_t *map,
     char *item, server_t *server)
 {
+    char *str;
     int i = 0;
 
     i = get_ressources_index(item);
@@ -116,6 +117,9 @@ char *can_player_drops_items(ai_stats_t *ai, map_t *map,
         return "ko\n";
     if (!increment_map_tile(ai, map, i, server))
         return "ko\n";
+    str = player_ressources_dropping(ai, i);
+    if (send_message_graphic(server, str) == FAILURE)
+        return NULL;
     return "ok\n";
 }
 

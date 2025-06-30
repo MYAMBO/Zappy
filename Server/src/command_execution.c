@@ -16,7 +16,10 @@
 #include "server.h"
 #include "split_string.h"
 #include "graphic_connect.h"
+#include "player_connection_protocol.h"
 #include "slot_handler.h"
+#include "technical_protocol.h"
+#include "utils.h"
 
 static int send_map_size_message(server_t *server,
                                  poll_handling_t *node)
@@ -51,6 +54,22 @@ static int send_slot_remaining_massages(server_t *server,
     sprintf(str, "%d\n", server->team_names[i]->slots_remaining);
     write(node->poll_fd.fd, str, j);
     my_free(str);
+    if (strcmp(node->player->team_name, "GRAPHIC") == 0){
+        str = get_server_message("Welcome to Zappy !");
+        if (str == NULL)
+            return FAILURE;
+        write(node->poll_fd.fd, str, strlen(str));
+        my_free(str);
+    }
+    else
+    {
+        str = player_new_connection(node->player);
+        if (str == NULL)
+            return FAILURE;
+        if (send_message_graphic(server, str) == FAILURE)
+            return FAILURE;
+        my_free(str);
+    }
     if (send_map_size_message(server, node) == FAILURE)
         return FAILURE;
     return SUCCESS;

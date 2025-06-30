@@ -13,6 +13,8 @@
 #include "server.h"
 #include <arpa/inet.h>
 #include <unistd.h>
+
+#include "actions_protocol.h"
 #include "commands.h"
 #include "command_exec_handler.h"
 #include "garbage.h"
@@ -20,9 +22,10 @@
 #include "logger.h"
 #include "slot_handler.h"
 #include "split_string.h"
+#include "utils.h"
 
 static int handle_read_error(ssize_t bytes_read, server_t *server,
-    poll_handling_t *node)
+                             poll_handling_t *node)
 {
     if (bytes_read < 0) {
         perror("read failed");
@@ -40,6 +43,15 @@ int handle_client_error(ssize_t bytes_read, server_t *server,
     if (handle_read_error(bytes_read, server, node) == FAILURE)
         return FAILURE;
     if (bytes_read == 0) {
+        if (node->player)
+        {
+            char *str = player_death(node->player);
+
+            if (str == NULL)
+                return FAILURE;
+            if (send_message_graphic(server, str) == FAILURE)
+                return FAILURE;
+        }
         if (send_message_disconnect(node) == FAILURE)
             return FAILURE;
         close(node->poll_fd.fd);
