@@ -17,7 +17,7 @@ namespace gui {
     namespace ui {
         class Menu {
             public:
-                Menu(std::shared_ptr<SceneState> sceneState, std::function<void()> function);
+                Menu(std::shared_ptr<SceneState> sceneState, std::function<void()> func);
                 ~Menu();
 
                 /**

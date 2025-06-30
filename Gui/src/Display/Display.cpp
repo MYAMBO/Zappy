@@ -8,6 +8,8 @@
 #include "Menu.hpp"
 #include "Client.hpp"
 #include "Display.hpp"
+
+#include <utility>
 #include "Settings.hpp"
 
 #include "Logger.hpp"
@@ -19,11 +21,8 @@
 
 
 gui::Display::Display(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState, std::shared_ptr<SceneState> sceneState, std::shared_ptr<int> timeUnit)
-    : _camera(camera), _camState(camState), _sceneState(sceneState), _displayTeams(), _width(WIDTH), _height(HEIGHT)
-gui::Display::Display(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState, std::shared_ptr<SceneState> sceneState, std::function<void()> function)
-    : _camera(camera), _camState(camState), _sceneState(sceneState), _width(WIDTH), _height(HEIGHT)
+    : _camera(std::move(camera)), _camState(std::move(camState)), _sceneState(std::move(sceneState)), _displayTeams(), _width(WIDTH), _height(HEIGHT)
 {
-
     _model = std::make_shared<Model>(LoadModel("assets/player/scene.glb"));
     _deadModel = LoadModel("assets/dead/scene.gltf");
     _animations = LoadModelAnimations("assets/player/scene.glb", &_animCount);
@@ -44,7 +43,7 @@ gui::Display::Display(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> 
     _players = std::make_shared<std::vector<std::shared_ptr<gui::Player>>>();
     _itemDisplay = {1, 1, 1, 1, 1, 1, 1};
 
-    _menu = std::make_unique<gui::ui::Menu>(_sceneState, function);
+    _menu = std::make_unique<gui::ui::Menu>(_sceneState, [](){std::cout << "Hello, World!" << std::endl;});
     _settings = std::make_unique<gui::ui::Settings>(_sceneState);
     _menu->initMenuUI();
     _settings->initSettingsUI();
@@ -170,6 +169,13 @@ void gui::Display::teamsDisplay()
 
 void gui::Display::render()
 {
+    Debug::WarningLog("Displayng here:");
+    if (_players->empty())
+        Debug::WarningLog("No Player");
+    if (_eggs->empty())
+        Debug::WarningLog("No Egg");
+    if (_map->empty())
+        Debug::WarningLog("No Map");
     BeginDrawing();
 
     if (_camera->position.y < 0.1f) {

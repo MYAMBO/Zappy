@@ -12,6 +12,7 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <algorithm>
+#include <utility>
 #include <sys/socket.h>
 
 
@@ -20,12 +21,13 @@
 ************************************************************/
 
 gui::Client::Client(std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players, std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> map,
-        std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs, std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState,
-        std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, std::shared_ptr<Display> display, std::shared_ptr<int> timeUnit,
+        std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs, const std::shared_ptr<Camera>& camera, const std::shared_ptr<CamState>& camState,
+        std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, const std::shared_ptr<Display>& display, const std::shared_ptr<int>& timeUnit,
         std::shared_ptr<std::string> hostname = std::make_shared<std::string>("localhost"), std::shared_ptr<std::string> port = std::make_shared<std::string>("12345"))
-    : _hostname(std::move(hostname)), _port(std::move(port)), _socket(), _isActive(true), _teams(),  _models(models), _eggs(eggs), _map(map), _players(players)
-    : _socket(), _isActive(true), _teams(std::make_shared<std::vector<std::string>>()), _teamColors(std::make_shared<std::map<std::string, Color>>()),
-      _models(models), _eggs(eggs), _map(map), _players(players)
+    : _camera(camera), _camState(camState), _hostname(std::move(hostname)), _port(std::move(port)),
+      _socket(), _isActive(), _thread(), _size(), _timeUnit(timeUnit), _display(display),
+      _displayTeams(), _teams(std::make_shared<std::vector<std::string>>()), _teamColors(std::make_shared<std::map<std::string, Color>>()), _models(std::move(models)),
+      _eggs(std::move(eggs)), _map(std::move(map)), _players(std::move(players))
 {
     _teams->push_back("Undefined");
     _teamColors->operator[]("Undefined") = WHITE;
@@ -290,8 +292,6 @@ void gui::Client::tna(std::vector<std::string> stringArray)
 
 void gui::Client::pnw(std::vector<std::string> stringArray)
 {
-    std::lock_guard<std::mutex> lock(_mutex);
-
     if (stringArray.size() != 7)
         throw Error("Wrong Number of parameter");
 
@@ -316,6 +316,8 @@ void gui::Client::pnw(std::vector<std::string> stringArray)
         }
     } else
         throw Error("Player's value are wrong.");
+    if (_players->empty())
+        Debug::WarningLog("players empty after player creation");
 }
 
 
@@ -374,7 +376,6 @@ void gui::Client::plv(std::vector<std::string> stringArray)
 
 void gui::Client::pin(std::vector<std::string> stringArray)
 {
-    std::lock_guard<std::mutex> lock(_mutex);
     std::map<std::string, int> inventory;
 
     Debug::InfoLog("Received pin command with arguments: " + std::to_string(stringArray.size()));
@@ -643,6 +644,8 @@ void gui::Client::enw(std::vector<std::string> stringArray)
         _eggs->emplace_back(std::make_shared<gui::Egg>(eggId, std::make_pair(posX, posY), _display->_eggModel, "Undefined"));
     else
         _eggs->emplace_back(std::make_shared<gui::Egg>(eggId, std::make_pair(posX, posY), _display->_eggModel, _players->at(playerIndice)->getTeam()));
+    if (_eggs->empty())
+        Debug::WarningLog("Eggs empty after egg creation");
 }
 
 

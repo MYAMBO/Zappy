@@ -9,7 +9,6 @@
     #define ZAPPY_PLAYER_HPP
 
     #include <tuple>
-    #include <mutex>
 
     #include "Type.hpp"
     #include "Button.hpp"
@@ -255,7 +254,6 @@ namespace gui {
             int _animFrameCounter;
             int _countBeforeExpire = 600;
             
-            std::mutex _mutex;
             bool _isMoving;
             bool _isDead = false;
             bool _isPushed = false;

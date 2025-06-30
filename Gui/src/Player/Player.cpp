@@ -27,8 +27,6 @@ gui::Player::Player(int id, std::pair<int, int> position, Orientation orientatio
     _inventory(std::make_shared<gui::ui::Inventory>(screenWidth, screenHeight)), _deadModel(deadModel), _direction(orientation), _currentAnimState(AnimState::IDLE),
     _animations(animations), _teamModel(teamModel)
 {
-    _mutex.lock();
-
     _timeUnit = timeUnit;
     if (_animCount > 0) {
         _currentAnim = 0;
@@ -92,7 +90,6 @@ gui::Player::Player(int id, std::pair<int, int> position, Orientation orientatio
         {52, "stonitark"},
         {53, "rockibalbaua"}
     };
-    _mutex.unlock();
 }
 
 gui::Player::~Player() = default;

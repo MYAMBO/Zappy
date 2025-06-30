@@ -30,13 +30,10 @@ gui::Scene::Scene(const std::string& hostname, const std::string& port)
 
     _timeUnit = std::make_shared<int>(100);
     _display = std::make_unique<Display>(_camera, _camState, _currentState, _timeUnit);
-    _client = std::make_shared<gui::Client>(_display->getPlayers(), _display->getMap(), _display->getEggs(), _camera, _camState, _display->getModels(), _display, _timeUnit);
-    _display = std::make_shared<Display>(_camera, _camState, _currentState, _client->connectToServer());
-
+    _client = std::make_shared<gui::Client>(_display->getPlayers(), _display->getMap(), _display->getEggs(), _camera, _camState, _display->getModels(), _display, _timeUnit, sharedHostname, sharedPort);
     _display->_menu->setHostname(sharedHostname);
     _display->_menu->setPort(sharedPort);
 
-    _client = std::make_shared<gui::Client>(_display->getPlayers(), _display->getMap(), _display->getEggs(), _camera, _camState, _display->getModels(), _display, sharedHostname, sharedPort);
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     _client->sendCommand("sgt");
 }
@@ -96,6 +93,10 @@ void gui::Scene::handleStateLogic()
 
 void gui::Scene::update()
 {
+    if (_display->getPlayers()->empty())
+        Debug::DebugLog("Players empty");
+    else
+        Debug::DebugLog("Players as value");
     if (!_isOpen) {
         return;
     }
