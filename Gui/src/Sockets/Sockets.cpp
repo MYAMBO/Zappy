@@ -6,6 +6,7 @@
 */
 
 #include "Sockets.hpp"
+#include "Error.hpp"
 
 gui::Socket::Socket()
     : _fd(-1), _connected(false)
@@ -31,14 +32,14 @@ void gui::Socket::connect(const std::string& hostname, const std::string& port)
     _fd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
     if (_fd < 0) {
         freeaddrinfo(res);
-        throw std::runtime_error("Socket creation failed");
+        throw Error("Socket creation failed");
     }
 
     if (::connect(_fd, res->ai_addr, res->ai_addrlen) < 0) {
         freeaddrinfo(res);
         ::close(_fd);
         _fd = -1;
-        throw std::runtime_error("Connection failed");
+        throw Error("Connection failed");
     }
 
     freeaddrinfo(res);
@@ -48,7 +49,7 @@ void gui::Socket::connect(const std::string& hostname, const std::string& port)
 void gui::Socket::send(const std::string& data)
 {
     if (!_connected) {
-        throw std::runtime_error("Socket not connected");
+        throw Error("Socket not connected");
     }
     ::send(_fd, data.c_str(), data.size(), 0);
 }
@@ -56,7 +57,7 @@ void gui::Socket::send(const std::string& data)
 ssize_t gui::Socket::receive(char* buffer, size_t size, bool nonBlocking)
 {
     if (!_connected) {
-        throw std::runtime_error("Socket not connected");
+        throw Error("Socket not connected");
     }
     int flags = nonBlocking ? MSG_DONTWAIT : 0;
     return recv(_fd, buffer, size, flags);

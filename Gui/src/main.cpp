@@ -20,31 +20,32 @@ int main(int argc, char **argv)
     std::string port;
     std::string hostname;
 
-    if (argc != 1 && argc != 5) {
+    if (argc != 5) {
         std::cerr << "Wrong number of parameter" << std::endl;
         return 84;
     }
 
-    if (argc == 1) {
-        hostname = "zappy.antuiix.me";
-        port = "12345";
-    } else {
-        for (int i = 1; i < argc; ++i) {
-            if (std::string(argv[i]) == "-p" && i + 1 < argc) {
-                port = argv[++i];
-            } else if (std::string(argv[i]) == "-h" && i + 1 < argc) {
-                hostname = argv[++i];
-            } else {
-                std::cerr << "Wrong parameter" << std::endl;
-                return 84;
-            }
+    for (int i = 1; i < argc; ++i) {
+        if (std::string(argv[i]) == "-p" && i + 1 < argc) {
+            port = argv[++i];
+        } else if (std::string(argv[i]) == "-h" && i + 1 < argc) {
+            hostname = argv[++i];
+        } else {
+            std::cerr << "Wrong parameter" << std::endl;
+            return 84;
         }
     }
 
-    gui::Scene scene(hostname, port);
+    try {
+        gui::Scene scene(hostname, port);
 
-    while (scene.isOpen()) {
-        scene.update();
+        while (scene.isOpen()) {
+            scene.update();
+        }
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
+        return 84;
     }
+
     return 0;
 }
