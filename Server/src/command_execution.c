@@ -52,11 +52,14 @@ static int send_slot_remaining_massages_part_one(poll_handling_t *node,
     return SUCCESS;
 }
 
-void browse_team_slots(slot_t *slot, server_t *server, poll_handling_t *node,
+slot_t *browse_team_slots(server_t *server, poll_handling_t *node,
     int i)
 {
+    slot_t *slot = NULL;
+
     for (slot = server->team_names[i]->slots;
         slot && slot->id_user != node->player->id; slot = slot->next);
+    return slot;
 }
 
 static int remaining_massages_part_two(poll_handling_t *node,
@@ -70,7 +73,7 @@ static int remaining_massages_part_two(poll_handling_t *node,
     my_free(str);
     for (int i = 0; server->team_names[i] != NULL; i++)
         if (strcmp(server->team_names[i]->name, node->player->team_name) == 0)
-            browse_team_slots(slot, server, node, i);
+            slot = browse_team_slots(server, node, i);
     if (!slot)
         return FAILURE;
     str = get_connection_from_egg(slot);
@@ -82,24 +85,32 @@ static int remaining_massages_part_two(poll_handling_t *node,
     return SUCCESS;
 }
 
-static int send_slot_remaining_massages(server_t *server,
-    poll_handling_t *node, int i)
+int send_slot_remaining_mess(server_t *server, poll_handling_t *node,
+    char **str, int i)
 {
     int j;
-    char *str;
-    slot_t *slot = NULL;
 
     j = snprintf(NULL, 0, "%d\n",
             server->team_names[i]->slots_remaining);
-    str = my_malloc((j + 1) * sizeof(char));
-    if (str == NULL)
+    *str = my_malloc((j + 1) * sizeof(char));
+    if (*str == NULL)
         return FAILURE;
-    if (strcmp(node->player->team_name, "GRAPHIC") != 0)
-    {
-        sprintf(str, "%d\n", server->team_names[i]->slots_remaining);
-        write(node->poll_fd.fd, str, j);
+    if (strcmp(node->player->team_name, "GRAPHIC") != 0) {
+        sprintf(*str, "%d\n", server->team_names[i]->slots_remaining);
+        write(node->poll_fd.fd, *str, j);
     }
     my_free(str);
+    return SUCCESS;
+}
+
+static int send_slot_remaining_massages(server_t *server,
+    poll_handling_t *node, int i)
+{
+    char *str;
+    slot_t *slot = NULL;
+
+    if (send_slot_remaining_mess(server, node, &str, i) == FAILURE)
+        return FAILURE;
     if (strcmp(node->player->team_name, "GRAPHIC") == 0){
         if (send_slot_remaining_massages_part_one(node, str) == FAILURE)
             return FAILURE;
@@ -142,7 +153,7 @@ int execute_commands_graphic(server_t *server, poll_handling_t *node,
     return SUCCESS;
 }
 
-static int execute_command_loop(server_t *server,
+int execute_command_loop(server_t *server,
     poll_handling_t *node, char **args)
 {
     char *str = player_laying_egg(node->player);
@@ -167,7 +178,7 @@ static int execute_command_loop(server_t *server,
     return SUCCESS;
 }
 
-static int execute_command_suite(poll_handling_t *node,
+int execute_command_suite(poll_handling_t *node,
     char **args, server_t *server)
 {
     int val = -1;
