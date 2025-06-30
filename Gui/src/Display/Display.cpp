@@ -248,7 +248,7 @@ void gui::Display::endGameUI()
         _winnerTeam = "";
     }
     if (IsKeyPressed(KEY_ESCAPE)) {
-        _sceneState = std::make_shared<SceneState>(SceneState::MENU);
+        *_sceneState = SceneState::MENU;
         _winner = false;
         _winnerTeam = "";
     }
@@ -292,7 +292,6 @@ void gui::Display::initOrbitalCamera(const Vector3& target, float distance)
 
 void gui::Display::updateCamera()
 {
-    auto camera = *_camera;
     auto camState = *_camState;
 
     if (IsKeyPressed(KEY_ESCAPE)) {
@@ -300,10 +299,10 @@ void gui::Display::updateCamera()
             *_sceneState = SceneState::MENU;
         }
         else if (camState == CamState::PLAYER) {
-            camera = { { -_width, 10.0f, -_height}, 
+            *_camera = { { -_width, 10.0f, -_height},
                         { _width / 2, 0.0f, _height / 2 }, 
                         { 0.0f, 1.0f, 0.0f }, 45.0f, 0 };
-            _camState = std::make_shared<CamState>(CamState::WORLD);
+            *_camState = CamState::WORLD;
         }
     }
     if (IsKeyDown(KEY_LEFT_CONTROL)) {
@@ -313,6 +312,7 @@ void gui::Display::updateCamera()
         else if (camState == CamState::PLAYER) {
             for (size_t i = 0; i < _players->size(); ++i) {
                 if (_players->at(i)->getSelected() && !_players->at(i)->getIsMoving()) {
+                    Debug::WarningLog("In orbital setter");
                     UpdateCamera(_camera.get(), CAMERA_ORBITAL);
                 }
             }
@@ -458,5 +458,5 @@ void gui::Display::addPlayer(int id, std::pair<int, int> position, Orientation o
 {
     std::lock_guard<std::mutex> lock(playersMutex);
     _players->emplace_back(std::make_shared<gui::Player>(id, position, orientation, level, team, 0.35, SCREEN_WIDTH, SCREEN_HEIGHT,
-        _camera, _camState, _timeUnit, _model, _deadModel, _animations, _animCount, _models->at(4)));
+        *_camera, *_camState, _timeUnit, _model, _deadModel, _animations, _animCount, _models->at(4)));
 }
