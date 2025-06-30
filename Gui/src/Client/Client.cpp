@@ -88,8 +88,8 @@ void gui::Client::receiveLoop()
     std::string incompleteCommand;
     std::vector<std::string> stringArray;
     
+    int loopCountSelect = 0;
     while (_socket.isConnected()) {
-        int loopCountSelect = 0;
 
         loopCountSelect++;
         for (size_t i = 0; i < _players->size(); ++i) {
