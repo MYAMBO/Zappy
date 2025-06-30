@@ -21,8 +21,7 @@ int launch_eggs_display(poll_handling_t *node, slot_table_t *table)
     slot_t *slot = table->slots;
     char *str = NULL;
 
-    for (; slot; slot = slot->next)
-    {
+    for (; slot; slot = slot->next) {
         str = egg_wad_laid(slot);
         if (!str)
             return FAILURE;
@@ -34,8 +33,7 @@ int launch_eggs_display(poll_handling_t *node, slot_table_t *table)
 
 int send_graphic_suite(server_t *server, poll_handling_t *node)
 {
-    for (int i = 0; server->team_names[i] != NULL; i++)
-    {
+    for (int i = 0; server->team_names[i] != NULL; i++) {
         if (strcmp(server->team_names[i]->name, "GRAPHIC") == 0)
             continue;
         if (launch_eggs_display(node,

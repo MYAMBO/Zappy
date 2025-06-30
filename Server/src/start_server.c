@@ -10,7 +10,6 @@
 #include <stdio.h>
 #include <time.h>
 #include <unistd.h>
-
 #include "commands.h"
 #include "command_exec_handler.h"
 #include "server.h"
@@ -22,6 +21,7 @@
 #include "time_handler.h"
 #include "utils.h"
 #include "actions_protocol.h"
+#include "time_exec_handler.h"
 
 int call_poll(server_t *server)
 {
@@ -35,26 +35,30 @@ int call_poll(server_t *server)
     return poll_val;
 }
 
+static int call_end_indentation(server_t *server, incantation_list_t *tmp)
+{
+    if (server->tick >= tmp->tick_end) {
+        if (end_incantation_command(server, NULL, NULL) == FAILURE)
+            return FAILURE;
+        pop_incantation(&server->incantation_list);
+    }
+    return SUCCESS;
+}
+
 int incantation_check(server_t *server)
 {
     incantation_list_t *next = NULL;
 
     for (incantation_list_t *tmp = server->incantation_list; tmp; tmp = next) {
         next = tmp->next;
-        if (server->tick >= tmp->tick_end) {
-            printf("entered with %d and %d\n", server->tick, tmp->tick_end);
-            if (end_incantation_command(server, NULL, NULL) == FAILURE)
-                return FAILURE;
-            pop_incantation(&server->incantation_list);
-        }
+        if (call_end_indentation(server, tmp) == FAILURE)
+            return FAILURE;
     }
     return SUCCESS;
 }
 
 static int exec_time_exec_handler(server_t *server)
 {
-    poll_handling_t *next = NULL;
-
     if (server->regenerate_time == -1 || server->regenerate_time + 20000 <=
         server->tick) {
         server->regenerate_time = server->tick;
@@ -64,43 +68,8 @@ static int exec_time_exec_handler(server_t *server)
         return SUCCESS;
     if (incantation_check(server) == FAILURE)
         return FAILURE;
-    for (poll_handling_t *node = server->poll_list; node != NULL;
-        node = next) {
-        next = node->next;
-        if (node->player && (strcmp(node->player->team_name, "GRAPHIC") == 0
-            || node->player->connected == false))
-            continue;
-        if (node->player && node->player->last_life == -1)
-            node->player->last_life = server->tick;
-        if (node->player && node->player->last_life + 1000 < server->tick) {
-            node->player->life--;
-            node->player->last_life = server->tick;
-        }
-        if (node->player && node->player->life <= 0) {
-            write(node->player->fd, "dead\n", strlen("dead\n"));
-            char *str = player_death(node->player);
-            if (str == NULL)
-                return FAILURE;
-            if (send_message_graphic(server, str) == FAILURE)
-                return FAILURE;
-            slot_table_t *table = NULL;
-            for (int i = 0; server->team_names[i]; i++) {
-                if (strcmp(server->team_names[i]->name,
-                    node->player->team_name) == 0)
-                    table = server->team_names[i];
-            }
-            if (table == NULL)
-                return FAILURE;
-            if (disconnect_player(&table, node->player->id) == FAILURE)
-                return FAILURE;
-            close(node->player->fd);
-            remove_node_poll_handling(&server->poll_list, node->player->fd);
-            continue;
-        }
-        command_exec_queue(node, server->tick);
-        if (launch_command_exec(node, server->tick, server) == FAILURE)
-            return FAILURE;
-    }
+    if (time_exec_handler_exec(server) == FAILURE)
+        return FAILURE;
     return SUCCESS;
 }
 
@@ -119,20 +88,27 @@ static int check_win_condition(server_t *server, int count, int i)
     return SUCCESS;
 }
 
+static void search_players_max(server_t *server, int *count, int i)
+{
+    poll_handling_t *node = NULL;
+
+    for (slot_t *slot = server->team_names[i]->slots; slot != NULL;
+            slot = slot->next) {
+        node = search_player_node(slot->id_user, server);
+        if (node == NULL)
+            continue;
+        if (node->player->level == 8)
+            (*count)++;
+    }
+}
+
 static int win_condition(server_t *server)
 {
     int count = 0;
 
     for (int i = 0; server->team_names[i]; i++) {
         count = 0;
-        for (slot_t *slot = server->team_names[i]->slots; slot != NULL;
-            slot = slot->next) {
-            poll_handling_t *node = search_player_node(slot->id_user, server);
-            if (node == NULL)
-                continue;
-            if (node->player->level == 8)
-                count++;
-        }
+        search_players_max(server, &count, i);
         if (check_win_condition(server, count, i) == 1)
             return 1;
         if (check_win_condition(server, count, i) == FAILURE)

@@ -29,6 +29,14 @@
 #include "generate_ressources.h"
 #include "player_connection_protocol.h"
 
+static void init_tiles(int width, int y, map_t *map)
+{
+    for (int x = 0; x < width; x++) {
+        for (int i = 0; i < 7; i++)
+            map->tiles[y][x].resources[i] = 0;
+    }
+}
+
 map_t *init_map(int width, int height)
 {
     map_t *map = my_malloc(sizeof(map_t));
@@ -45,10 +53,7 @@ map_t *init_map(int width, int height)
         map->tiles[y] = my_malloc(sizeof(ressources_t) * width);
         if (!map->tiles[y])
             return NULL;
-        for (int x = 0; x < width; x++) {
-            for (int i = 0; i < 7; i++)
-                map->tiles[y][x].resources[i] = 0;
-        }
+        init_tiles(width, y, map);
     }
     return map;
 }
@@ -101,7 +106,6 @@ static void show_usage(void)
         "  -f NUMBER: freq used (100 by default)"
         "\n\nUSAGE:\n"
         "  $ ./zappy_server -p 1234 -x 2 -y 5 -c 10 -n team1 team2 -f 60\n\n"
-
         );
 }
 

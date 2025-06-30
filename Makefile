@@ -68,6 +68,7 @@ SERVER_SRC = 												\
 				Server/src/incantation_list.c	\
 				Server/src/send_init_graphic.c	\
 				Server/src/send_slots_remaining.c	\
+				Server/src/time_exec_handler.c	\
 
 GUI_SRC = 												\
 				Gui/src/main.cpp 						\

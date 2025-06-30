@@ -42,7 +42,7 @@ static slot_t *init_slot(slot_table_t *table, int xy[2],
 }
 
 int add_slot(slot_table_t *slot_table, int xy[2], int id_user,
-server_t *server)
+    server_t *server)
 {
     slot_t *slot = init_slot(slot_table, xy, id_user, server);
     slot_t *tmp;
