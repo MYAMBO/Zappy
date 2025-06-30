@@ -115,8 +115,7 @@ char *eject_player(ai_stats_t *ai, poll_handling_t *players,
         for (slot_t *slot = server->team_names[i]->slots;
             slot != NULL; slot = next) {
             next = slot->next;
-            if (slot->id_user == -1 && slot->x == ai->x && slot->y == ai->y)
-            {
+            if (slot->id_user == -1 && slot->x == ai->x && slot->y == ai->y) {
                 remove_slot(&server->team_names[i]->slots, slot->id_slot);
                 str = death_of_an_egg(slot);
                 if (!str)

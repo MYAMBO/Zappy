@@ -39,11 +39,13 @@ char *end_incantation_protocol(incantation_list_t *incantation, bool status)
     else
         num_lev = 0;
     alloc = snprintf(NULL, 0,
-        "pie %d %d %d\n", incantation->x, incantation->y, incantation->level_base + num_lev);
+        "pie %d %d %d\n", incantation->x, incantation->y,
+        incantation->level_base + num_lev);
     result = my_malloc(alloc + 1);
     if (!result)
         return NULL;
     snprintf(result, alloc + 1,
-        "pie %d %d %d\n", incantation->x, incantation->y, incantation->level_base + num_lev);
+        "pie %d %d %d\n", incantation->x, incantation->y,
+        incantation->level_base + num_lev);
     return result;
 }

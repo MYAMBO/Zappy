@@ -13,7 +13,7 @@ char *inventory_communication(ai_stats_t *ai)
                     "[food %d, linemate %d, deraumere %d, sibur %d,"
                     " mendiane %d, phiras %d, thystame %d]\n", ai->life,
                     ai->inventory.resources[1], ai->inventory.resources[2],
-                    ai->inventory.resources[3],ai->inventory.resources[4],
+                    ai->inventory.resources[3], ai->inventory.resources[4],
                     ai->inventory.resources[5], ai->inventory.resources[6]);
     char *result = my_malloc(alloc + 1);
 
@@ -23,7 +23,7 @@ char *inventory_communication(ai_stats_t *ai)
         "[food %d, linemate %d, deraumere %d, sibur %d,"
         " mendiane %d, phiras %d, thystame %d]\n", ai->life,
         ai->inventory.resources[1], ai->inventory.resources[2],
-        ai->inventory.resources[3],ai->inventory.resources[4],
+        ai->inventory.resources[3], ai->inventory.resources[4],
         ai->inventory.resources[5], ai->inventory.resources[6]);
     return result;
 }

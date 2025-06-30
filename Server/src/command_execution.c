@@ -68,10 +68,8 @@ static int send_slot_remaining_massages(server_t *server,
             return FAILURE;
         my_free(str);
         slot_t *slot = NULL;
-        for (int i = 0; server->team_names[i] != NULL; i++)
-        {
-            if (strcmp(server->team_names[i]->name, node->player->team_name) == 0)
-            {
+        for (int i = 0; server->team_names[i] != NULL; i++) {
+            if (strcmp(server->team_names[i]->name, node->player->team_name) == 0) {
                 for (slot = server->team_names[i]->slots; slot && slot->id_user != node->player->id; slot = slot->next);
             }
         }
@@ -129,10 +127,8 @@ static int execute_command_loop(server_t *server,
     for (int i = 0; commands_ai_list[i].command != NULL; i++) {
         if (strcmp(args[0], commands_ai_list[i].command) != 0)
             continue;
-        if (strcmp(args[0], "Fork") == 0)
-        {
+        if (strcmp(args[0], "Fork") == 0) {
             char *str;
-
             str = player_laying_egg(node->player);
             if (!str)
                 return FAILURE;
