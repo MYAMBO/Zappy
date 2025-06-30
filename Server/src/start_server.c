@@ -70,9 +70,8 @@ static int exec_time_exec_handler(server_t *server)
         if (node->player && (strcmp(node->player->team_name, "GRAPHIC") == 0
             || node->player->connected == false))
             continue;
-        if (node->player && node->player->last_life == -1) {
+        if (node->player && node->player->last_life == -1)
             node->player->last_life = server->tick;
-        }
         if (node->player && node->player->last_life + 1000 < server->tick) {
             node->player->life--;
             node->player->last_life = server->tick;
@@ -105,35 +104,43 @@ static int exec_time_exec_handler(server_t *server)
     return SUCCESS;
 }
 
+static int check_win_condition(server_t *server, int count, int i)
+{
+    char *msg = NULL;
+
+    if (count >= 6) {
+        msg = end_of_game(server->team_names[i]->name);
+        if (msg == NULL)
+            return FAILURE;
+        if (send_message_graphic(server, msg) == FAILURE)
+            return FAILURE;
+        return 1;
+    }
+    return SUCCESS;
+}
+
 static int win_condition(server_t *server)
 {
     int count = 0;
 
     for (int i = 0; server->team_names[i]; i++) {
         count = 0;
-        for (slot_t *slot = server->team_names[i]->slots; slot != NULL; slot = slot->next) {
+        for (slot_t *slot = server->team_names[i]->slots; slot != NULL;
+            slot = slot->next) {
             poll_handling_t *node = search_player_node(slot->id_user, server);
             if (node == NULL)
                 continue;
             if (node->player->level == 8)
                 count++;
         }
-        if (count >= 6) {
-            char *msg = end_of_game(server->team_names[i]->name);
-            if (msg == NULL)
-                return FAILURE;
-            if (send_message_graphic(server, msg) == FAILURE)
-                return FAILURE;
+        if (check_win_condition(server, count, i) == 1)
             return 1;
-        }
+        if (check_win_condition(server, count, i) == FAILURE)
+            return FAILURE;
     }
     return SUCCESS;
 }
 
-static int loop_start_server(server_t *server)
-{
-
-}
 
 int start_server(server_t *server)
 {
