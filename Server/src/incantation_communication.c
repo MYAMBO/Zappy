@@ -123,18 +123,6 @@ static int verif_players_stats(server_t *server,
     return SUCCESS;
 }
 
-static void remove_incantation_state(server_t *server)
-{
-    for (poll_handling_t *poll = server->poll_list; poll != NULL;
-        poll = poll->next){
-        if (!poll->player || strcmp(poll->player->team_name, "GRAPHIC") == 0)
-            continue;
-        if (poll->player->in_incantation ==
-            server->incantation_list[0].incantation_nb)
-            poll->player->in_incantation = -1;
-        }
-}
-
 static int verif_players_stats_end(server_t *server,
     map_t *map)
 {
@@ -154,7 +142,6 @@ static int verif_players_stats_end(server_t *server,
     if (!has_required_rock_end(map, server->incantation_list[0].x,
         server->incantation_list[0].y, server->incantation_list[0].level_base))
         return 1;
-    remove_incantation_state(server);
     return SUCCESS;
 }
 
@@ -185,6 +172,5 @@ char *end_incantation(server_t *server, map_t *map)
     snprintf(result, alloc + 1,
         "Elevation underway\nCurrent level: %d\n",
         server->incantation_list[0].level_base);
-    printf("kakou, kakou\n");
     return result;
 }

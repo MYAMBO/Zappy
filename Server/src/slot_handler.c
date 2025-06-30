@@ -99,6 +99,7 @@ int connect_player(slot_table_t *slot_table, ai_stats_t *user)
     slot->id_user = user->id;
     user->x = slot->x;
     user->y = slot->y;
+    user->connected = true;
     user->team_name = my_malloc(sizeof(char) *
         (strlen(slot_table->name) + 1));
     if (user->team_name == NULL)

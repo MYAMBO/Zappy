@@ -69,6 +69,7 @@ SERVER_SRC = 												\
 				Server/src/send_init_graphic.c	\
 				Server/src/send_slots_remaining.c	\
 				Server/src/time_exec_handler.c	\
+				Server/src/send_slot_messages.c	\
 
 GUI_SRC = 												\
 				Gui/src/main.cpp 						\
