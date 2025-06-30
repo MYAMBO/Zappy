@@ -5,8 +5,8 @@
 ** Client.cpp
 */
 
-#include "Client.hpp"
 #include "Error.hpp"
+#include "Client.hpp"
 #include "Logger.hpp"
 
 #include <netdb.h>
@@ -18,12 +18,11 @@
 /************************************************************
 **         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
 ************************************************************/
-
 gui::Client::Client(std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players, std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> map,
-        std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs, std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState,
-        std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, std::shared_ptr<Display> display, std::shared_ptr<int> timeUnit)
-    : _socket(), _isActive(true), _teams(std::make_shared<std::vector<std::string>>()), _teamColors(std::make_shared<std::map<std::string, Color>>()),
-      _models(models), _eggs(eggs), _map(map), _players(players)
+    std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs, std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState,
+    std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, std::shared_ptr<Display> display, std::shared_ptr<int> timeUnit)
+: _socket(), _isActive(true), _teams(std::make_shared<std::vector<std::string>>()), _teamColors(std::make_shared<std::map<std::string, Color>>()),
+  _models(models), _eggs(eggs), _map(map), _players(players)
 {
     _teams->push_back("Undefined");
     _teamColors->operator[]("Undefined") = WHITE;
@@ -40,11 +39,7 @@ gui::Client::Client(std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> p
 
 gui::Client::~Client()
 {
-    if (_socket >= 0) {
-        close(_socket);
-        _socket = -1;
-    }
-
+    _socket.close();
     if (_thread.joinable()) {
         _thread.join();
     }
@@ -54,9 +49,9 @@ gui::Client::~Client()
 **               >>>>   MEMBER FUNCTIONS   <<<<            **
 ************************************************************/
 
-void gui::Client::sendCommand(const std::string& command) const
+void gui::Client::sendCommand(const std::string& command)
 {
-    send(_socket, command.c_str(), command.size(), 0);
+    _socket.send(command);
     Debug::InfoLog("Sent command: " + command);
 }
 
@@ -88,15 +83,14 @@ void gui::Client::receiveLoop()
         {"suc", [this](const std::vector<std::string>& s) { suc(s); }},
         {"sbp", [this](const std::vector<std::string>& s) { sbp(s); }}
     };
-
-    size_t bufferSize = 4096;
-    const size_t maxBufferSize = 1024 * 1024;
-    std::vector<char> buffer(bufferSize);
     std::string incompleteCommand;
     std::vector<std::string> stringArray;
     
-    while (true) {
-        ssize_t bytesReceived = recv(_socket, buffer.data(), buffer.size() - 1, MSG_DONTWAIT);
+    while (_socket.isConnected()) {
+        constexpr size_t BUFFER_SIZE = 4096;
+        std::vector<char> buffer(BUFFER_SIZE);
+        
+        ssize_t bytesReceived = _socket.receive(buffer.data(), buffer.size() - 1, true);
         
         if (bytesReceived < 0) {
             if (errno == EAGAIN || errno == EWOULDBLOCK) {
@@ -109,11 +103,6 @@ void gui::Client::receiveLoop()
         if (bytesReceived == 0) {
             std::cout << "Server disconnected.\n";
             break;
-        }
-        if (bytesReceived >= static_cast<ssize_t>(buffer.size() - 1) && bufferSize < maxBufferSize) {
-            bufferSize *= 2;
-            buffer.resize(bufferSize);
-            Debug::InfoLog("Increased buffer size to: " + std::to_string(bufferSize));
         }
         
         buffer[bytesReceived] = '\0';
@@ -128,6 +117,7 @@ void gui::Client::receiveLoop()
                 commands.pop_back();
             }
         }
+        
         for (const auto &command : commands) {
             Debug::InfoLog("Received command: " + command);
             if (command.empty()) continue;
@@ -157,30 +147,7 @@ void gui::Client::receiveLoop()
 
 void gui::Client::connectToServer()
 {
-    const char* hostname = "localhost";
-    const char* port = "12345";
-
-    addrinfo hints{}, *res;
-    hints.ai_family = AF_INET; // IPV4
-    hints.ai_socktype = SOCK_STREAM; // TCP socket
-
-    int status = getaddrinfo(hostname, port, &hints, &res);
-    if (status != 0)
-        throw Error(gai_strerror(status));
-
-    _socket = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-    if (_socket < 0) {
-        freeaddrinfo(res);
-        throw Error("Socket creation failed.\n");
-    }
-
-    if (connect(_socket, res->ai_addr, res->ai_addrlen) < 0) {
-        freeaddrinfo(res);
-        close(_socket);
-        throw  Error("Connection failed.\n");
-    }
-
-    freeaddrinfo(res);
+    _socket.connect("localhost", "12345");
 
     _thread = std::thread(&gui::Client::receiveLoop, this);
 
@@ -191,6 +158,7 @@ void gui::Client::connectToServer()
     sendCommand("tna\n");
     sendCommand("sgt\n");
 }
+
 
 /************************************************************
 **               >>>>       COMMANDS       <<<<            **
@@ -494,7 +462,7 @@ void gui::Client::pic(std::vector<std::string> stringArray)
 
 /*               >>>>       END INCANTATION       <<<<            */
 
-void gui::Client::pie(std::vector<std::string> stringArray) const
+void gui::Client::pie(std::vector<std::string> stringArray)
 {
     int posX = 0;
     int posY = 0;
