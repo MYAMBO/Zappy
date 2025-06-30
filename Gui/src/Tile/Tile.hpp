@@ -81,7 +81,7 @@ namespace gui {
              * @brief Handle user input for the Tile.
              * @param camera The Camera3D used for ray picking.
              */
-            void handleUserInput(Camera camera);
+            void handleUserInput(std::shared_ptr<Camera3D> camera);
 
             /**
              * @brief Display Tile content

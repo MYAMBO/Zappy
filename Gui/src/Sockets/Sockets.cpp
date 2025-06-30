@@ -20,7 +20,8 @@ gui::Socket::~Socket()
 
 void gui::Socket::connect(const std::string& hostname, const std::string& port)
 {
-    addrinfo hints{}, *res;
+    addrinfo *res;
+    addrinfo hints{};
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
 
@@ -59,7 +60,9 @@ ssize_t gui::Socket::receive(char* buffer, size_t size, bool nonBlocking)
     if (!_connected) {
         throw Error("Socket not connected");
     }
-    int flags = nonBlocking ? MSG_DONTWAIT : 0;
+    int flags = 0;
+    if (nonBlocking)
+        flags = MSG_DONTWAIT;
     return recv(_fd, buffer, size, flags);
 }
 
