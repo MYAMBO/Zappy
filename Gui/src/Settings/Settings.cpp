@@ -12,7 +12,7 @@ gui::ui::Settings::Settings(std::shared_ptr<SceneState> sceneState)
     : _sceneState(sceneState), 
       _backButton([this]() { backButtonClicked(); }, Rectangle{static_cast<float>(SCREEN_WIDTH) * 0.01f, static_cast<float>(SCREEN_HEIGHT) * 0.01f, 200.0f, 100.0f}, "Back"),
       _screenWidth(SCREEN_WIDTH), _screenHeight(SCREEN_HEIGHT), _color(7), _box(7), _key(7), _name(7),
-      _cameraKeys(6), _cameraActions(6)
+      _cameraKeys(10), _cameraActions(10)
 {
     initSettingsUI();
     initResourceItems();
@@ -69,6 +69,10 @@ void gui::ui::Settings::initCameraControls()
     _cameraKeys[3] = std::string("Crtl - Scroll");
     _cameraKeys[4] = std::string("When On Player / Crtl");
     _cameraKeys[5] = std::string("When On Player / Escape");
+    _cameraKeys[6] = std::string("Click on Player");
+    _cameraKeys[7] = std::string("Shift - Click on Tiles");
+    _cameraKeys[8] = std::string("P");
+    _cameraKeys[9] = std::string("B");
     
     _cameraActions[0] = std::string("Exit Camera View");
     _cameraActions[1] = std::string("Move Camera (Forward/Back/Left/Right)");
@@ -76,6 +80,10 @@ void gui::ui::Settings::initCameraControls()
     _cameraActions[3] = std::string("Zoom In/Out");
     _cameraActions[4] = std::string("Turn Around Player");
     _cameraActions[5] = std::string("Exit Player View");
+    _cameraActions[6] = std::string("Select Player");
+    _cameraActions[7] = std::string("Select Tiles");
+    _cameraActions[8] = std::string("Toggle Number of Players/Eggs");
+    _cameraActions[9] = std::string("Toggle Broadcasting");
     Debug::InfoLog("[GUI] Camera controls initialized");
 }
 
@@ -116,7 +124,8 @@ void gui::ui::Settings::drawSettings()
     DrawRectangleLinesEx(_cameraBox, 2, WHITE);
     DrawText("Camera Controls", static_cast<int>(_cameraBox.x + 10), static_cast<int>(_cameraBox.y + 10), 24, WHITE);
     yOffset = 50;
-    for (int i = 0; i < 6; i++) {
+    for (size_t i = 0; i < _cameraKeys.size(); i++) {
+        Debug::InfoLog("[GUI] Drawing camera control: " + _cameraKeys[i]);
         DrawText(_cameraKeys[i].c_str(), 
                 static_cast<int>(_cameraBox.x + 20), 
                 static_cast<int>(_cameraBox.y + yOffset), 20, WHITE);
