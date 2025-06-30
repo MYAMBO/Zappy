@@ -19,7 +19,6 @@
 gui::Scene::Scene(const std::string& hostname, const std::string& port)
     : _isOpen(true)
 {
-    Debug::InfoLog("Zappy started");
     _camera = std::make_shared<Camera>();
     _camState = std::make_shared<CamState>(CamState::WORLD);
     _currentState = std::make_shared<SceneState>(SceneState::MENU);

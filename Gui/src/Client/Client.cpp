@@ -267,10 +267,8 @@ void gui::Client::tna(std::vector<std::string> stringArray)
         team_name[team_name.length() - 1] = '\0';
 
     for (int i = 0; i < (int)_teams->size(); ++i) {
-        if (_teams->at(i) == team_name) {
-            Debug::InfoLog("Team already exists: " + team_name);
-            return;
-        }
+        if (_teams->at(i) == team_name)
+            throw Error("Team already exists: " + team_name);
     }
 
     std::vector <Color> colors = {
@@ -320,8 +318,6 @@ void gui::Client::pnw(std::vector<std::string> stringArray)
             player->setColorTeam(_teamColors);
     } else
         throw Error("Player's value are wrong.");
-    if (_players->empty())
-        Debug::WarningLog("players empty after player creation");
 }
 
 
@@ -671,8 +667,6 @@ void gui::Client::enw(std::vector<std::string> stringArray)
         _eggs->emplace_back(std::make_shared<gui::Egg>(eggId, std::make_pair(posX, posY), _display->_eggModel, ""));
     else
         _eggs->emplace_back(std::make_shared<gui::Egg>(eggId, std::make_pair(posX, posY), _display->_eggModel, _players->at(playerIndice)->getTeam()));
-    if (_eggs->empty())
-        Debug::WarningLog("Eggs empty after egg creation");
 }
 
 
