@@ -95,11 +95,8 @@ void gui::Scene::update()
 {
     if (_display->getPlayers()->empty())
         Debug::DebugLog("Players empty");
-    else
-        Debug::DebugLog("Players as value");
     if (!_isOpen) {
         return;
     }
-    
     handleStateLogic();
 }

@@ -101,8 +101,7 @@ void gui::ui::Settings::drawSettings()
     BeginDrawing();
     ClearBackground(DARKGRAY);
     DrawText("Settings", static_cast<int>(_screenWidth / 2 - 70), static_cast<int>(_screenHeight / 20), 40, WHITE);
-    
-    // Draw Resource Controls Section
+
     DrawRectangleRec(_commandBox, GRAY);
     DrawRectangleLinesEx(_commandBox, 2, WHITE);
     DrawText("Resource Toggle Controls", static_cast<int>(_commandBox.x + 10), static_cast<int>(_commandBox.y + 10), 24, WHITE);
@@ -118,8 +117,7 @@ void gui::ui::Settings::drawSettings()
                 static_cast<int>(_commandBox.y + yOffset), 20, WHITE);
         yOffset += 30;
     }
-    
-    // Draw Camera Controls Section
+
     DrawRectangleRec(_cameraBox, GRAY);
     DrawRectangleLinesEx(_cameraBox, 2, WHITE);
     DrawText("Camera Controls", static_cast<int>(_cameraBox.x + 10), static_cast<int>(_cameraBox.y + 10), 24, WHITE);
@@ -141,6 +139,6 @@ void gui::ui::Settings::drawSettings()
 
 void gui::ui::Settings::backButtonClicked()
 {
-    *_sceneState = SceneState::MENU;
+    _sceneState = std::make_shared<SceneState>(SceneState::MENU);
     Debug::InfoLog("[GUI] Back button clicked in settings");
 }
