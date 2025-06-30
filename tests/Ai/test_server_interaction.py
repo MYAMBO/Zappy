@@ -120,3 +120,88 @@ def test_invalid_replies_do_not_crash(dummy_ai, reply):
         dummy_ai.handle_reply(reply)
     except Exception as e:
         pytest.fail(f"Reply '{reply}' caused crash: {e}")
+
+team_replies = [
+    "",
+    "8",
+    "ko",
+    "8 8",
+    "8,8",
+    "dead",
+    "8 8 8",
+    "8 8\n",
+    "eight eight",
+]
+
+look_replies = [
+    "[]",
+    "123",
+    "look",
+    "null",
+    "[", "]",
+    "[player, food",
+    "player, food]",
+    "[player, food, food]",
+]
+
+inventory_replies = [
+    "{}",
+    "ok",
+    "{1 2}",
+    "{food}",
+    "Inventory",
+    "{food 1, linemate 2}",
+]
+
+okko_replies = [
+    "",
+    "ok",
+    "ko",
+    "OK",
+    "okko",
+    "ok ok",
+    "ok\nko",
+]
+
+eject_replies = [
+    "ok",
+    "eject:",
+    "eject: 1 2",
+    "eject: 1 2 3",
+    "eject: a b c",
+    "eject: 1 2 3 4",
+]
+
+incantation_replies = [
+    "2",
+    "ok",
+    "ko",
+    "incant",
+    "Current level: 2",
+    "Current level: ",
+    "current level: 2",
+]
+
+reply_cases = {
+    "team": [...],
+    "Look": [...],
+    "Inventory": [...],
+    "Broadcast": [...],
+    "Forward": [...],
+    "Right": [...],
+    "Left": [...],
+    "Take": [...],
+    "Set": [...],
+    "Eject": [...],
+    "Incantation": [...],
+}
+
+@pytest.mark.parametrize("command, reply", [
+    (cmd, r) for cmd, replies in reply_cases.items() for r in replies
+])
+def test_handle_all_command_to_reply_formats(dummy_ai, command, reply):
+    dummy_ai._Ai__command_to_reply = command
+    try:
+        dummy_ai.handle_reply(reply)
+    except Exception as e:
+        pytest.fail(f"command='{command}', reply='{reply}' crashed with: {e}")
