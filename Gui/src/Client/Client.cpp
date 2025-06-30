@@ -775,7 +775,7 @@ void gui::Client::suc(const std::vector<std::string>& stringArray)
 {
     if (stringArray.size() != 1)
         throw Error("Wrong number of parameter.");
-    Debug::WarningLog("Received command: suc");
+    Debug::WarningLog("[GUI] Received command: suc");
 }
 
 
@@ -785,7 +785,7 @@ void gui::Client::sbp(const std::vector<std::string>& stringArray)
 {
     if (stringArray.size() != 1)
         throw Error("Wrong number of parameter.");
-    Debug::WarningLog("Received command: sbp");
+    Debug::WarningLog("[GUI] Received command: sbp");
 }
 
 
