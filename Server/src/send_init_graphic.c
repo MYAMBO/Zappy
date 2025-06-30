@@ -18,8 +18,11 @@
 int send_graphic_init(server_t *server, poll_handling_t *node)
 {
     char *str = get_server_message("Welcome to Zappy !");
+
+    (void) server;
     if (str == NULL)
         return FAILURE;
     write(node->poll_fd.fd, str, strlen(str));
     my_free(str);
+    return SUCCESS;
 }
