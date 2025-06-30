@@ -21,8 +21,7 @@
 #include "technical_protocol.h"
 #include "utils.h"
 
-static int send_map_size_message(server_t *server,
-                                 poll_handling_t *node)
+static int send_map_size_message(server_t *server, poll_handling_t *node)
 {
     int j;
     char *str;
@@ -60,9 +59,7 @@ static int send_slot_remaining_massages(server_t *server,
             return FAILURE;
         write(node->poll_fd.fd, str, strlen(str));
         my_free(str);
-    }
-    else
-    {
+    } else {
         str = player_new_connection(node->player);
         if (str == NULL)
             return FAILURE;
@@ -86,7 +83,6 @@ static int send_slot_remaining(int *val, server_t *server,
             return FAILURE;
         if (*val != 0)
             continue;
-
         return send_slot_remaining_massages(server, node, i);
     }
     return SUCCESS;

@@ -33,8 +33,7 @@ int add_incantation(incantation_list_t **head, int incantation_nb, int tick_actu
 
     if (node == NULL)
         return FAILURE;
-    if (*head == NULL)
-    {
+    if (*head == NULL) {
         *head = node;
         return SUCCESS;
     }

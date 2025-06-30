@@ -118,19 +118,16 @@ static int win_condition(server_t *server)
 {
     int count = 0;
 
-    for (int i = 0; server->team_names[i]; i++)
-    {
+    for (int i = 0; server->team_names[i]; i++) {
         count = 0;
-        for (slot_t *slot = server->team_names[i]->slots; slot != NULL; slot = slot->next)
-        {
+        for (slot_t *slot = server->team_names[i]->slots; slot != NULL; slot = slot->next) {
             poll_handling_t *node = search_player_node(slot->id_user, server);
             if (node == NULL)
                 continue;
             if (node->player->level == 8)
                 count++;
         }
-        if (count >= 6)
-        {
+        if (count >= 6) {
             char *msg = end_of_game(server->team_names[i]->name);
             if (msg == NULL)
                 return FAILURE;

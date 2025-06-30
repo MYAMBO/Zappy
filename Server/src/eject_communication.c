@@ -12,7 +12,7 @@
 #include "slot_handler.h"
 
 static void eject_east(ai_stats_t *ai, ai_stats_t *target,
-                       map_t *map, server_t *server)
+    map_t *map, server_t *server)
 {
     int a;
     char *str;
@@ -108,7 +108,8 @@ char *eject_player(ai_stats_t *ai, poll_handling_t *players,
     slot_t *next = NULL;
 
     for (int i = 0; server->team_names[i] != NULL; i++) {
-        for (slot_t *slot = server->team_names[i]->slots; slot != NULL; slot = next) {
+        for (slot_t *slot = server->team_names[i]->slots;
+            slot != NULL; slot = next) {
             next = slot->next;
             if (slot->id_user == -1 && slot->x == ai->x && slot->y == ai->y)
                 remove_slot(&server->team_names[i]->slots, slot->id_slot);
