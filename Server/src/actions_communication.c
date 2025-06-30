@@ -26,7 +26,8 @@ char *player_plays_broadcast(ai_stats_t *ai, char *text, server_t *server)
 
     for (poll_handling_t *tmp = server->poll_list; tmp; tmp = tmp->next) {
         if (!tmp->player || tmp->player->id == ai->id ||
-            strcmp(tmp->player->team_name, "GRAPHIC") == 0)
+            strcmp(tmp->player->team_name, "GRAPHIC") == 0 ||
+            tmp->player->connected)
             continue;
         a = snprintf(NULL, 0, "message %d, %s\n",
             get_signal_direction(ai, tmp->player, server), text);
