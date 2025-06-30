@@ -50,6 +50,13 @@ gui::Display::Display(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> 
 
 gui::Display::~Display()
 {
+    for (size_t i = 0; i < _models->size(); ++i) {
+        UnloadModel(*_models->operator[](i));
+    }
+    UnloadModel(*_model);
+    UnloadModel(_deadModel);
+    UnloadModel(*_eggModel);
+    UnloadModelAnimations(_animations, _animCount);
 }
 
 /************************************************************
