@@ -141,33 +141,49 @@ static int win_condition(server_t *server)
     return SUCCESS;
 }
 
+static int loop_iteration(server_t *server, int *poll_val, int *win_val)
+{
+    if (*win_val != 1) {
+        *win_val = win_condition(server);
+        if (*win_val == FAILURE)
+            return FAILURE;
+    }
+    if (*win_val == 1)
+        return SUCCESS;
+    if (exec_time_exec_handler(server) == FAILURE)
+        return FAILURE;
+    *poll_val = call_poll(server);
+    if (*poll_val == -1)
+        return FAILURE;
+    if (*poll_val == 0)
+        return SUCCESS;
+    if (handle_event(server) == FAILURE)
+        return FAILURE;
+    return SUCCESS;
+}
+
+static int loop_start_server(server_t *server, int poll_val, int win_val)
+{
+    while (*is_running()) {
+        if (server->team_names[0]->nb_slots == 0 &&
+            add_slot(server->team_names[0],
+            (int[2]){-1, -1}, -1, server) == FAILURE)
+            return FAILURE;
+        if (loop_iteration(server, &poll_val, &win_val) == FAILURE)
+            return FAILURE;
+        if (win_val == 1 || poll_val == 0)
+            continue;
+    }
+    return SUCCESS;
+}
 
 int start_server(server_t *server)
 {
-    int poll_val;
+    int poll_val = 0;
     int win_val = 0;
 
     server->base_time = clock();
-    while (*is_running() == 1) {
-        if (server->team_names[0]->nb_slots == 0 &&
-            add_slot(server->team_names[0], (int[2]){-1, -1}, -1, server) == FAILURE)
-            return FAILURE;
-        if (win_val == 1)
-            continue;
-        win_val = win_condition(server);
-        if (win_val == FAILURE)
-            return FAILURE;
-        if (win_val == 1)
-            continue;
-        if (exec_time_exec_handler(server) == FAILURE)
-            return FAILURE;
-        poll_val = call_poll(server);
-        if (poll_val == -1)
-            return FAILURE;
-        if (poll_val == 0)
-            continue;
-        if (handle_event(server) == FAILURE)
-            return FAILURE;
-    }
+    if (loop_start_server(server, poll_val, win_val) == FAILURE)
+        return FAILURE;
     return SUCCESS;
 }
