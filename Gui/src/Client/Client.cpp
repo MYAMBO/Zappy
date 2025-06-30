@@ -89,6 +89,16 @@ void gui::Client::receiveLoop()
     std::vector<std::string> stringArray;
     
     while (_socket.isConnected()) {
+        int loopCountSelect = 0;
+
+        loopCountSelect++;
+        for (size_t i = 0; i < _players->size(); ++i) {
+            if (_players->at(i)->getSelected() && loopCountSelect >= 60) {
+                sendCommand("pin " + std::to_string(_players->at(i)->getId()) + "\n");
+                loopCountSelect = 0;
+            }
+        }
+
         constexpr size_t BUFFER_SIZE = 4096;
         std::vector<char> buffer(BUFFER_SIZE);
         

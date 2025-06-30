@@ -36,7 +36,7 @@ gui::Display::Display(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> 
     _models->emplace_back(std::make_shared<Model>(LoadModel("assets/mendiane/scene.gltf")));
     _models->emplace_back(std::make_shared<Model>(LoadModel("assets/phiras/scene.gltf")));
     _models->emplace_back(std::make_shared<Model>(LoadModel("assets/thystame/scene.gltf")));
-    
+
     _map = std::make_shared<std::vector<std::shared_ptr<gui::Tile>>>();
     _eggs = std::make_shared<std::vector<std::shared_ptr<gui::Egg>>>();
     _players = std::make_shared<std::vector<std::shared_ptr<gui::Player>>>();
@@ -254,11 +254,6 @@ void gui::Display::endGameUI()
     }
 }
 
-void gui::Display::endGame()
-{
-
-}
-
 void gui::Display::displayEntity()
 {
     for (int i = 0; i < static_cast<int>(_map->size()); ++i) {
@@ -266,6 +261,8 @@ void gui::Display::displayEntity()
     }
     for (int i = 0; i < static_cast<int>(_players->size()); ++i) {
         _players->operator[](i)->draw();
+        if (_players->at(i)->getSelected())
+            
         if (_players->operator[](i)->getCountBeforeExpire() == 0)
             _players->erase(_players->begin() + i);
     }
