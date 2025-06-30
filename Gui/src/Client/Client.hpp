@@ -11,6 +11,7 @@
     #include <thread>
 
     #include "Scene.hpp"
+    #include "Sockets.hpp"
     #include "TeamsDisplay.hpp"
 
 namespace gui {
@@ -21,7 +22,7 @@ namespace gui {
                 std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, std::shared_ptr<Display> display, std::shared_ptr<int> timeUnit);
             ~Client();
 
-            void sendCommand(const std::string& command) const;
+            void sendCommand(const std::string& command);
 
             void setMap(std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> map);
             void setPlayers(std::shared_ptr<std::vector<std::shared_ptr<Player>>> players);
@@ -45,7 +46,7 @@ namespace gui {
             void pex(std::vector<std::string> stringArray); // expulsion
             void pbc(std::vector<std::string> stringArray); // broadcast
             void pic(std::vector<std::string> stringArray); // start of an incantation
-            void pie(std::vector<std::string> stringArray) const; // end of an incantation
+            void pie(std::vector<std::string> stringArray); // end of an incantation
             void pfk(std::vector<std::string> stringArray); // egg laying by the player
             void pdr(std::vector<std::string> stringArray); // resource dropping
             void pgt(std::vector<std::string> stringArray); // resource collecting
@@ -65,11 +66,11 @@ namespace gui {
             int findEgg(int id);
             int findTile(int x, int y);
 
+            Socket _socket;
             std::mutex _mutex;
             std::shared_ptr<Camera> _camera;
             std::shared_ptr<CamState> _camState;
 
-            int _socket;
             bool _isActive;
             
             std::thread _thread;

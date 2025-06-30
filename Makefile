@@ -57,6 +57,7 @@ GUI_SRC = 												\
 				Gui/src/Client/Client.cpp 				\
 				Gui/src/Button/Button.cpp 				\
 				Gui/src/Player/Player.cpp				\
+				Gui/src/Sockets/Sockets.cpp				\
 				Gui/src/Display/Display.cpp				\
 				Gui/src/AEntity/AEntity.cpp				\
 				Gui/src/Settings/Settings.cpp			\
@@ -85,6 +86,7 @@ GUI_FLAGS = -lraylib -lpthread -lGL -I Debug 		\
 			-I Gui/src/Player 						\
 			-I Gui/src/Button 						\
 			-I Gui/src/Client 						\
+			-I Gui/src/Sockets 						\
 			-I Gui/src/Display 						\
 			-I Gui/src/AEntity 						\
 			-I Gui/src/Settings						\
