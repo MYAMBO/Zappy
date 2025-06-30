@@ -42,14 +42,23 @@ static int send_map_size_message(server_t *server,
     return SUCCESS;
 }
 
+static int get_table(server_t *server, poll_handling_t *node)
+{
+    int i = 0;
+
+    for (i = 0; server->team_names[i] != NULL ; i++) {
+        if (strcmp(server->team_names[i]->name, node->player->team_name) == 0)
+            return i;
+    }
+    return 0;
+}
+
 static int send_egg_connection(server_t *server, poll_handling_t *node)
 {
     slot_t *slot = NULL;
     char *str = NULL;
-    int i;
+    int i = get_table(server, node);
 
-    for (i = 0; server->team_names[i] != NULL && strcmp(
-        server->team_names[i]->name, node->player->team_name) != 0; i++);
     for (slot = server->team_names[i]->slots; slot &&
         slot->id_user != node->player->id; slot = slot->next);
     if (!slot)

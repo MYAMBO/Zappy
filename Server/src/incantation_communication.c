@@ -177,7 +177,6 @@ char *end_incantation(server_t *server, map_t *map)
         server->incantation_list[0].level_base);
     char *result = my_malloc(alloc + 1);
 
-    printf("into end\n");
     if (!result)
         return NULL;
     val = verif_players_stats_end(server, map);
@@ -186,5 +185,6 @@ char *end_incantation(server_t *server, map_t *map)
     snprintf(result, alloc + 1,
         "Elevation underway\nCurrent level: %d\n",
         server->incantation_list[0].level_base);
+    printf("kakou, kakou\n");
     return result;
 }
