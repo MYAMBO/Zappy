@@ -137,7 +137,7 @@ void gui::Tile::displayContent()
         float itemWidth = _tileInventory.width / static_cast<float>(_items.size());
         for (int i = 0; i < static_cast<int>(_itemsText.size()); ++i) {
             Debug::InfoLog("[GUI] Drawing inventory item: " + _itemsText.at(i).first + " with quantity: " + std::to_string(_qty.at(i)));
-            std::string text = _itemsText.at(i).first + " : " + std::to_string(_qty.at(i) / 2);
+            std::string text = _itemsText.at(i).first + " : " + std::to_string(_qty.at(i));
             Vector2 textSize = MeasureTextEx(GetFontDefault(), text.c_str(), _fontSize, 1);
             float textX = _tileInventory.x + i * itemWidth + (itemWidth - textSize.x) / 2;
             float textY = _tileInventory.y + (_tileInventory.height - textSize.y) / 2;
