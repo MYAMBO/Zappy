@@ -13,18 +13,23 @@
     #include <utility>
     #include <raylib.h>
 
+    #include "Egg.hpp"
     #include "Food.hpp"
     #include "Sibur.hpp"
+    #include "Player.hpp"
     #include "Phiras.hpp"
     #include "Linemate.hpp"
     #include "Mendiane.hpp"
     #include "Thystame.hpp"
     #include "Deraumere.hpp"
+    #include "TeamsDisplay.hpp"
 
 namespace gui {
     class Tile {
         public:
-            Tile(std::pair<int, int> coord, std::vector<int> qty, std::vector<std::shared_ptr<Model>> model);
+            Tile(std::pair<int, int> coord, std::vector<int> qty, std::shared_ptr<std::vector<std::shared_ptr<Model>>> model,
+                 int screenHeight, int screenWidth, std::shared_ptr<TeamsDisplay> displayTeams);
+      
             ~Tile();
 
             /**
@@ -59,11 +64,44 @@ namespace gui {
              */
             void delItem(int qty, int type);
 
+            /**
+             * @brief Get the quantity of a specific item type in the tile.
+             * @param type The ID of the item type to check.
+             * @return The quantity of the specified item type in the tile.
+             */
+            int getItem(int type) const;
+
+            /**
+             * @brief Get the coordinates of the tile.
+             * @return A pair representing the coordinates of the tile.
+             */
+            std::pair<int, int> getCoord();
+
+            /**
+             * @brief Handle user input for the Tile.
+             * @param camera The Camera3D used for ray picking.
+             */
+            void handleUserInput(std::shared_ptr<Camera3D> camera);
+
+            /**
+             * @brief Display Tile content
+             */
+            void displayContent();
+
         private:
+
+            bool _isSelected;
             std::vector<int> _qty;
             std::pair<int, int> _coord;
-            std::vector<std::shared_ptr<Model>> _models;
+            std::shared_ptr<TeamsDisplay> _displayTeams;
+            std::shared_ptr<std::vector<std::shared_ptr<Model>>> _models;
             std::vector<std::vector<std::shared_ptr<gui::AItem>>> _items;
+
+            /* Inventory part */
+            int _fontSize;
+            std::vector<std::pair<std::string, Color>> _itemsText;
+
+            Rectangle _tileInventory;
     };
 };
 
