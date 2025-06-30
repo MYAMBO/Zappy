@@ -24,7 +24,6 @@ gui::ui::Menu::~Menu()
 {
 }
 
-
 void gui::ui::Menu::initMenuUI()
 {
     Debug::InfoLog("[GUI] Initializing menu UI elements");

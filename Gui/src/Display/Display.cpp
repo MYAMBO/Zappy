@@ -248,7 +248,7 @@ void gui::Display::endGameUI()
         _winnerTeam = "";
     }
     if (IsKeyPressed(KEY_ESCAPE)) {
-        *_sceneState = SceneState::MENU;
+        _sceneState = std::make_shared<SceneState>(SceneState::MENU);
         _winner = false;
         _winnerTeam = "";
     }
@@ -292,40 +292,41 @@ void gui::Display::initOrbitalCamera(const Vector3& target, float distance)
 
 void gui::Display::updateCamera()
 {
+    auto camera = *_camera;
+    auto camState = *_camState;
+
     if (IsKeyPressed(KEY_ESCAPE)) {
-        if (*_camState == CamState::WORLD) {
+        if (camState == CamState::WORLD) {
             *_sceneState = SceneState::MENU;
         }
-        else if (*_camState == CamState::PLAYER) {
-            *_camera = { { -_width, 10.0f, -_height}, 
+        else if (camState == CamState::PLAYER) {
+            camera = { { -_width, 10.0f, -_height}, 
                         { _width / 2, 0.0f, _height / 2 }, 
                         { 0.0f, 1.0f, 0.0f }, 45.0f, 0 };
-            *_camState = CamState::WORLD;
+            _camState = std::make_shared<CamState>(CamState::WORLD);
         }
     }
     if (IsKeyDown(KEY_LEFT_CONTROL)) {
-        if (*_camState == CamState::WORLD) {
+        if (camState == CamState::WORLD) {
             UpdateCamera(_camera.get(), CAMERA_THIRD_PERSON);
         }
-        else if (*_camState == CamState::PLAYER) {
-            for (auto& player : *_players) {
-                if (player->getSelected() && !player->getIsMoving()) {
+        else if (camState == CamState::PLAYER) {
+            for (size_t i = 0; i < _players->size(); ++i) {
+                if (_players->at(i)->getSelected() && !_players->at(i)->getIsMoving()) {
                     UpdateCamera(_camera.get(), CAMERA_ORBITAL);
                 }
             }
         }
     }
-    if (*_camState == CamState::PLAYER) {
-        for (auto& player : *_players) {
-            if (player->getSelected()) {
-                if (player->getIsMoving()) {
-                    _camera->target = player->getPosition();
-                    _camera->position = {
-                        player->getPosition().x - 2.0f,
-                        player->getPosition().y + 2.0f,
-                        player->getPosition().z - 2.0f
-                    };
-                }
+    if (camState == CamState::PLAYER) {
+        for (size_t i = 0; i < _players->size(); ++i) {
+            if (_players->at(i)->getSelected() && !_players->at(i)->getIsMoving()) {
+                _camera->target = _players->at(i)->getPosition();
+                _camera->position = {
+                    _players->at(i)->getPosition().x - 2.0f,
+                    _players->at(i)->getPosition().y + 2.0f,
+                    _players->at(i)->getPosition().z - 2.0f
+                };
             }
         }
     }
@@ -335,19 +336,14 @@ void gui::Display::handleInput()
 {
     eventToggleDisplay();
     updateCamera();
-    
-    for (auto& tile: *_map)
-    tile->handleUserInput(*_camera);
-    for (auto& player : *_players) {
-        std::lock_guard<std::mutex> lock(playersMutex);
-        if (player->update(*_camera) == 1) {
-            for (auto& p : *_players) {
-                if (p->getId() != player->getId() && p->getSelected()) {
-                    player->setSelected(false);
-                }
-            }
-        }
-    }
+
+    for (size_t i = 0; i < _map->size(); ++i)
+        _map->at(i)->handleUserInput(_camera);
+    for (size_t i = 0; i < _players->size(); ++i)
+        if (_players->at(i)->update(_camera) == 1)
+            for (size_t j = 0; j < _players->size(); ++j)
+                if (i != j && _players->at(j)->getSelected())
+                    _players->at(j)->setSelected(false);    
     if (IsKeyPressed(KEY_P))
         _displayTeams->toggleDisplay();
 }
@@ -369,12 +365,12 @@ void gui::Display::render()
     BeginMode3D(*_camera);
     displayEntity();
     EndMode3D();
-    for (auto& player : *_players) {
-        player->drawUI();
-        player->updateUI();
+    for (size_t i = 0; i < _players->size(); ++i) {
+        _players->at(i)->drawUI();
+        _players->at(i)->updateUI();
     }
-    for (auto& tile: *_map) {
-        tile->displayContent();
+    for (size_t i = 0; i < _map->size(); ++i) {
+        _map->at(i)->displayContent();
     }
     teamsDisplay();
     if (_winner)
@@ -462,5 +458,5 @@ void gui::Display::addPlayer(int id, std::pair<int, int> position, Orientation o
 {
     std::lock_guard<std::mutex> lock(playersMutex);
     _players->emplace_back(std::make_shared<gui::Player>(id, position, orientation, level, team, 0.35, SCREEN_WIDTH, SCREEN_HEIGHT,
-        *_camera, *_camState, _timeUnit, _model, _deadModel, _animations, _animCount, _models->at(4)));
+        _camera, _camState, _timeUnit, _model, _deadModel, _animations, _animCount, _models->at(4)));
 }

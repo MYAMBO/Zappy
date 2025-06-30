@@ -20,7 +20,7 @@ namespace gui {
     class Player : public AEntity {
         public:
             Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team,
-                float scale, int screenWidth, int screenHeight, Camera &camera, CamState &sceneState, std::shared_ptr<int> timeUnit,
+                float scale, int screenWidth, int screenHeight, std::shared_ptr<Camera> camera, std::shared_ptr<CamState> sceneState, std::shared_ptr<int> timeUnit,
                 std::shared_ptr<Model> model, Model deadModel, ModelAnimation *animations, int animCount, std::shared_ptr<Model> teamModel);
             ~Player();
 
@@ -82,7 +82,7 @@ namespace gui {
              * @brief Handle the camera button action.
              * This function handles the action when the camera button is clicked.
              */
-            void HandleCamButton(Camera &camera, CamState &sceneState);
+            void HandleCamButton(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> sceneState);
 
             /**
              * @brief Update the Player.
@@ -90,7 +90,7 @@ namespace gui {
              * @param camera The Camera3D used for ray picking.
              * @return An integer indicating the result of the update (e.g., success or failure).
              */
-            [[nodiscard]] int update(Camera camera);
+            [[nodiscard]] int update(std::shared_ptr<Camera> camera);
 
             /**
              * @brief Update the UI of the Player.
@@ -165,7 +165,7 @@ namespace gui {
              * @param camera The Camera3D used for ray picking.
              * @return An integer indicating the result of the user input handling (e.g., success or failure).
              */
-            [[nodiscard]] int handleUserInput(Camera camera);
+            [[nodiscard]] int handleUserInput(std::shared_ptr<Camera> camera);
             
             /**
              * @brief set the dead state of the Player.

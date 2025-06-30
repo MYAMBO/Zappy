@@ -99,10 +99,10 @@ void gui::Tile::displayTile(std::vector<int> displayItem)
     DrawCubeWires(position, 1.0f, 1.0f, 1.0f, {61, 0, 49, 255});
 }
 
-void gui::Tile::handleUserInput(Camera camera)
+void gui::Tile::handleUserInput(std::shared_ptr<Camera3D> camera)
 {
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && IsKeyDown(KEY_LEFT_SHIFT)) {
-        Ray ray = GetMouseRay(GetMousePosition(), camera);
+        Ray ray = GetMouseRay(GetMousePosition(), *camera);
         BoundingBox box = {
             { static_cast<float>(_coord.first - 0.5), 0.5, static_cast<float>(_coord.second - 0.5)},
             { static_cast<float>(_coord.first + 0.5), 0.5, static_cast<float>(_coord.second + 0.5)}

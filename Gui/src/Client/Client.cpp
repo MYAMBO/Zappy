@@ -377,6 +377,7 @@ void gui::Client::pin(std::vector<std::string> stringArray)
     std::map<std::string, int> inventory;
 
     Debug::InfoLog("Received pin command with arguments: " + std::to_string(stringArray.size()));
+
     if (stringArray.size() != 11)
         throw Error("Command with the wrong number of argument.");
 
@@ -846,7 +847,7 @@ int gui::Client::findEgg(int id) {
 int gui::Client::findTile(int x, int y)
 {
     for (int i = 0; i < (int)_map->size(); ++i) {
-        std::shared_ptr<gui::Tile> tile = std::dynamic_pointer_cast<gui::Tile>((*_map)[i]);
+        std::shared_ptr<gui::Tile> tile = std::dynamic_pointer_cast<gui::Tile>(_map->at(i));
 
         if (tile->getCoord() == std::make_pair(x, y))
             return i;

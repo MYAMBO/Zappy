@@ -10,9 +10,12 @@
 #include <utility>
 
 Error::Error(std::string  message)
-    : message_(std::move(message)) {}
+    : message_(std::move(message))
+{
+}
 
-const char* Error::what() const noexcept {
+const char* Error::what() const noexcept
+{
     return message_.c_str();
 }
 

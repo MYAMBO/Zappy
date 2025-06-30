@@ -12,12 +12,12 @@
 #include <string>
 
 class Error : public std::exception {
-public:
-    explicit Error(std::string  message);
-    [[nodiscard]] const char* what() const noexcept override;
+    public:
+        explicit Error(std::string  message);
+        [[nodiscard]] const char* what() const noexcept override;
 
-private:
-    std::string message_;
+    private:
+        std::string message_;
 };
 
-#endif //ZAPPY_ERROR_HPP
+#endif
