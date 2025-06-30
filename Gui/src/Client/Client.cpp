@@ -219,8 +219,9 @@ void gui::Client::bct(std::vector<std::string> stringArray)
     coord.first = std::stoi(stringArray[1]);
     coord.second = std::stoi(stringArray[2]);
 
-    for (int i = 3; i <= 9 && i < (int)stringArray.size(); ++i)
+    for (int i = 3; i <= 9 && i < (int)stringArray.size(); ++i) {
         quantity.push_back(std::stoi(stringArray[i]));
+    }
 
     std::lock_guard<std::mutex> lock(_mutex);
 
@@ -231,10 +232,10 @@ void gui::Client::bct(std::vector<std::string> stringArray)
     } else if (findTile(coord.first, coord.second) != -1) {
         auto &_tile = _map->at(findTile(coord.first, coord.second));
         for (int i = 0; i < 7; ++i) {
-            while (quantity[i] > (_tile->getItem(i) / 2)) {
+            while (quantity[i] > _tile->getItem(i)) {
                 _tile->addItem(1, i);
             }
-            while (quantity[i] < (_tile->getItem(i) / 2)) {
+            while (quantity[i] < _tile->getItem(i)) {
                 _tile->delItem(1, i);
             }
         }

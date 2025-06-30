@@ -18,7 +18,7 @@
 
 
 gui::Tile::Tile(std::pair<int, int> coord, std::vector<int> qty, std::shared_ptr<std::vector<std::shared_ptr<Model>>> model, int screenWidth, int screenHeight, std::shared_ptr<TeamsDisplay> displayTeams)
-    : _isSelected(false), _qty(qty), _coord(std::move(coord)), _displayTeams(displayTeams), _models(std::move(model)), _items(7),
+    : _isSelected(false), _qty(std::vector<int>()), _coord(std::move(coord)), _displayTeams(displayTeams), _models(std::move(model)), _items(7),
       _fontSize(30), _tileInventory({0, static_cast<float>(screenHeight) * 0.8f, static_cast<float>(screenWidth), static_cast<float>(screenHeight) / 5.0f})
 {
     addItem(qty[FOOD], FOOD);
@@ -68,7 +68,6 @@ void gui::Tile::addItem(int qty, int type)
         _items[type].emplace_back(it->second());
     _qty[type] += qty;
 }
-
 
 void gui::Tile::delItem(int qty, int type)
 {

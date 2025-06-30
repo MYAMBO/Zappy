@@ -171,7 +171,7 @@ define progress_bar
 	\033[1;32m%s\033[0m\n" "$$bar" "$$empty" "$$progress" "$(1)"
 endef
 
-all: zappy_server zappy_gui zappy_ai
+all: zappy_gui zappy_ai
 
 debug: CFLAGS += -g
 debug: all
