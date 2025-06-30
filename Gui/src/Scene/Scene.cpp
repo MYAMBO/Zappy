@@ -5,7 +5,6 @@
 ** Scene
 */
 
-#include <thread>
 
 #include "Scene.hpp"
 #include "Menu.hpp"
@@ -17,19 +16,26 @@
 **         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
 ************************************************************/
 
-gui::Scene::Scene()
+gui::Scene::Scene(const std::string& hostname, const std::string& port)
     : _isOpen(true)
 {
-    Debug::ClearLogFile();
     Debug::InfoLog("Zappy started");
     _camera = std::make_shared<Camera>();
     _camState = std::make_shared<CamState>(CamState::WORLD);
     _currentState = std::make_shared<SceneState>(SceneState::MENU);
+    std::shared_ptr<std::string> sharedHostname = std::make_shared<std::string>(hostname);
+    std::shared_ptr<std::string> sharedPort = std::make_shared<std::string>(port);
     initWindow();
 
     _timeUnit = std::make_shared<int>(100);
     _display = std::make_unique<Display>(_camera, _camState, _currentState, _timeUnit);
-    _client = std::make_shared<gui::Client>(_display->getPlayers(), _display->getMap(), _display->getEggs(), _camera, _camState, _display->getModels(), _display, _timeUnit);
+    _client = std::make_shared<gui::Client>(_display->getPlayers(), _display->getMap(), _display->getEggs(), _camera, _camState, _display->getModels(), _display, _timeUnit, sharedHostname, sharedPort);
+    _display->_menu->setHostname(sharedHostname);
+    _display->_menu->setPort(sharedPort);
+    _display->setFunction([this]() {_client->newServerConnection();});
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    _client->sendCommand("sgt");
 }
 
 gui::Scene::~Scene()
@@ -87,6 +93,10 @@ void gui::Scene::handleStateLogic()
 
 void gui::Scene::update()
 {
+    if (_display->getPlayers()->empty())
+        Debug::DebugLog("Players empty");
+    else
+        Debug::DebugLog("Players as value");
     if (!_isOpen) {
         return;
     }

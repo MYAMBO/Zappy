@@ -18,8 +18,9 @@ namespace gui {
     class Client {
         public:
             Client(std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players, std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> map,
-                std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs, std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState, 
-                std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, std::shared_ptr<Display> display, std::shared_ptr<int> timeUnit);
+                   std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs, const std::shared_ptr<Camera>& camera, const std::shared_ptr<CamState>& camState,
+                   std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, const std::shared_ptr<Display>& display, const std::shared_ptr<int>& timeUnit,
+                   std::shared_ptr<std::string> hostname, std::shared_ptr<std::string> port);
             ~Client();
 
             void sendCommand(const std::string& command);
@@ -32,6 +33,8 @@ namespace gui {
             std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> getMap();
             std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> getPlayers();
 
+            void drawPlayers();
+            void newServerConnection();
         private:
             void connectToServer();
             void receiveLoop();
@@ -66,13 +69,18 @@ namespace gui {
             int findEgg(int id);
             int findTile(int x, int y);
 
-            Socket _socket;
-            std::mutex _mutex;
             std::shared_ptr<Camera> _camera;
             std::shared_ptr<CamState> _camState;
 
+
+            std::string _previousPort;
+            std::string _previousHostname;
+            std::shared_ptr<std::string> _hostname;
+            std::shared_ptr<std::string> _port;
+            Socket _socket;
+
             bool _isActive;
-            
+
             std::thread _thread;
             std::pair<int, int> _size;
             std::shared_ptr<int> _timeUnit;

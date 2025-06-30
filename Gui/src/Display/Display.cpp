@@ -6,11 +6,12 @@
 */
 
 #include "Menu.hpp"
-#include "Client.hpp"
 #include "Display.hpp"
 #include "Settings.hpp"
-
 #include "Logger.hpp"
+
+#include <utility>
+
 
 
 /************************************************************
@@ -19,9 +20,8 @@
 
 
 gui::Display::Display(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState, std::shared_ptr<SceneState> sceneState, std::shared_ptr<int> timeUnit)
-    : _camera(camera), _camState(camState), _sceneState(sceneState), _displayTeams(), _width(WIDTH), _height(HEIGHT)
+    : _camera(std::move(camera)), _camState(std::move(camState)), _sceneState(std::move(sceneState)), _displayTeams(), _width(WIDTH), _height(HEIGHT)
 {
-
     _model = std::make_shared<Model>(LoadModel("assets/player/scene.glb"));
     _deadModel = LoadModel("assets/dead/scene.gltf");
     _animations = LoadModelAnimations("assets/player/scene.glb", &_animCount);
@@ -438,6 +438,11 @@ void gui::Display::setTeamsColors(std::shared_ptr<std::map<std::string, Color>> 
 void gui::Display::setDisplayTeams(std::shared_ptr<TeamsDisplay> displayTeams)
 {
     _displayTeams = std::move(displayTeams);
+}
+
+void gui::Display::setFunction(std::function<void ()> function)
+{
+    _menu->setFunction(function);
 }
 
 void gui::Display::setWinner(const std::string& team)

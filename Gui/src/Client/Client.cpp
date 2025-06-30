@@ -12,6 +12,7 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <algorithm>
+#include <utility>
 #include <sys/socket.h>
 
 
@@ -19,10 +20,13 @@
 **         >>>>   CONSTRUCTORS DESTRUCTORS    <<<<         **
 ************************************************************/
 gui::Client::Client(std::shared_ptr<std::vector<std::shared_ptr<gui::Player>>> players, std::shared_ptr<std::vector<std::shared_ptr<gui::Tile>>> map,
-    std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs, std::shared_ptr<Camera> camera, std::shared_ptr<CamState> camState,
-    std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, std::shared_ptr<Display> display, std::shared_ptr<int> timeUnit)
-: _socket(), _isActive(true), _teams(std::make_shared<std::vector<std::string>>()), _teamColors(std::make_shared<std::map<std::string, Color>>()),
-  _models(models), _eggs(eggs), _map(map), _players(players)
+        std::shared_ptr<std::vector<std::shared_ptr<gui::Egg>>> eggs, const std::shared_ptr<Camera>& camera, const std::shared_ptr<CamState>& camState,
+        std::shared_ptr<std::vector<std::shared_ptr<Model>>> models, const std::shared_ptr<Display>& display, const std::shared_ptr<int>& timeUnit,
+        std::shared_ptr<std::string> hostname = std::make_shared<std::string>("localhost"), std::shared_ptr<std::string> port = std::make_shared<std::string>("12345"))
+    : _camera(camera), _camState(camState), _previousPort(port->c_str()), _previousHostname(hostname->c_str()),_hostname(std::move(hostname)), _port(std::move(port)),
+      _socket(), _isActive(), _thread(), _size(), _timeUnit(timeUnit), _display(display),
+      _displayTeams(), _teams(std::make_shared<std::vector<std::string>>()), _teamColors(std::make_shared<std::map<std::string, Color>>()), _models(std::move(models)),
+      _eggs(std::move(eggs)), _map(std::move(map)), _players(std::move(players))
 {
     _teams->push_back("Undefined");
     _teamColors->operator[]("Undefined") = WHITE;
@@ -104,12 +108,12 @@ void gui::Client::receiveLoop()
             std::cout << "Server disconnected.\n";
             break;
         }
-        
+
         buffer[bytesReceived] = '\0';
         std::string receivedData(buffer.data(), bytesReceived);
         std::string completeData = incompleteCommand + receivedData;
         incompleteCommand.clear();
-        
+
         auto commands = splitString(completeData, '\n');
         if (!completeData.empty() && completeData.back() != '\n') {
             if (!commands.empty()) {
@@ -121,16 +125,16 @@ void gui::Client::receiveLoop()
         for (const auto &command : commands) {
             Debug::InfoLog("Received command: " + command);
             if (command.empty()) continue;
-            
+
             stringArray = splitString(command, ' ');
             if (stringArray.empty()) continue;
-            
-            if (stringArray[0] == "WELCOME" || 
-                stringArray[0] == "GRAPHIC" || 
+
+            if (stringArray[0] == "WELCOME" ||
+                stringArray[0] == "GRAPHIC" ||
                 stringArray[0] == "ko") {
                 continue;
             }
-                
+
             auto it = funcMap.find(stringArray[0]);
             if (it != funcMap.end()) {
                 try {
@@ -147,7 +151,7 @@ void gui::Client::receiveLoop()
 
 void gui::Client::connectToServer()
 {
-    _socket.connect("localhost", "12345");
+    _socket.connect(this->_hostname->c_str(), this->_port->c_str());
 
     _thread = std::thread(&gui::Client::receiveLoop, this);
 
@@ -159,6 +163,24 @@ void gui::Client::connectToServer()
     sendCommand("sgt\n");
 }
 
+void gui::Client::newServerConnection()
+{
+    if (_previousHostname == _hostname->c_str() && _previousPort == _port->c_str())
+        return;
+    else {
+        _socket.close();
+        _thread.join();
+        _players->clear();
+        _eggs->clear();
+        _map->clear();
+        _teams->clear();
+        _teamColors->clear();
+
+        _previousHostname = _hostname->c_str();
+        _previousPort = _port->c_str();
+        connectToServer();
+    }
+}
 
 /************************************************************
 **               >>>>       COMMANDS       <<<<            **
@@ -259,8 +281,6 @@ void gui::Client::tna(std::vector<std::string> stringArray)
 
 void gui::Client::pnw(std::vector<std::string> stringArray)
 {
-    std::lock_guard<std::mutex> lock(_mutex);
-
     if (stringArray.size() != 7)
         throw Error("Wrong Number of parameter");
 
@@ -285,6 +305,8 @@ void gui::Client::pnw(std::vector<std::string> stringArray)
         }
     } else
         throw Error("Player's value are wrong.");
+    if (_players->empty())
+        Debug::WarningLog("players empty after player creation");
 }
 
 
@@ -343,7 +365,6 @@ void gui::Client::plv(std::vector<std::string> stringArray)
 
 void gui::Client::pin(std::vector<std::string> stringArray)
 {
-    std::lock_guard<std::mutex> lock(_mutex);
     std::map<std::string, int> inventory;
 
     Debug::InfoLog("Received pin command with arguments: " + std::to_string(stringArray.size()));
@@ -612,6 +633,8 @@ void gui::Client::enw(std::vector<std::string> stringArray)
         _eggs->emplace_back(std::make_shared<gui::Egg>(eggId, std::make_pair(posX, posY), _display->_eggModel, "Undefined"));
     else
         _eggs->emplace_back(std::make_shared<gui::Egg>(eggId, std::make_pair(posX, posY), _display->_eggModel, _players->at(playerIndice)->getTeam()));
+    if (_eggs->empty())
+        Debug::WarningLog("Eggs empty after egg creation");
 }
 
 
@@ -740,7 +763,7 @@ std::vector<std::string> gui::Client::splitString(const std::string& string, cha
     std::vector<std::string> list;
     std::string buffer;
     bool inQuotes = false;
-    
+
     for (size_t i = 0; i < string.length(); ++i) {
         char c = string[i];
         if (c == '"') {
@@ -758,7 +781,7 @@ std::vector<std::string> gui::Client::splitString(const std::string& string, cha
     if (!buffer.empty() || string.back() == delimiter) {
         list.push_back(buffer);
     }
-    
+
     return list;
 }
 
