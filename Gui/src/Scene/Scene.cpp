@@ -40,6 +40,7 @@ gui::Scene::Scene(const std::string& hostname, const std::string& port)
 
 gui::Scene::~Scene()
 {
+    Debug::InfoLog("Zappy closed");
     CloseWindow();
 }
 
