@@ -9,6 +9,7 @@
 #include "utils.h"
 #include "actions_communication.h"
 #include "actions_protocol.h"
+#include "send_init_graphic.h"
 #include "unistd.h"
 
 int drop_command(server_t *server, poll_handling_t *node, char **args)
@@ -23,5 +24,7 @@ int drop_command(server_t *server, poll_handling_t *node, char **args)
     if (!str)
         return FAILURE;
     write(node->poll_fd.fd, str, strlen(str));
+    if (send_info_user(server, node) == FAILURE)
+        return FAILURE;
     return SUCCESS;
 }
