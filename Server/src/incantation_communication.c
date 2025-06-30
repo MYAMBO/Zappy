@@ -52,6 +52,7 @@ static bool has_required_rock_end(map_t *map, int x, int y, int level)
     for (int i = 0; i < 6; i++) {
         if (tile.resources[i + 1] < requirements[level - 1][i])
             return false;
+        tile.resources[i + 1] -= requirements[level - 1][i];
     }
     return true;
 }
@@ -162,8 +163,6 @@ char *end_incantation(server_t *server, map_t *map)
     int val = verif_players_stats_end(server, map);
     if (val == 1)
         return "ko\n";
-    if (val == 84)
-        return NULL;
     snprintf(result, alloc + 1,
         "Elevation underway\nCurrent level: %d\n",
         server->incantation_list[0].level_base);

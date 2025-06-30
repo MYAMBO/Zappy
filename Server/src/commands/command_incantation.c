@@ -14,51 +14,59 @@
 static int count_incant(server_t *server, int id, poll_handling_t *node)
 {
     int count = 0;
-
-    for (poll_handling_t *tmp = server->poll_list; tmp; tmp = tmp->next) {
+    for (poll_handling_t *tmp = server->poll_list; tmp; tmp = tmp->next)
+    {
         if (!tmp->player || strcmp(tmp->player->team_name, "GRAPHIC") == 0)
             continue;
-        if (tmp->player && tmp->player->in_incantation == id &&
-            tmp->player->id != node->player->id) {
+        if (tmp->player && tmp->player->in_incantation == id && tmp->player->id != node->player->id)
+        {
             count++;
         }
     }
     return count;
 }
 
-static int get_other_incantation(server_t *server,
-    int id, poll_handling_t *node)
+static int get_other_incantation(server_t *server, int id, poll_handling_t *node)
 {
     int count = count_incant(server, id, node);
-    ai_stats_t **list = NULL;
+    ai_stats_t **list = NULL;  // Changed to pointer to pointer
     int tmp_count = 0;
     char *str = NULL;
 
-    list = my_malloc(sizeof(ai_stats_t *) * (count + 1));
+    // Allocate memory for the array of pointers
+    list = my_malloc(sizeof(ai_stats_t*) * (count + 1));
     if (!list)
         return FAILURE;
+
+    // Initialize the array with NULL
     for (int i = 0; i <= count; i++)
         list[i] = NULL;
-    for (poll_handling_t *tmp = server->poll_list; tmp; tmp = tmp->next) {
+
+    // Fill the array with player pointers
+    for (poll_handling_t *tmp = server->poll_list; tmp; tmp = tmp->next)
+    {
         if (!tmp->player || strcmp(tmp->player->team_name, "GRAPHIC") == 0)
             continue;
-        if (tmp->player && tmp->player->in_incantation == id &&
-            tmp->player->id != node->player->id) {
+        if (tmp->player && tmp->player->in_incantation == id && tmp->player->id != node->player->id)
+        {
             list[tmp_count] = tmp->player;
             tmp_count++;
         }
     }
+
     str = start_incantation_protocol(node->player, list);
     if (!str) {
-        my_free(list);
+        my_free(list);  // Free the allocated array
         return FAILURE;
     }
+
     if (send_message_graphic(server, str) == FAILURE) {
-        my_free(list);
+        my_free(list);  // Free the allocated array
         my_free(str);
         return FAILURE;
     }
-    my_free(list);
+
+    my_free(list);  // Free the allocated array
     my_free(str);
     return SUCCESS;
 }
@@ -89,8 +97,11 @@ int end_incantation_command(server_t *server, poll_handling_t *node, char **args
     (void)node;
     (void)args;
     str = end_incantation(server, server->map);
+    printf("lala1\n");
     if (!str)
         return FAILURE;
+    printf("lala2\n");
+    printf("%s", str);
     for (poll_handling_t *poll = server->poll_list; poll != NULL; poll = poll->next) {
         if (!poll->player || strcmp(poll->player->team_name, "GRAPHIC") == 0)
             continue;
@@ -100,7 +111,8 @@ int end_incantation_command(server_t *server, poll_handling_t *node, char **args
             write(poll->player->fd, str, strlen(str));
         }
         if (poll->player->in_incantation == server->incantation_list[0].incantation_nb &&
-            strcmp(str, "ko\n") != 0) {
+            strcmp(str, "ko\n") != 0)
+        {
             poll->player->in_incantation = -1;
             poll->player->level++;
             write(poll->player->fd, str, strlen(str));

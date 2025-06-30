@@ -15,7 +15,7 @@
     #include "garbage.h"
     #include <stdbool.h>
 
-char *end_incantation_protocol(ai_stats_t *lead, bool status);
 char *start_incantation_protocol(ai_stats_t *lead, ai_stats_t *rest[]);
+char *end_incantation_protocol(incantation_list_t *incantation, bool status);
 
 #endif //ZAPPY_INCANTATION_PROTOCOL_H
