@@ -36,7 +36,7 @@ gui::Display::Display(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> 
     _models->emplace_back(std::make_shared<Model>(LoadModel("assets/mendiane/scene.gltf")));
     _models->emplace_back(std::make_shared<Model>(LoadModel("assets/phiras/scene.gltf")));
     _models->emplace_back(std::make_shared<Model>(LoadModel("assets/thystame/scene.gltf")));
-    
+
     _map = std::make_shared<std::vector<std::shared_ptr<gui::Tile>>>();
     _eggs = std::make_shared<std::vector<std::shared_ptr<gui::Egg>>>();
     _players = std::make_shared<std::vector<std::shared_ptr<gui::Player>>>();
@@ -248,15 +248,10 @@ void gui::Display::endGameUI()
         _winnerTeam = "";
     }
     if (IsKeyPressed(KEY_ESCAPE)) {
-        _sceneState = std::make_shared<SceneState>(SceneState::MENU);
+        *_sceneState = SceneState::MENU;
         _winner = false;
         _winnerTeam = "";
     }
-}
-
-void gui::Display::endGame()
-{
-
 }
 
 void gui::Display::displayEntity()
@@ -266,6 +261,8 @@ void gui::Display::displayEntity()
     }
     for (int i = 0; i < static_cast<int>(_players->size()); ++i) {
         _players->operator[](i)->draw();
+        if (_players->at(i)->getSelected())
+            
         if (_players->operator[](i)->getCountBeforeExpire() == 0)
             _players->erase(_players->begin() + i);
     }
@@ -292,7 +289,6 @@ void gui::Display::initOrbitalCamera(const Vector3& target, float distance)
 
 void gui::Display::updateCamera()
 {
-    auto camera = *_camera;
     auto camState = *_camState;
 
     if (IsKeyPressed(KEY_ESCAPE)) {
@@ -300,10 +296,10 @@ void gui::Display::updateCamera()
             *_sceneState = SceneState::MENU;
         }
         else if (camState == CamState::PLAYER) {
-            camera = { { -_width, 10.0f, -_height}, 
+            *_camera = { { -_width, 10.0f, -_height},
                         { _width / 2, 0.0f, _height / 2 }, 
                         { 0.0f, 1.0f, 0.0f }, 45.0f, 0 };
-            _camState = std::make_shared<CamState>(CamState::WORLD);
+            *_camState = CamState::WORLD;
         }
     }
     if (IsKeyDown(KEY_LEFT_CONTROL)) {
@@ -458,5 +454,5 @@ void gui::Display::addPlayer(int id, std::pair<int, int> position, Orientation o
 {
     std::lock_guard<std::mutex> lock(playersMutex);
     _players->emplace_back(std::make_shared<gui::Player>(id, position, orientation, level, team, 0.35, SCREEN_WIDTH, SCREEN_HEIGHT,
-        _camera, _camState, _timeUnit, _model, _deadModel, _animations, _animCount, _models->at(4)));
+        *_camera, *_camState, _timeUnit, _model, _deadModel, _animations, _animCount, _models->at(4)));
 }

@@ -88,7 +88,17 @@ void gui::Client::receiveLoop()
     std::string incompleteCommand;
     std::vector<std::string> stringArray;
     
+    int loopCountSelect = 0;
     while (_socket.isConnected()) {
+
+        loopCountSelect++;
+        for (size_t i = 0; i < _players->size(); ++i) {
+            if (_players->at(i)->getSelected() && loopCountSelect >= 60) {
+                sendCommand("pin #" + std::to_string(_players->at(i)->getId()) + "\n");
+                loopCountSelect = 0;
+            }
+        }
+
         constexpr size_t BUFFER_SIZE = 4096;
         std::vector<char> buffer(BUFFER_SIZE);
         
@@ -191,7 +201,6 @@ void gui::Client::msz(std::vector<std::string> stringArray)
 {
     std::pair<int, int> size;
 
-    Debug::InfoLog("Received msz command with arguments: " + std::to_string(stringArray.size()));
     if (stringArray.size() != 3)
         throw Error("Value for team name is invalid.");
 
@@ -219,8 +228,9 @@ void gui::Client::bct(std::vector<std::string> stringArray)
     coord.first = std::stoi(stringArray[1]);
     coord.second = std::stoi(stringArray[2]);
 
-    for (int i = 3; i <= 9 && i < (int)stringArray.size(); ++i)
+    for (int i = 3; i <= 9 && i < (int)stringArray.size(); ++i) {
         quantity.push_back(std::stoi(stringArray[i]));
+    }
 
     std::lock_guard<std::mutex> lock(_mutex);
 
@@ -231,10 +241,10 @@ void gui::Client::bct(std::vector<std::string> stringArray)
     } else if (findTile(coord.first, coord.second) != -1) {
         auto &_tile = _map->at(findTile(coord.first, coord.second));
         for (int i = 0; i < 7; ++i) {
-            while (quantity[i] > (_tile->getItem(i) / 2)) {
+            while (quantity[i] > _tile->getItem(i)) {
                 _tile->addItem(1, i);
             }
-            while (quantity[i] < (_tile->getItem(i) / 2)) {
+            while (quantity[i] < _tile->getItem(i)) {
                 _tile->delItem(1, i);
             }
         }
@@ -257,10 +267,8 @@ void gui::Client::tna(std::vector<std::string> stringArray)
         team_name[team_name.length() - 1] = '\0';
 
     for (int i = 0; i < (int)_teams->size(); ++i) {
-        if (_teams->at(i) == team_name) {
-            Debug::InfoLog("Team already exists: " + team_name);
-            return;
-        }
+        if (_teams->at(i) == team_name)
+            throw Error("Team already exists: " + team_name);
     }
 
     std::vector <Color> colors = {
@@ -310,8 +318,6 @@ void gui::Client::pnw(std::vector<std::string> stringArray)
             player->setColorTeam(_teamColors);
     } else
         throw Error("Player's value are wrong.");
-    if (_players->empty())
-        Debug::WarningLog("players empty after player creation");
 }
 
 
@@ -375,8 +381,6 @@ void gui::Client::plv(std::vector<std::string> stringArray)
 void gui::Client::pin(std::vector<std::string> stringArray)
 {
     std::map<std::string, int> inventory;
-
-    Debug::InfoLog("Received pin command with arguments: " + std::to_string(stringArray.size()));
 
     if (stringArray.size() != 11)
         throw Error("Command with the wrong number of argument.");
@@ -446,7 +450,6 @@ void gui::Client::pex(std::vector<std::string> stringArray)
 void gui::Client::pbc(std::vector<std::string> stringArray)
 {
 
-    Debug::InfoLog("Received pbc command with arguments: " + std::to_string(stringArray.size()));
     if (stringArray.size() != 3)
         throw Error("Command with the wrong number of argument.");
 
@@ -558,7 +561,6 @@ void gui::Client::pdr(std::vector<std::string> stringArray)
     int id = std::stoi(stringArray[1].substr(1));
     int nbResources = std::stoi(stringArray[2]);
 
-    Debug::InfoLog("Player ID: " + std::to_string(id) + ", Resource ID: " + std::to_string(nbResources));
     if (id && findPlayer(id) == -1)
         return;
 
@@ -592,7 +594,6 @@ void gui::Client::pgt(std::vector<std::string> stringArray)
     id = std::stoi(stringArray[1].substr(1));
     nbResources = std::stoi(stringArray[2]);
 
-    Debug::InfoLog("Player ID: " + std::to_string(id) + ", Resource ID: " + std::to_string(nbResources));
     if (id && findPlayer(id) == -1)
         return;
 
@@ -661,8 +662,6 @@ void gui::Client::enw(std::vector<std::string> stringArray)
         _eggs->emplace_back(std::make_shared<gui::Egg>(eggId, std::make_pair(posX, posY), _display->_eggModel, ""));
     else
         _eggs->emplace_back(std::make_shared<gui::Egg>(eggId, std::make_pair(posX, posY), _display->_eggModel, _players->at(playerIndice)->getTeam()));
-    if (_eggs->empty())
-        Debug::WarningLog("Eggs empty after egg creation");
 }
 
 
@@ -672,7 +671,6 @@ void gui::Client::ebo(std::vector<std::string> stringArray)
 {
     int id;
 
-    Debug::InfoLog("Received ebo command with arguments: " + std::to_string(stringArray.size()));
     if (stringArray.size() != 2)
         throw Error("Command with the wrong number of argument.");
 
@@ -723,7 +721,7 @@ void gui::Client::sgt(std::vector<std::string> stringArray)
     std::lock_guard<std::mutex> lock(_mutex);
 
     _timeUnit = std::make_shared<int>(time_unit);
-    Debug::InfoLog("Time unit set to: " + std::to_string(time_unit));
+    Debug::InfoLog("[GUI] Time unit set to: " + std::to_string(time_unit));
 }
 
 
@@ -739,7 +737,7 @@ void gui::Client::sst(std::vector<std::string> stringArray)
     std::lock_guard<std::mutex> lock(_mutex);
 
     _timeUnit = std::make_shared<int>(time_unit);
-    Debug::InfoLog("Time unit modified to: " + std::to_string(time_unit));
+    Debug::InfoLog("[GUI] Time unit modified to: " + std::to_string(time_unit));
 }
 
 
@@ -756,7 +754,7 @@ void gui::Client::seg(std::vector<std::string> stringArray)
 
     _display->setWinner(winner);
     _isActive = false;
-    Debug::InfoLog("Game ended. Winner: " + winner);
+    Debug::InfoLog("[GUI] Game ended. Winner: " + winner);
 }
 
 
@@ -778,7 +776,7 @@ void gui::Client::suc(const std::vector<std::string>& stringArray)
 {
     if (stringArray.size() != 1)
         throw Error("Wrong number of parameter.");
-    Debug::WarningLog("Received command: suc");
+    Debug::WarningLog("[GUI] Received command: suc");
 }
 
 
@@ -788,7 +786,7 @@ void gui::Client::sbp(const std::vector<std::string>& stringArray)
 {
     if (stringArray.size() != 1)
         throw Error("Wrong number of parameter.");
-    Debug::WarningLog("Received command: sbp");
+    Debug::WarningLog("[GUI] Received command: sbp");
 }
 
 

@@ -19,7 +19,6 @@
 gui::Scene::Scene(const std::string& hostname, const std::string& port)
     : _isOpen(true)
 {
-    Debug::InfoLog("Zappy started");
     _camera = std::make_shared<Camera>();
     _camState = std::make_shared<CamState>(CamState::WORLD);
     _currentState = std::make_shared<SceneState>(SceneState::MENU);
@@ -40,6 +39,7 @@ gui::Scene::Scene(const std::string& hostname, const std::string& port)
 
 gui::Scene::~Scene()
 {
+    Debug::InfoLog("Zappy closed");
     CloseWindow();
 }
 
@@ -93,8 +93,6 @@ void gui::Scene::handleStateLogic()
 
 void gui::Scene::update()
 {
-    if (_display->getPlayers()->empty())
-        Debug::DebugLog("Players empty");
     if (!_isOpen) {
         return;
     }

@@ -19,7 +19,7 @@
 
 
 gui::Player::Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team,
-        float scale, int screenWidth, int screenHeight, std::shared_ptr<Camera> camera, std::shared_ptr<CamState> sceneState, std::shared_ptr<int> timeUnit,
+        float scale, int screenWidth, int screenHeight, Camera& camera, CamState& sceneState, std::shared_ptr<int> timeUnit,
         std::shared_ptr<Model> model, Model deadModel, ModelAnimation *animations, int animCount, std::shared_ptr<Model> teamModel)
     : AEntity({(float)position.first, 1.0f, (float)position.second}, scale, WHITE), 
     _model(model), _id(id), _level(level), _animCount(animCount), _currentAnim(2), _animFrameCounter(0), _isMoving(false), _isSelected(false), _team(std::move(team)), _animationSpeed(1.0f),
@@ -180,7 +180,12 @@ void gui::Player::drawUI()
 {
     if (_isSelected) {
         _inventory->draw();
-        DrawText(("Team name: " + _team).c_str(), static_cast<float>(SCREEN_WIDTH) / 5.0f, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam->operator[](_team));
+        std::string text;
+        if (_team.size() > 5)
+            text = _team.substr(0, 5) + "... : ";
+        else
+            text = _team + " : ";
+        DrawText(("Team name: " + text).c_str(), static_cast<float>(SCREEN_WIDTH) / 5.0f, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam->operator[](_team));
         DrawText(("Player ID: " + std::to_string(_id)).c_str(), static_cast<float>(SCREEN_WIDTH) / 2.8, static_cast<float>(SCREEN_HEIGHT) * 0.8f + 10, 30, _colorTeam->operator[](_team));
         int falseId = _id;
         int counter = 0;
@@ -242,14 +247,14 @@ int gui::Player::update(std::shared_ptr<Camera> camera)
     return 0;
 }
 
-void gui::Player::HandleCamButton(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> sceneState)
+void gui::Player::HandleCamButton(Camera& camera, CamState& sceneState)
 {
-    camera = std::make_shared<Camera>(Camera{ { _position.x - 2, _position.y + 2, _position.z - 2 },
+    camera = { { _position.x - 2, _position.y + 2, _position.z - 2 },
         { _position.x, _position.y, _position.z },
         { 0.0f, 1.0f, 0.0f },
         45.0f,
-        0 });
-    sceneState = std::make_shared<CamState>(CamState::PLAYER);
+        0 };
+    sceneState = CamState::PLAYER;
 }
 
 void gui::Player::broadcastAnimation()
@@ -271,8 +276,6 @@ void gui::Player::broadcastAnimation()
 
 void gui::Player::IncantationAnimation()
 {
-    if (!_isIncantation && !_isIncantationEnded)
-        return;
     if (_isIncantationEnded) {
         _IncantationTimer += GetFrameTime();
         float t = _IncantationTimer / _IncantationDuration;
@@ -287,17 +290,20 @@ void gui::Player::IncantationAnimation()
         DrawCube(pos, scale, scale, scale, color);
         return;
     }
-    _IncantationTimer += GetFrameTime();
-    float t = _IncantationTimer / _IncantationDuration;
-    if (t > 1.0f) {
-        _isIncantation = false;
+    if (_isIncantation) {
+        _IncantationTimer += GetFrameTime();
+        float t = _IncantationTimer / _IncantationDuration;
+        if (t > 1.0f) {
+            _isIncantation = false;
+            return;
+        }
+        float scale = Lerp(0.5f, 9.0f, t);
+        float alpha = Lerp(0.8f, 0.0f, t);
+        Color color = { 75, 0, 130, static_cast<unsigned char>(alpha * 255) };
+        Vector3 pos = getPosition();
+        DrawCube(pos, scale, scale, scale, color);
         return;
     }
-    float scale = Lerp(0.5f, 9.0f, t);
-    float alpha = Lerp(0.8f, 0.0f, t);
-    Color color = { 75, 0, 130, static_cast<unsigned char>(alpha * 255) };
-    Vector3 pos = getPosition();
-    DrawCube(pos, scale, scale, scale, color);
 }
 
 

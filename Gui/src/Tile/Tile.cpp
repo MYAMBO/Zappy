@@ -18,9 +18,11 @@
 
 
 gui::Tile::Tile(std::pair<int, int> coord, std::vector<int> qty, std::shared_ptr<std::vector<std::shared_ptr<Model>>> model, int screenWidth, int screenHeight, std::shared_ptr<TeamsDisplay> displayTeams)
-    : _isSelected(false), _qty(qty), _coord(std::move(coord)), _displayTeams(displayTeams), _models(std::move(model)), _items(7),
+    : _isSelected(false), _qty(), _coord(std::move(coord)), _displayTeams(displayTeams), _models(std::move(model)), _items(7),
       _fontSize(30), _tileInventory({0, static_cast<float>(screenHeight) * 0.8f, static_cast<float>(screenWidth), static_cast<float>(screenHeight) / 5.0f})
 {
+    _qty = std::vector<int> ({0,0,0,0,0,0,0});
+
     addItem(qty[FOOD], FOOD);
     addItem(qty[LINEMATE], LINEMATE);
     addItem(qty[DERAUMERE], DERAUMERE);
@@ -68,7 +70,6 @@ void gui::Tile::addItem(int qty, int type)
         _items[type].emplace_back(it->second());
     _qty[type] += qty;
 }
-
 
 void gui::Tile::delItem(int qty, int type)
 {
@@ -138,7 +139,7 @@ void gui::Tile::displayContent()
         float itemWidth = _tileInventory.width / static_cast<float>(_items.size());
         for (int i = 0; i < static_cast<int>(_itemsText.size()); ++i) {
             Debug::InfoLog("[GUI] Drawing inventory item: " + _itemsText.at(i).first + " with quantity: " + std::to_string(_qty.at(i)));
-            std::string text = _itemsText.at(i).first + " : " + std::to_string(_qty.at(i) / 2);
+            std::string text = _itemsText.at(i).first + " : " + std::to_string(_qty.at(i));
             Vector2 textSize = MeasureTextEx(GetFontDefault(), text.c_str(), _fontSize, 1);
             float textX = _tileInventory.x + i * itemWidth + (itemWidth - textSize.x) / 2;
             float textY = _tileInventory.y + (_tileInventory.height - textSize.y) / 2;
