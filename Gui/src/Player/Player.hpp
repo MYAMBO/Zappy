@@ -20,7 +20,7 @@ namespace gui {
     class Player : public AEntity {
         public:
             Player(int id, std::pair<int, int> position, Orientation orientation, int level, std::string team,
-                float scale, int screenWidth, int screenHeight, std::shared_ptr<Camera> camera, std::shared_ptr<CamState> sceneState, std::shared_ptr<int> timeUnit,
+                float scale, int screenWidth, int screenHeight, Camera &camera, CamState &sceneState, std::shared_ptr<int> timeUnit,
                 std::shared_ptr<Model> model, Model deadModel, ModelAnimation *animations, int animCount, std::shared_ptr<Model> teamModel);
             ~Player();
 
@@ -82,7 +82,7 @@ namespace gui {
              * @brief Handle the camera button action.
              * This function handles the action when the camera button is clicked.
              */
-            void HandleCamButton(std::shared_ptr<Camera> camera, std::shared_ptr<CamState> sceneState);
+            void HandleCamButton(Camera& camera, CamState& sceneState);
 
             /**
              * @brief Update the Player.
