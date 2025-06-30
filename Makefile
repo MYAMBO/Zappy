@@ -67,6 +67,7 @@ SERVER_SRC = 												\
 				Server/src/egg_protocol.c					\
 				Server/src/incantation_list.c	\
 				Server/src/send_init_graphic.c	\
+				Server/src/send_slots_remaining.c	\
 
 GUI_SRC = 												\
 				Gui/src/main.cpp 						\

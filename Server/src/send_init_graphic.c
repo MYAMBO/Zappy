@@ -47,7 +47,6 @@ int send_graphic_suite(server_t *server, poll_handling_t *node)
 
 int send_graphic_init(server_t *server, poll_handling_t *node)
 {
-    (void)server;
     char *str = get_server_message("Welcome to Zappy !");
     char *args[] = {"command", NULL};
 

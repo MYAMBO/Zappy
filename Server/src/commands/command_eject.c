@@ -30,9 +30,7 @@ int eject_command(server_t *server, poll_handling_t *node, char **args)
     write(node->poll_fd.fd, str, strlen(str));
     if (strcmp(str, "ko\n") != 0) {
         tmp = player_expulsion(node->player);
-        if (tmp == NULL)
-            return FAILURE;
-        if (send_message_graphic(server, tmp) == FAILURE)
+        if (tmp == NULL && send_message_graphic(server, tmp) == FAILURE)
             return FAILURE;
         my_free(tmp);
     }

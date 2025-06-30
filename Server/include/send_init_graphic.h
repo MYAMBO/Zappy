@@ -12,6 +12,6 @@
 
     #include "struct.h"
 
-int send_graphic_init(server_t *server,  poll_handling_t *node);
+int send_graphic_init(server_t *server, poll_handling_t *node);
 
 #endif //SEND_INIT_GRAPHIC_H
