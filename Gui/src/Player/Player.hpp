@@ -9,6 +9,7 @@
     #define ZAPPY_PLAYER_HPP
 
     #include <tuple>
+    #include <mutex>
 
     #include "Type.hpp"
     #include "Button.hpp"
@@ -268,8 +269,8 @@ namespace gui {
             int _animFrameCounter;
             int _countBeforeExpire = 600;
             
-            bool _isMoving;
             bool _isDead = false;
+            bool _isMoving = false;
             bool _isPushed = false;
             bool _isSelected = false;
             bool _isIncantation = false;
@@ -288,20 +289,20 @@ namespace gui {
             float _IncantationDuration = 2.0f;
 
             Vector3 _targetPosition;
-            
+
             ui::Button _camButton;
             std::shared_ptr<ui::Inventory> _inventory;
-
+            
             Model _deadModel; 
             Orientation _direction;
             AnimState _currentAnimState;
             ModelAnimation *_animations;
-
+            
             int _fontSize;
             std::map<std::string, std::pair<int, Color>> _items;
-
+            
             Rectangle _bounds;
-
+            
             std::shared_ptr<Model> _teamModel;
 
             std::shared_ptr<std::map<std::string, Color>> _colorTeam;
