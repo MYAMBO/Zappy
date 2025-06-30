@@ -52,8 +52,8 @@ static int div_round_down(int value)
     return value / 126;
 }
 
-
-static char *return_player_resources(ai_stats_t *ai, int alloc, int x, int y)
+static char *return_player_resources(ai_stats_t *ai,
+    int alloc, int x, int y)
 {
     char *result = my_malloc(alloc + 1);
 
