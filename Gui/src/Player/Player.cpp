@@ -127,21 +127,17 @@ void gui::Player::updateMovementAndAnimation()
             float baseSpeed = 0.02f;
             float baseTimeUnit = 10.0f;
             float speed = baseSpeed * (static_cast<float>(*_timeUnit) / baseTimeUnit);
-            
             _position = Vector3Add(_position, Vector3Scale(direction, speed));
         } else {
             _position = _targetPosition;
             stopMoving();
         }
     }
-    
     if (_animCount > 0 && _currentAnim < _animCount) {
         float animSpeed = static_cast<float>(*_timeUnit) / 10.0f;
         _animFrameCounter += animSpeed;
-        
-        if (_animFrameCounter >= _animations[_currentAnim].frameCount) {
+        if (_animFrameCounter >= _animations[_currentAnim].frameCount)
             _animFrameCounter = 0;
-        }
         UpdateModelAnimation(*_model, _animations[_currentAnim], static_cast<int>(_animFrameCounter));
     }
 }
