@@ -11,7 +11,8 @@
 #include "garbage.h"
 #include "server.h"
 
-static incantation_list_t *init_node(int incantation_nb, int tick_actual, int xy_lev[3])
+static incantation_list_t *init_node(int incantation_nb,
+    int tick_actual, int xy_lev[3])
 {
     incantation_list_t *tmp = my_malloc(sizeof(incantation_list_t));
 
@@ -26,15 +27,15 @@ static incantation_list_t *init_node(int incantation_nb, int tick_actual, int xy
     return tmp;
 }
 
-int add_incantation(incantation_list_t **head, int incantation_nb, int tick_actual, int xy_lev[3])
+int add_incantation(incantation_list_t **head, int incantation_nb,
+    int tick_actual, int xy_lev[3])
 {
     incantation_list_t *node = init_node(incantation_nb, tick_actual, xy_lev);
     incantation_list_t *tmp;
 
     if (node == NULL)
         return FAILURE;
-    if (*head == NULL)
-    {
+    if (*head == NULL) {
         *head = node;
         return SUCCESS;
     }

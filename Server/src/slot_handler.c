@@ -19,7 +19,8 @@ static int get_global_id(void)
     return id;
 }
 
-static slot_t *init_slot(slot_table_t *table, int xy[2], int id_user, server_t *server)
+static slot_t *init_slot(slot_table_t *table, int xy[2],
+    int id_user, server_t *server)
 {
     slot_t *slot = my_malloc(sizeof(slot_t));
 
@@ -29,13 +30,10 @@ static slot_t *init_slot(slot_table_t *table, int xy[2], int id_user, server_t *
     slot->id_slot = table->id_slot_current;
     table->id_slot_current = table->id_slot_current + 1;
     slot->id_user = id_user;
-    if (xy[0] < 0 || xy[1] < 0)
-    {
+    if (xy[0] < 0 || xy[1] < 0) {
         slot->x = rand() % server->map_width;
         slot->y = rand() % server->map_height;
-    }
-    else
-    {
+    } else {
         slot->x = xy[0];
         slot->y = xy[1];
     }
@@ -43,7 +41,8 @@ static slot_t *init_slot(slot_table_t *table, int xy[2], int id_user, server_t *
     return slot;
 }
 
-int add_slot(slot_table_t *slot_table, int xy[2], int id_user, server_t *server)
+int add_slot(slot_table_t *slot_table, int xy[2], int id_user,
+    server_t *server)
 {
     slot_t *slot = init_slot(slot_table, xy, id_user, server);
     slot_t *tmp;
@@ -100,6 +99,7 @@ int connect_player(slot_table_t *slot_table, ai_stats_t *user)
     slot->id_user = user->id;
     user->x = slot->x;
     user->y = slot->y;
+    user->connected = true;
     user->team_name = my_malloc(sizeof(char) *
         (strlen(slot_table->name) + 1));
     if (user->team_name == NULL)

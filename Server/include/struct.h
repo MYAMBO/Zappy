@@ -42,8 +42,7 @@ typedef struct map_s {
     ressources_t **tiles;
 } map_t;
 
-typedef struct incantation_list_s
-{
+typedef struct incantation_list_s {
     int incantation_nb;
     int tick_end;
     int x;

@@ -36,8 +36,9 @@ int take_command(server_t *server, poll_handling_t *node, char **args);
 int drop_command(server_t *server, poll_handling_t *node, char **args);
 int connect_nbr_command(server_t *server, poll_handling_t *node, char **args);
 int incantation_command(server_t *server, poll_handling_t *node, char **args);
-int end_incantation_command(server_t *server, poll_handling_t *node, char **args);
 int fork_command(server_t *server, poll_handling_t *node, char **args);
+int end_incantation_command(server_t *server,
+    poll_handling_t *node, char **args);
 
 static entry_ai_t const commands_ai_list[] = {
     {"quit", quit_command, 0},

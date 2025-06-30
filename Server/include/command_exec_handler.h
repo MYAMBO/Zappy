@@ -20,5 +20,7 @@ int add_command_exec(command_exec_t **head, char **args, int time_to_exec);
 void command_exec_queue(poll_handling_t *node, int actual_tick);
 int launch_command_exec(poll_handling_t *node, int actual_tick,
     server_t *server);
+int send_map_size_message(server_t *server,
+    poll_handling_t *node);
 
 #endif //COMMAND_EXEC_HANDLER_H

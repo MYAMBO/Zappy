@@ -25,7 +25,7 @@
 #include "utils.h"
 
 static int handle_read_error(ssize_t bytes_read, server_t *server,
-                             poll_handling_t *node)
+    poll_handling_t *node)
 {
     if (bytes_read < 0) {
         perror("read failed");
@@ -37,22 +37,28 @@ static int handle_read_error(ssize_t bytes_read, server_t *server,
     return SUCCESS;
 }
 
-int handle_client_error(ssize_t bytes_read, server_t *server,
+static int send_death(server_t *server, poll_handling_t *node)
+{
+    char *str;
+
+    if (node->player) {
+        str = player_death(node->player);
+        if (str == NULL)
+            return FAILURE;
+        if (send_message_graphic(server, str) == FAILURE)
+            return FAILURE;
+    }
+    return SUCCESS;
+}
+
+static int handle_client_error(ssize_t bytes_read, server_t *server,
     poll_handling_t *node, char *buffer)
 {
     if (handle_read_error(bytes_read, server, node) == FAILURE)
         return FAILURE;
     if (bytes_read == 0) {
-        if (node->player)
-        {
-            char *str = player_death(node->player);
-
-            if (str == NULL)
-                return FAILURE;
-            if (send_message_graphic(server, str) == FAILURE)
-                return FAILURE;
-        }
-        if (send_message_disconnect(node) == FAILURE)
+        if (send_death(server, node) == FAILURE ||
+            send_message_disconnect(node) == FAILURE)
             return FAILURE;
         close(node->poll_fd.fd);
         if (node->player->connected && disconnect_player

@@ -47,7 +47,13 @@ char *get_player_level(ai_stats_t *ai)
     return result;
 }
 
-static char *return_player_resources(ai_stats_t *ai, int alloc, int x, int y)
+static int div_round_down(int value)
+{
+    return value / 126;
+}
+
+static char *return_player_resources(ai_stats_t *ai,
+    int alloc, int x, int y)
 {
     char *result = my_malloc(alloc + 1);
 
@@ -55,7 +61,7 @@ static char *return_player_resources(ai_stats_t *ai, int alloc, int x, int y)
         return NULL;
     snprintf(result, alloc + 1,
         "pin #%d %d %d %d %d %d %d %d %d %d\n", ai->id, x, y,
-        ai->inventory.resources[0],
+        div_round_down(ai->life),
         ai->inventory.resources[1],
         ai->inventory.resources[2],
         ai->inventory.resources[3],
@@ -69,7 +75,7 @@ char *get_player_inventory(ai_stats_t *ai, int x, int y)
 {
     int alloc = snprintf(NULL, 0,
                     "pin #%d %d %d %d %d %d %d %d %d %d\n", ai->id, x, y,
-                    ai->inventory.resources[0],
+                    div_round_down(ai->life),
                     ai->inventory.resources[1],
                     ai->inventory.resources[2],
                     ai->inventory.resources[3],
