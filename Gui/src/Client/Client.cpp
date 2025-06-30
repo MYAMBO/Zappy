@@ -201,7 +201,6 @@ void gui::Client::msz(std::vector<std::string> stringArray)
 {
     std::pair<int, int> size;
 
-    Debug::InfoLog("Received msz command with arguments: " + std::to_string(stringArray.size()));
     if (stringArray.size() != 3)
         throw Error("Value for team name is invalid.");
 
@@ -382,8 +381,6 @@ void gui::Client::pin(std::vector<std::string> stringArray)
 {
     std::map<std::string, int> inventory;
 
-    Debug::InfoLog("Received pin command with arguments: " + std::to_string(stringArray.size()));
-
     if (stringArray.size() != 11)
         throw Error("Command with the wrong number of argument.");
 
@@ -452,7 +449,6 @@ void gui::Client::pex(std::vector<std::string> stringArray)
 void gui::Client::pbc(std::vector<std::string> stringArray)
 {
 
-    Debug::InfoLog("Received pbc command with arguments: " + std::to_string(stringArray.size()));
     if (stringArray.size() != 3)
         throw Error("Command with the wrong number of argument.");
 
@@ -564,7 +560,6 @@ void gui::Client::pdr(std::vector<std::string> stringArray)
     int id = std::stoi(stringArray[1].substr(1));
     int nbResources = std::stoi(stringArray[2]);
 
-    Debug::InfoLog("Player ID: " + std::to_string(id) + ", Resource ID: " + std::to_string(nbResources));
     if (id && findPlayer(id) == -1)
         return;
 
@@ -598,7 +593,6 @@ void gui::Client::pgt(std::vector<std::string> stringArray)
     id = std::stoi(stringArray[1].substr(1));
     nbResources = std::stoi(stringArray[2]);
 
-    Debug::InfoLog("Player ID: " + std::to_string(id) + ", Resource ID: " + std::to_string(nbResources));
     if (id && findPlayer(id) == -1)
         return;
 
@@ -676,7 +670,6 @@ void gui::Client::ebo(std::vector<std::string> stringArray)
 {
     int id;
 
-    Debug::InfoLog("Received ebo command with arguments: " + std::to_string(stringArray.size()));
     if (stringArray.size() != 2)
         throw Error("Command with the wrong number of argument.");
 
@@ -727,7 +720,7 @@ void gui::Client::sgt(std::vector<std::string> stringArray)
     std::lock_guard<std::mutex> lock(_mutex);
 
     _timeUnit = std::make_shared<int>(time_unit);
-    Debug::InfoLog("Time unit set to: " + std::to_string(time_unit));
+    Debug::InfoLog("[GUI] Time unit set to: " + std::to_string(time_unit));
 }
 
 
@@ -743,7 +736,7 @@ void gui::Client::sst(std::vector<std::string> stringArray)
     std::lock_guard<std::mutex> lock(_mutex);
 
     _timeUnit = std::make_shared<int>(time_unit);
-    Debug::InfoLog("Time unit modified to: " + std::to_string(time_unit));
+    Debug::InfoLog("[GUI] Time unit modified to: " + std::to_string(time_unit));
 }
 
 
@@ -760,7 +753,7 @@ void gui::Client::seg(std::vector<std::string> stringArray)
 
     _display->setWinner(winner);
     _isActive = false;
-    Debug::InfoLog("Game ended. Winner: " + winner);
+    Debug::InfoLog("[GUI] Game ended. Winner: " + winner);
 }
 
 
